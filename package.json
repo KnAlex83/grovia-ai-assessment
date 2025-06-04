@@ -1,0 +1,23 @@
+{
+  "name": "ai-assessment-production",
+  "version": "1.0.0",
+  "description": "AI Readiness Assessment for SMEs - Production Build",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.3",
+    "@neondatabase/serverless": "^0.10.1",
+    "drizzle-orm": "^0.35.3",
+    "express": "^4.21.1",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8",
+    "nanoid": "^5.0.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
