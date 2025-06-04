@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "node index.js"
+    "dev": "node index.js",
+    "build": "echo 'Files are pre-built, no build step needed'"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.3",
