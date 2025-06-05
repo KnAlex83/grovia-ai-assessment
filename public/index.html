@@ -7,53 +7,51 @@
     <meta name="description" content="Evaluate your company's AI readiness with our comprehensive assessment tool. Get personalized recommendations and a detailed report." />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <style>
-      /* Exact replica of preview mode styling with bug fixes */
+      /* Complete fix for form scrolling and theme toggle */
       :root {
-        /* Grovia Digital Professional Color Palette - Exact Match */
-        --background: 0 0% 100%; /* Pure white */
-        --foreground: 210 15% 20%; /* Deep professional navy */
-        --muted: 210 20% 97%; /* Light gray background */
-        --muted-foreground: 210 10% 50%; /* Medium gray text */
+        /* Grovia Digital Professional Color Palette */
+        --background: 0 0% 100%;
+        --foreground: 210 15% 20%;
+        --muted: 210 20% 97%;
+        --muted-foreground: 210 10% 50%;
         --popover: 0 0% 100%;
         --popover-foreground: 210 15% 20%;
         --card: 0 0% 100%;
         --card-foreground: 210 15% 20%;
-        --border: 210 20% 88%; /* Subtle professional border */
-        --input: 210 20% 94%; /* Input background */
-        --primary: 210 100% 45%; /* Professional blue matching corporate sites */
+        --border: 210 20% 88%;
+        --input: 210 20% 94%;
+        --primary: 210 100% 45%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 210 15% 95%; /* Light professional gray */
+        --secondary: 210 15% 95%;
         --secondary-foreground: 210 15% 20%;
-        --accent: 210 100% 96%; /* Light blue accent */
+        --accent: 210 100% 96%;
         --accent-foreground: 210 100% 35%;
         --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 100%;
         --ring: 210 100% 45%;
-        --radius: 0.75rem; /* More modern radius */
-        --success: 142 70% 40%; /* Professional green */
-        --text-primary: 210 15% 20%; /* Main text color */
-        --text-secondary: 210 10% 50%; /* Secondary text */
-        --background-gradient: 210 30% 98%; /* Subtle gradient background */
+        --radius: 0.75rem;
+        --success: 142 70% 40%;
+        --text-primary: 210 15% 20%;
+        --text-secondary: 210 10% 50%;
+        --background-gradient: 210 30% 98%;
         
-        /* Corporate spacing and typography */
         --content-max-width: 1200px;
         --section-padding: 4rem;
         --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       }
 
       .dark {
-        /* Grovia Digital Dark Theme - Exact Match */
-        --background: 220 20% 6%; /* Deep professional dark background */
-        --foreground: 210 20% 95%; /* Light text */
-        --muted: 220 15% 10%; /* Dark muted backgrounds */
-        --muted-foreground: 210 15% 65%; /* Medium light text */
+        --background: 220 20% 6%;
+        --foreground: 210 20% 95%;
+        --muted: 220 15% 10%;
+        --muted-foreground: 210 15% 65%;
         --popover: 220 20% 8%;
         --popover-foreground: 210 20% 95%;
-        --card: 220 18% 8%; /* Dark card background */
+        --card: 220 18% 8%;
         --card-foreground: 210 20% 95%;
-        --border: 220 15% 18%; /* Subtle dark borders */
-        --input: 220 15% 12%; /* Dark input backgrounds */
-        --primary: 210 100% 60%; /* Professional blue for dark mode */
+        --border: 220 15% 18%;
+        --input: 220 15% 12%;
+        --primary: 210 100% 60%;
         --primary-foreground: 0 0% 100%;
         --secondary: 220 15% 12%;
         --secondary-foreground: 210 20% 95%;
@@ -84,17 +82,12 @@
         transition: background-color 0.3s ease, color 0.3s ease;
       }
 
-      /* Professional gradients and backgrounds */
       .bg-gradient-main {
         background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--background-gradient)) 100%);
         min-height: 100vh;
       }
 
-      .bg-gradient-professional {
-        background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, hsl(var(--accent)) 100%);
-      }
-
-      /* Header Styling - Exact Match */
+      /* Header Styling */
       .header {
         background: hsl(var(--background));
         box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -104,12 +97,10 @@
       .header-content {
         max-width: 1280px;
         margin: 0 auto;
-        padding: 0 1rem;
+        padding: 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
       }
 
       .header-logo {
@@ -154,7 +145,7 @@
       }
 
       .lang-btn {
-        padding: 0.25rem 0.75rem;
+        padding: 0.375rem 0.75rem;
         font-size: 0.875rem;
         border: 1px solid hsl(var(--border));
         border-radius: 0.375rem;
@@ -162,6 +153,7 @@
         color: hsl(var(--foreground));
         cursor: pointer;
         transition: all 0.2s ease;
+        font-weight: 500;
       }
 
       .lang-btn.active {
@@ -174,52 +166,57 @@
         background: hsl(var(--muted));
       }
 
-      /* FIXED: Fancy Theme Toggle - Exact Match to Preview */
+      /* FIXED: Perfect Theme Toggle matching preview mode */
       .theme-toggle {
         position: relative;
-        width: 2rem;
-        height: 2rem;
+        width: 2.25rem;
+        height: 2.25rem;
         border: 1px solid hsl(var(--border));
-        border-radius: 0.375rem;
+        border-radius: 0.5rem;
         background: hsl(var(--background));
-        color: hsl(var(--foreground));
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
         overflow: hidden;
       }
 
       .theme-toggle:hover {
         background: hsl(var(--muted));
+        border-color: hsl(var(--primary) / 0.5);
         transform: scale(1.05);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
 
       .theme-icon {
-        width: 1rem;
-        height: 1rem;
-        transition: all 0.3s ease;
+        width: 1.125rem;
+        height: 1.125rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         position: absolute;
+        fill: currentColor;
+        color: hsl(var(--foreground));
       }
 
-      .theme-toggle .sun-icon {
+      /* Sun icon (light mode) */
+      .sun-icon {
         opacity: 1;
         transform: rotate(0deg) scale(1);
       }
 
-      .theme-toggle .moon-icon {
+      /* Moon icon (dark mode) */
+      .moon-icon {
         opacity: 0;
         transform: rotate(90deg) scale(0);
       }
 
-      .dark .theme-toggle .sun-icon {
+      /* Dark mode transitions */
+      .dark .sun-icon {
         opacity: 0;
         transform: rotate(-90deg) scale(0);
       }
 
-      .dark .theme-toggle .moon-icon {
+      .dark .moon-icon {
         opacity: 1;
         transform: rotate(0deg) scale(1);
       }
@@ -231,7 +228,7 @@
         padding: 2rem 1rem;
       }
 
-      /* Progress Bar - Exact Match */
+      /* Progress Bar */
       .progress-container {
         margin-bottom: 1.5rem;
       }
@@ -258,23 +255,26 @@
         text-align: center;
       }
 
-      /* Chat Interface Card - Exact Match */
+      /* FIXED: Chat Interface with proper scrolling */
       .chat-card {
         background: hsl(var(--card));
         border: 1px solid hsl(var(--border));
         border-radius: calc(var(--radius) + 2px);
         box-shadow: var(--card-shadow);
-        height: 600px;
         margin-bottom: 1.5rem;
         overflow: hidden;
         display: flex;
         flex-direction: column;
+        /* FIXED: Dynamic height based on content */
+        min-height: 500px;
+        max-height: 700px;
       }
 
       .chat-header {
         padding: 1.5rem;
         border-bottom: 1px solid hsl(var(--border));
         background: hsl(var(--muted) / 0.3);
+        flex-shrink: 0;
       }
 
       .chat-header-content {
@@ -307,11 +307,14 @@
         margin: 0;
       }
 
+      /* FIXED: Messages area with proper scrolling */
       .chat-messages {
         flex: 1;
         overflow-y: auto;
         padding: 1.5rem;
         background: hsl(var(--background));
+        min-height: 200px;
+        max-height: 350px;
       }
 
       .message {
@@ -349,11 +352,15 @@
         border-bottom-left-radius: 0.25rem;
       }
 
-      /* Input Container - Exact Match */
+      /* FIXED: Input Container with proper form layout */
       .input-container {
         padding: 1.5rem;
         border-top: 1px solid hsl(var(--border));
         background: hsl(var(--background));
+        flex-shrink: 0;
+        /* FIXED: Allow scrolling within forms */
+        max-height: 300px;
+        overflow-y: auto;
       }
 
       .form-container {
@@ -370,7 +377,7 @@
       }
 
       .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
       }
 
       .form-label {
@@ -422,30 +429,37 @@
         cursor: pointer;
       }
 
+      /* FIXED: Form button always visible */
       .form-button {
         background: hsl(var(--primary));
         color: hsl(var(--primary-foreground));
         border: none;
-        padding: 0.75rem 1.5rem;
+        padding: 0.875rem 1.5rem;
         border-radius: calc(var(--radius) - 2px);
         font-size: 1rem;
-        font-weight: 500;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
         width: 100%;
+        margin-top: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .form-button:hover:not(:disabled) {
         background: hsl(var(--primary) / 0.9);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       }
 
       .form-button:disabled {
         background: hsl(var(--muted));
         color: hsl(var(--muted-foreground));
         cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
 
-      /* FIXED: Question Form with Proper Submit Button */
+      /* FIXED: Question form with proper layout */
       .question-form-container {
         max-width: 600px;
         margin: 0 auto;
@@ -458,26 +472,11 @@
       }
 
       .text-input-form .form-input {
-        flex: 1;
-        margin-bottom: 0;
         min-height: 2.5rem;
+        resize: vertical;
       }
 
-      .text-input-form .form-button {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        align-self: stretch;
-        background: hsl(var(--primary));
-        color: hsl(var(--primary-foreground));
-      }
-
-      .text-input-form .form-button:hover:not(:disabled) {
-        background: hsl(var(--primary) / 0.9);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-      }
-
-      /* FIXED: Feature Cards with Proper Icons - Exact Match to Preview */
+      /* Feature Cards */
       .features-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -565,7 +564,7 @@
         line-height: 1.5;
       }
 
-      /* Footer - Exact Match */
+      /* Footer */
       .footer {
         background: hsl(var(--muted) / 0.5);
         border-top: 1px solid hsl(var(--border));
@@ -633,6 +632,8 @@
       @media (max-width: 768px) {
         .header-content {
           padding: 0.75rem 1rem;
+          flex-direction: column;
+          gap: 1rem;
         }
 
         .main-content {
@@ -640,13 +641,16 @@
         }
 
         .chat-card {
-          height: 500px;
+          min-height: 400px;
+          max-height: 600px;
         }
 
-        .chat-header,
-        .chat-messages,
+        .chat-messages {
+          max-height: 250px;
+        }
+
         .input-container {
-          padding: 1rem;
+          max-height: 250px;
         }
 
         .features-grid {
@@ -657,6 +661,29 @@
           flex-direction: column;
           gap: 1rem;
         }
+      }
+
+      /* Custom scrollbar styling */
+      .chat-messages::-webkit-scrollbar,
+      .input-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .chat-messages::-webkit-scrollbar-track,
+      .input-container::-webkit-scrollbar-track {
+        background: hsl(var(--muted));
+        border-radius: 3px;
+      }
+
+      .chat-messages::-webkit-scrollbar-thumb,
+      .input-container::-webkit-scrollbar-thumb {
+        background: hsl(var(--border));
+        border-radius: 3px;
+      }
+
+      .chat-messages::-webkit-scrollbar-thumb:hover,
+      .input-container::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--muted-foreground));
       }
 
       /* SVG Icons */
@@ -674,12 +701,12 @@
     </style>
   </head>
   <body class="bg-gradient-main">
-    <!-- Header - Exact Match -->
+    <!-- Header -->
     <header class="header">
       <div class="header-content">
         <div class="header-logo">
           <div class="logo-icon">
-            <svg class="icon-large" viewBox="0 0 24 24">
+            <svg class="icon-large" viewBox="0 0 24 24" style="color: white;">
               <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
             </svg>
           </div>
@@ -693,13 +720,16 @@
             <button class="lang-btn active" id="lang-de">DE</button>
             <button class="lang-btn" id="lang-en">EN</button>
           </div>
-          <!-- FIXED: Fancy Theme Toggle -->
-          <button class="theme-toggle" id="theme-toggle">
+          <!-- FIXED: Perfect Theme Toggle with proper sun/moon icons -->
+          <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+            <!-- Sun icon for light mode -->
             <svg class="theme-icon sun-icon" viewBox="0 0 24 24">
-              <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+              <circle cx="12" cy="12" r="5"/>
+              <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
             </svg>
+            <!-- Moon icon for dark mode -->
             <svg class="theme-icon moon-icon" viewBox="0 0 24 24">
-              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
           </button>
         </div>
@@ -716,7 +746,7 @@
         <div class="progress-text" id="progress-text">Assessment wird geladen...</div>
       </div>
 
-      <!-- Chat Interface -->
+      <!-- FIXED: Chat Interface with proper scrolling -->
       <div class="chat-card">
         <div class="chat-header">
           <div class="chat-header-content">
@@ -736,6 +766,7 @@
           <!-- Messages will be added here -->
         </div>
         
+        <!-- FIXED: Input container with proper scrolling -->
         <div class="input-container">
           <!-- Consent Form -->
           <div id="consent-form" class="form-container">
@@ -781,10 +812,11 @@
                 <option value="500+">500+</option>
               </select>
             </div>
+            <!-- FIXED: Submit button always visible -->
             <button class="form-button" id="contact-submit">Assessment starten</button>
           </div>
           
-          <!-- FIXED: Question Form with Proper Submit Button -->
+          <!-- Question Form -->
           <div id="question-form" class="question-form-container hidden">
             <div class="text-input-form">
               <input type="text" id="question-input" class="form-input" placeholder="Ihre Antwort...">
@@ -806,7 +838,7 @@
         </div>
       </div>
 
-      <!-- FIXED: Feature Cards with Proper Icons and Styling -->
+      <!-- Feature Cards -->
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">
@@ -851,7 +883,7 @@
     </footer>
 
     <script>
-      // Exact replica of assessment functionality with fixes
+      // Complete assessment functionality with fixed form handling
       const assessmentQuestions = [
         {
           id: '1',
@@ -1090,7 +1122,7 @@
       }
 
       function updateProgress() {
-        const totalSteps = assessmentQuestions.length + 2; // +2 for consent and contact
+        const totalSteps = assessmentQuestions.length + 2;
         let currentStepNumber = 0;
         
         if (currentStep === 'consent') currentStepNumber = 0;
@@ -1299,7 +1331,7 @@
           }, 1000);
         });
 
-        // Question form - FIXED
+        // Question form
         const questionInput = document.getElementById('question-input');
         const questionSubmitBtn = document.getElementById('question-submit');
         
