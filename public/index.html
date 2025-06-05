@@ -7,382 +7,687 @@
     <meta name="description" content="Evaluate your company's AI readiness with our comprehensive assessment tool. Get personalized recommendations and a detailed report." />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <style>
+      /* Exact replica of preview mode styling */
+      :root {
+        /* Grovia Digital Professional Color Palette - Exact Match */
+        --background: 0 0% 100%; /* Pure white */
+        --foreground: 210 15% 20%; /* Deep professional navy */
+        --muted: 210 20% 97%; /* Light gray background */
+        --muted-foreground: 210 10% 50%; /* Medium gray text */
+        --popover: 0 0% 100%;
+        --popover-foreground: 210 15% 20%;
+        --card: 0 0% 100%;
+        --card-foreground: 210 15% 20%;
+        --border: 210 20% 88%; /* Subtle professional border */
+        --input: 210 20% 94%; /* Input background */
+        --primary: 210 100% 45%; /* Professional blue matching corporate sites */
+        --primary-foreground: 0 0% 100%;
+        --secondary: 210 15% 95%; /* Light professional gray */
+        --secondary-foreground: 210 15% 20%;
+        --accent: 210 100% 96%; /* Light blue accent */
+        --accent-foreground: 210 100% 35%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+        --ring: 210 100% 45%;
+        --radius: 0.75rem; /* More modern radius */
+        --success: 142 70% 40%; /* Professional green */
+        --text-primary: 210 15% 20%; /* Main text color */
+        --text-secondary: 210 10% 50%; /* Secondary text */
+        --background-gradient: 210 30% 98%; /* Subtle gradient background */
+        
+        /* Corporate spacing and typography */
+        --content-max-width: 1200px;
+        --section-padding: 4rem;
+        --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+
+      .dark {
+        /* Grovia Digital Dark Theme - Exact Match */
+        --background: 220 20% 6%; /* Deep professional dark background */
+        --foreground: 210 20% 95%; /* Light text */
+        --muted: 220 15% 10%; /* Dark muted backgrounds */
+        --muted-foreground: 210 15% 65%; /* Medium light text */
+        --popover: 220 20% 8%;
+        --popover-foreground: 210 20% 95%;
+        --card: 220 18% 8%; /* Dark card background */
+        --card-foreground: 210 20% 95%;
+        --border: 220 15% 18%; /* Subtle dark borders */
+        --input: 220 15% 12%; /* Dark input backgrounds */
+        --primary: 210 100% 60%; /* Professional blue for dark mode */
+        --primary-foreground: 0 0% 100%;
+        --secondary: 220 15% 12%;
+        --secondary-foreground: 210 20% 95%;
+        --accent: 210 100% 20%;
+        --accent-foreground: 210 100% 80%;
+        --destructive: 0 84% 65%;
+        --destructive-foreground: 0 0% 100%;
+        --ring: 210 100% 60%;
+        --radius: 0.75rem;
+        --success: 142 70% 55%;
+        --text-primary: 210 20% 95%;
+        --text-secondary: 210 15% 65%;
+        --background-gradient: 220 20% 6%;
+      }
+
       * {
+        box-sizing: border-box;
         margin: 0;
         padding: 0;
-        box-sizing: border-box;
       }
-      
+
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
+        line-height: 1.6;
+        letter-spacing: -0.01em;
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      /* Professional gradients and backgrounds */
+      .bg-gradient-main {
+        background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--background-gradient)) 100%);
         min-height: 100vh;
+      }
+
+      .bg-gradient-professional {
+        background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, hsl(var(--accent)) 100%);
+      }
+
+      /* Header Styling - Exact Match */
+      .header {
+        background: hsl(var(--background));
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        border-bottom: 1px solid hsl(var(--border));
+      }
+
+      .header-content {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+      }
+
+      .header-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .logo-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: hsl(var(--primary));
+        border-radius: 0.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
       }
-      
-      .container {
-        width: 100%;
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      
-      .assessment-card {
-        background: white;
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
-      }
-      
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-      
-      .header h1 {
-        color: #333;
-        font-size: 2rem;
-        margin-bottom: 10px;
+
+      .logo-text h1 {
+        font-size: 1.25rem;
         font-weight: 600;
+        color: hsl(var(--foreground));
+        margin: 0;
       }
-      
-      .header p {
-        color: #666;
-        font-size: 1.1rem;
+
+      .logo-text p {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+        margin: 0;
       }
-      
-      .chat-container {
-        height: 500px;
+
+      .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .language-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .lang-btn {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: 0.375rem;
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .lang-btn.active {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        border-color: hsl(var(--primary));
+      }
+
+      .lang-btn:hover:not(.active) {
+        background: hsl(var(--muted));
+      }
+
+      .theme-toggle {
+        width: 2.5rem;
+        height: 2.5rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: 0.375rem;
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .theme-toggle:hover {
+        background: hsl(var(--muted));
+      }
+
+      /* Main Content */
+      .main-content {
+        max-width: 1024px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      /* Progress Bar - Exact Match */
+      .progress-container {
+        margin-bottom: 1.5rem;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 0.5rem;
+        background: hsl(var(--muted));
+        border-radius: 0.25rem;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: hsl(var(--primary));
+        border-radius: 0.25rem;
+        transition: width 0.3s ease;
+      }
+
+      .progress-text {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+        text-align: center;
+      }
+
+      /* Chat Interface Card - Exact Match */
+      .chat-card {
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) + 2px);
+        box-shadow: var(--card-shadow);
+        height: 600px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid hsl(var(--border));
+        background: hsl(var(--muted) / 0.3);
+      }
+
+      .chat-header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .bot-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: hsl(var(--primary));
+        border-radius: calc(var(--radius) + 2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      }
+
+      .chat-title h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: hsl(var(--foreground));
+        margin: 0;
+      }
+
+      .chat-title p {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+        margin: 0;
+      }
+
+      .chat-messages {
+        flex: 1;
         overflow-y: auto;
-        margin-bottom: 20px;
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
+        padding: 1.5rem;
+        background: hsl(var(--background));
       }
-      
+
       .message {
         display: flex;
-        margin-bottom: 15px;
+        margin-bottom: 1rem;
         animation: fadeIn 0.3s ease-in;
       }
-      
+
       .message.user {
         justify-content: flex-end;
       }
-      
+
       .message.bot {
         justify-content: flex-start;
       }
-      
+
       .message-bubble {
         max-width: 70%;
-        padding: 12px 18px;
-        border-radius: 18px;
-        font-size: 15px;
+        padding: 0.75rem 1rem;
+        border-radius: 1.125rem;
+        font-size: 0.9375rem;
         line-height: 1.4;
+        word-wrap: break-word;
       }
-      
+
       .message.user .message-bubble {
-        background: #007bff;
-        color: white;
-        border-bottom-right-radius: 4px;
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        border-bottom-right-radius: 0.25rem;
       }
-      
+
       .message.bot .message-bubble {
-        background: #e9ecef;
-        color: #333;
-        border-bottom-left-radius: 4px;
+        background: hsl(var(--muted));
+        color: hsl(var(--foreground));
+        border-bottom-left-radius: 0.25rem;
       }
-      
+
+      /* Input Container - Exact Match */
       .input-container {
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
+        padding: 1.5rem;
+        border-top: 1px solid hsl(var(--border));
+        background: hsl(var(--background));
       }
-      
+
+      .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .form-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: hsl(var(--foreground));
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
       .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 1.5rem;
       }
-      
-      .form-group label {
+
+      .form-label {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 0.5rem;
         font-weight: 500;
-        color: #333;
+        color: hsl(var(--foreground));
+        font-size: 0.875rem;
       }
-      
-      .form-group input,
-      .form-group select,
-      .form-group textarea {
+
+      .form-input,
+      .form-select {
         width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 16px;
-        transition: border-color 0.2s;
+        padding: 0.75rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) - 2px);
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
       }
-      
-      .form-group input:focus,
-      .form-group select:focus,
-      .form-group textarea:focus {
+
+      .form-input:focus,
+      .form-select:focus {
         outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        border-color: hsl(var(--ring));
+        box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
       }
-      
+
       .checkbox-group {
         display: flex;
         align-items: flex-start;
-        margin-bottom: 15px;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
       }
-      
-      .checkbox-group input[type="checkbox"] {
-        width: auto;
-        margin-right: 10px;
-        margin-top: 2px;
+
+      .checkbox-input {
+        width: 1rem;
+        height: 1rem;
+        margin-top: 0.125rem;
+        accent-color: hsl(var(--primary));
       }
-      
-      .checkbox-group label {
-        margin-bottom: 0;
-        cursor: pointer;
+
+      .checkbox-label {
         flex: 1;
+        font-size: 0.875rem;
+        color: hsl(var(--foreground));
+        line-height: 1.4;
+        cursor: pointer;
       }
-      
-      .btn {
-        background: #007bff;
-        color: white;
+
+      .form-button {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
         border: none;
-        padding: 12px 24px;
-        border-radius: 6px;
-        font-size: 16px;
+        padding: 0.75rem 1.5rem;
+        border-radius: calc(var(--radius) - 2px);
+        font-size: 1rem;
         font-weight: 500;
         cursor: pointer;
-        transition: background 0.2s;
-        min-width: 120px;
+        transition: all 0.2s ease;
+        width: 100%;
       }
-      
-      .btn:hover:not(:disabled) {
-        background: #0056b3;
+
+      .form-button:hover:not(:disabled) {
+        background: hsl(var(--primary) / 0.9);
       }
-      
-      .btn:disabled {
-        background: #6c757d;
+
+      .form-button:disabled {
+        background: hsl(var(--muted));
+        color: hsl(var(--muted-foreground));
         cursor: not-allowed;
       }
-      
-      .btn-secondary {
-        background: #6c757d;
-      }
-      
-      .btn-secondary:hover:not(:disabled) {
-        background: #545b62;
-      }
-      
+
       .text-input-form {
         display: flex;
-        gap: 10px;
+        gap: 0.75rem;
         align-items: flex-end;
       }
-      
-      .text-input-form input {
+
+      .text-input-form .form-input {
         flex: 1;
+        margin-bottom: 0;
       }
-      
-      .language-toggle {
+
+      .text-input-form .form-button {
+        width: auto;
+        padding: 0.75rem 1rem;
+        min-width: 80px;
+      }
+
+      /* Feature Cards - Exact Match */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .feature-card {
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        transition: all 0.2s ease;
+      }
+
+      .feature-card:hover {
+        box-shadow: var(--card-shadow);
+        transform: translateY(-2px);
+      }
+
+      .feature-icon {
+        width: 3rem;
+        height: 3rem;
+        background: hsl(var(--primary) / 0.1);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+
+      .feature-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: hsl(var(--foreground));
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-description {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+        line-height: 1.5;
+      }
+
+      /* Footer - Exact Match */
+      .footer {
+        background: hsl(var(--muted) / 0.5);
+        border-top: 1px solid hsl(var(--border));
+        padding: 2rem 0;
+        margin-top: 4rem;
+      }
+
+      .footer-content {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 1rem;
         text-align: center;
-        margin-top: 20px;
       }
-      
-      .language-toggle button {
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background 0.2s;
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 1rem;
       }
-      
-      .language-toggle button:hover {
-        background: rgba(255,255,255,0.3);
+
+      .footer-link {
+        color: hsl(var(--muted-foreground));
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: color 0.2s ease;
       }
-      
-      .progress-bar {
-        width: 100%;
-        height: 6px;
-        background: #e9ecef;
-        border-radius: 3px;
-        margin-bottom: 20px;
-        overflow: hidden;
+
+      .footer-link:hover {
+        color: hsl(var(--foreground));
       }
-      
-      .progress-fill {
-        height: 100%;
-        background: #007bff;
-        border-radius: 3px;
-        transition: width 0.3s ease;
+
+      .footer-copyright {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
       }
-      
+
+      /* Utilities */
+      .hidden {
+        display: none !important;
+      }
+
       .loading-dots {
         display: inline-block;
       }
-      
+
       .loading-dots::after {
         content: '';
         animation: dots 1.5s steps(5, end) infinite;
       }
-      
+
       @keyframes dots {
         0%, 20% { content: ''; }
         40% { content: '.'; }
         60% { content: '..'; }
         80%, 100% { content: '...'; }
       }
-      
+
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
       }
-      
-      .summary-card {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 20px;
-      }
-      
-      .score-display {
-        text-align: center;
-        margin: 20px 0;
-      }
-      
-      .score-number {
-        font-size: 3rem;
-        font-weight: bold;
-        color: #007bff;
-      }
-      
-      .score-label {
-        font-size: 1.1rem;
-        color: #666;
-      }
-      
-      .recommendations {
-        margin-top: 20px;
-      }
-      
-      .recommendations h3 {
-        color: #333;
-        margin-bottom: 15px;
-      }
-      
-      .recommendations ul {
-        list-style: none;
-        padding: 0;
-      }
-      
-      .recommendations li {
-        padding: 8px 0;
-        border-bottom: 1px solid #e9ecef;
-      }
-      
-      .recommendations li:last-child {
-        border-bottom: none;
-      }
-      
-      .hidden {
-        display: none;
-      }
-      
+
+      /* Responsive Design */
       @media (max-width: 768px) {
-        body {
-          padding: 10px;
+        .header-content {
+          padding: 0.75rem 1rem;
         }
-        
-        .assessment-card {
-          padding: 20px;
+
+        .main-content {
+          padding: 1rem;
         }
-        
-        .header h1 {
-          font-size: 1.5rem;
+
+        .chat-card {
+          height: 500px;
         }
-        
-        .chat-container {
-          height: 400px;
+
+        .chat-header,
+        .chat-messages,
+        .input-container {
+          padding: 1rem;
         }
-        
+
         .text-input-form {
           flex-direction: column;
         }
-        
-        .text-input-form input {
-          margin-bottom: 10px;
+
+        .text-input-form .form-button {
+          width: 100%;
+          margin-top: 0.5rem;
         }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-links {
+          flex-direction: column;
+          gap: 1rem;
+        }
+      }
+
+      /* SVG Icons */
+      .icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: currentColor;
+      }
+
+      .icon-large {
+        width: 1.5rem;
+        height: 1.5rem;
+        fill: currentColor;
       }
     </style>
   </head>
-  <body>
-    <div class="container">
-      <div class="assessment-card">
-        <div class="header">
-          <h1 id="main-title">AI Readiness Assessment</h1>
-          <p id="main-subtitle">Bewerten Sie die KI-Bereitschaft Ihres Unternehmens</p>
+  <body class="bg-gradient-main">
+    <!-- Header - Exact Match -->
+    <header class="header">
+      <div class="header-content">
+        <div class="header-logo">
+          <div class="logo-icon">
+            <svg class="icon-large" viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <h1 id="main-title">AI Readiness Assessment</h1>
+            <p id="main-subtitle">Bewerten Sie die KI-Bereitschaft Ihres Unternehmens</p>
+          </div>
         </div>
-        
+        <div class="header-controls">
+          <div class="language-toggle">
+            <button class="lang-btn active" id="lang-de">DE</button>
+            <button class="lang-btn" id="lang-en">EN</button>
+          </div>
+          <button class="theme-toggle" id="theme-toggle">
+            <svg class="icon" id="theme-icon" viewBox="0 0 24 24">
+              <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Progress Bar -->
+      <div class="progress-container">
         <div class="progress-bar">
           <div class="progress-fill" id="progress" style="width: 0%"></div>
         </div>
+        <div class="progress-text" id="progress-text">Assessment wird geladen...</div>
+      </div>
+
+      <!-- Chat Interface -->
+      <div class="chat-card">
+        <div class="chat-header">
+          <div class="chat-header-content">
+            <div class="bot-icon">
+              <svg class="icon-large" style="color: white;" viewBox="0 0 24 24">
+                <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v1a1 1 0 0 1-1 1h-2v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H4a1 1 0 0 1-1-1v-1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2m6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+              </svg>
+            </div>
+            <div class="chat-title">
+              <h3 id="chat-title">KI-Readiness Assessment</h3>
+              <p id="chat-subtitle">Ihr digitaler Berater</p>
+            </div>
+          </div>
+        </div>
         
-        <div class="chat-container" id="chat-container">
+        <div class="chat-messages" id="chat-messages">
           <!-- Messages will be added here -->
         </div>
         
         <div class="input-container">
           <!-- Consent Form -->
-          <div id="consent-form">
-            <h3 id="consent-title">Einverständniserklärung</h3>
+          <div id="consent-form" class="form-container">
+            <h3 class="form-title" id="consent-title">Einverständniserklärung</h3>
             <div class="checkbox-group">
-              <input type="checkbox" id="data-processing" required>
-              <label for="data-processing" id="data-processing-label">
+              <input type="checkbox" id="data-processing" class="checkbox-input" required>
+              <label for="data-processing" class="checkbox-label" id="data-processing-label">
                 Ich stimme der Verarbeitung meiner Daten für das Assessment zu.
               </label>
             </div>
             <div class="checkbox-group">
-              <input type="checkbox" id="contact-permission">
-              <label for="contact-permission" id="contact-permission-label">
+              <input type="checkbox" id="contact-permission" class="checkbox-input">
+              <label for="contact-permission" class="checkbox-label" id="contact-permission-label">
                 Ich erlaube die Kontaktaufnahme für weitere Informationen.
               </label>
             </div>
-            <button class="btn" id="consent-submit" disabled>Weiter</button>
+            <button class="form-button" id="consent-submit" disabled>Weiter</button>
           </div>
           
           <!-- Contact Form -->
-          <div id="contact-form" class="hidden">
-            <h3 id="contact-title">Kontaktinformationen</h3>
+          <div id="contact-form" class="form-container hidden">
+            <h3 class="form-title" id="contact-title">Kontaktinformationen</h3>
             <div class="form-group">
-              <label for="contact-name" id="name-label">Name *</label>
-              <input type="text" id="contact-name" required>
+              <label for="contact-name" class="form-label" id="name-label">Name *</label>
+              <input type="text" id="contact-name" class="form-input" required>
             </div>
             <div class="form-group">
-              <label for="contact-email" id="email-label">E-Mail *</label>
-              <input type="email" id="contact-email" required>
+              <label for="contact-email" class="form-label" id="email-label">E-Mail *</label>
+              <input type="email" id="contact-email" class="form-input" required>
             </div>
             <div class="form-group">
-              <label for="contact-company" id="company-label">Unternehmen *</label>
-              <input type="text" id="contact-company" required>
+              <label for="contact-company" class="form-label" id="company-label">Unternehmen *</label>
+              <input type="text" id="contact-company" class="form-input" required>
             </div>
             <div class="form-group">
-              <label for="employee-count" id="employees-label">Mitarbeiteranzahl</label>
-              <select id="employee-count">
+              <label for="employee-count" class="form-label" id="employees-label">Mitarbeiteranzahl</label>
+              <select id="employee-count" class="form-select">
                 <option value="">Bitte wählen</option>
                 <option value="1-10">1-10</option>
                 <option value="11-50">11-50</option>
@@ -391,41 +696,77 @@
                 <option value="500+">500+</option>
               </select>
             </div>
-            <button class="btn" id="contact-submit">Assessment starten</button>
+            <button class="form-button" id="contact-submit">Assessment starten</button>
           </div>
           
           <!-- Question Form -->
           <div id="question-form" class="hidden">
             <div class="text-input-form">
-              <input type="text" id="question-input" placeholder="Ihre Antwort...">
-              <button class="btn" id="question-submit" disabled>Senden</button>
+              <input type="text" id="question-input" class="form-input" placeholder="Ihre Antwort...">
+              <button class="form-button" id="question-submit" disabled>Senden</button>
             </div>
           </div>
           
           <!-- Completion Message -->
-          <div id="completion-message" class="hidden">
-            <div class="summary-card">
-              <h3 id="completion-title">Assessment abgeschlossen!</h3>
-              <div class="score-display">
-                <div class="score-number" id="final-score">--</div>
-                <div class="score-label" id="score-label">AI Readiness Score</div>
-              </div>
-              <p id="completion-text">
-                Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.
-              </p>
+          <div id="completion-form" class="form-container hidden">
+            <h3 class="form-title" id="completion-title">Assessment abgeschlossen!</h3>
+            <div style="text-align: center; margin: 2rem 0;">
+              <div style="font-size: 3rem; font-weight: bold; color: hsl(var(--primary)); margin-bottom: 0.5rem;" id="final-score">--</div>
+              <div style="font-size: 1.125rem; color: hsl(var(--muted-foreground));" id="score-label">AI Readiness Score</div>
             </div>
+            <p style="text-align: center; color: hsl(var(--muted-foreground));" id="completion-text">
+              Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.
+            </p>
           </div>
         </div>
       </div>
-    </div>
-    
-    <div class="language-toggle">
-      <button id="language-toggle">Switch to English</button>
-    </div>
+
+      <!-- Feature Cards -->
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg class="icon-large" style="color: hsl(var(--primary));" viewBox="0 0 24 24">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h4 class="feature-title" id="feature1-title">Detaillierte Analyse</h4>
+          <p class="feature-description" id="feature1-desc">Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg class="icon-large" style="color: hsl(var(--primary));" viewBox="0 0 24 24">
+              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <h4 class="feature-title" id="feature2-title">DSGVO-konform</h4>
+          <p class="feature-description" id="feature2-desc">Ihre Daten werden sicher und datenschutzkonform verarbeitet</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg class="icon-large" style="color: hsl(var(--primary));" viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h4 class="feature-title" id="feature3-title">Handlungsempfehlungen</h4>
+          <p class="feature-description" id="feature3-desc">Konkrete nächste Schritte für Ihre KI-Strategie</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="#" class="footer-link" id="privacy-link">Datenschutz</a>
+          <a href="#" class="footer-link" id="imprint-link">Impressum</a>
+          <a href="#" class="footer-link" id="terms-link">AGB</a>
+        </div>
+        <p class="footer-copyright" id="footer-text">© 2024 AI Readiness Assessment. Alle Rechte vorbehalten.</p>
+      </div>
+    </footer>
 
     <script>
-      // Assessment Application - Pure JavaScript Version
-      
+      // Exact replica of assessment functionality
       const assessmentQuestions = [
         {
           id: '1',
@@ -503,6 +844,8 @@
         de: {
           mainTitle: 'AI Readiness Assessment',
           mainSubtitle: 'Bewerten Sie die KI-Bereitschaft Ihres Unternehmens',
+          chatTitle: 'KI-Readiness Assessment',
+          chatSubtitle: 'Ihr digitaler Berater',
           consentTitle: 'Einverständniserklärung',
           dataProcessingLabel: 'Ich stimme der Verarbeitung meiner Daten für das Assessment zu.',
           contactPermissionLabel: 'Ich erlaube die Kontaktaufnahme für weitere Informationen.',
@@ -519,18 +862,30 @@
           completionTitle: 'Assessment abgeschlossen!',
           completionText: 'Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.',
           scoreLabel: 'AI Readiness Score',
-          languageToggle: 'Switch to English',
           questionPrefix: 'Frage',
           followUpPrefix: 'Nachfrage',
           welcomeMsg1: 'Hallo! Willkommen zum AI Readiness Assessment. Ich helfe Ihnen dabei, die KI-Bereitschaft Ihres Unternehmens zu bewerten.',
           welcomeMsg2: 'Das Assessment dauert etwa 5-10 Minuten. Am Ende erhalten Sie einen detaillierten Report per E-Mail.',
           consentThanks: 'Vielen Dank! Bevor wir mit dem Assessment beginnen, benötigen wir einige Kontaktdaten.',
           assessmentStart: 'Lassen Sie uns nun mit dem Assessment beginnen.',
-          errorMsg: 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.'
+          errorMsg: 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.',
+          progressText: 'Assessment wird geladen...',
+          feature1Title: 'Detaillierte Analyse',
+          feature1Desc: 'Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens',
+          feature2Title: 'DSGVO-konform',
+          feature2Desc: 'Ihre Daten werden sicher und datenschutzkonform verarbeitet',
+          feature3Title: 'Handlungsempfehlungen',
+          feature3Desc: 'Konkrete nächste Schritte für Ihre KI-Strategie',
+          privacyLink: 'Datenschutz',
+          imprintLink: 'Impressum',
+          termsLink: 'AGB',
+          footerText: '© 2024 AI Readiness Assessment. Alle Rechte vorbehalten.'
         },
         en: {
           mainTitle: 'AI Readiness Assessment',
           mainSubtitle: 'Evaluate your company\'s AI readiness',
+          chatTitle: 'AI Readiness Assessment',
+          chatSubtitle: 'Your digital consultant',
           consentTitle: 'Consent Declaration',
           dataProcessingLabel: 'I agree to the processing of my data for the assessment.',
           contactPermissionLabel: 'I allow contact for further information.',
@@ -547,19 +902,30 @@
           completionTitle: 'Assessment completed!',
           completionText: 'Thank you! You will receive a detailed report via email shortly.',
           scoreLabel: 'AI Readiness Score',
-          languageToggle: 'Auf Deutsch wechseln',
           questionPrefix: 'Question',
           followUpPrefix: 'Follow-up Question',
           welcomeMsg1: 'Hello! Welcome to the AI Readiness Assessment. I will help you evaluate your company\'s AI readiness.',
           welcomeMsg2: 'The assessment takes about 5-10 minutes. At the end, you will receive a detailed report via email.',
           consentThanks: 'Thank you! Before we begin the assessment, we need some contact information.',
           assessmentStart: 'Let\'s now begin the assessment.',
-          errorMsg: 'Sorry, there was an error. Please try again.'
+          errorMsg: 'Sorry, there was an error. Please try again.',
+          progressText: 'Loading assessment...',
+          feature1Title: 'Detailed Analysis',
+          feature1Desc: 'Comprehensive evaluation of all AI-relevant areas of your company',
+          feature2Title: 'GDPR Compliant',
+          feature2Desc: 'Your data is processed securely and in compliance with data protection',
+          feature3Title: 'Action Recommendations',
+          feature3Desc: 'Concrete next steps for your AI strategy',
+          privacyLink: 'Privacy',
+          imprintLink: 'Imprint',
+          termsLink: 'Terms',
+          footerText: '© 2024 AI Readiness Assessment. All rights reserved.'
         }
       };
 
       // Global state
       let currentLanguage = 'de';
+      let currentTheme = 'light';
       let sessionId = generateSessionId();
       let currentStep = 'consent';
       let currentQuestionIndex = 0;
@@ -577,6 +943,8 @@
         
         document.getElementById('main-title').textContent = t.mainTitle;
         document.getElementById('main-subtitle').textContent = t.mainSubtitle;
+        document.getElementById('chat-title').textContent = t.chatTitle;
+        document.getElementById('chat-subtitle').textContent = t.chatSubtitle;
         document.getElementById('consent-title').textContent = t.consentTitle;
         document.getElementById('data-processing-label').textContent = t.dataProcessingLabel;
         document.getElementById('contact-permission-label').textContent = t.contactPermissionLabel;
@@ -592,14 +960,38 @@
         document.getElementById('completion-title').textContent = t.completionTitle;
         document.getElementById('completion-text').textContent = t.completionText;
         document.getElementById('score-label').textContent = t.scoreLabel;
-        document.getElementById('language-toggle').textContent = t.languageToggle;
+        document.getElementById('progress-text').textContent = t.progressText;
+        document.getElementById('feature1-title').textContent = t.feature1Title;
+        document.getElementById('feature1-desc').textContent = t.feature1Desc;
+        document.getElementById('feature2-title').textContent = t.feature2Title;
+        document.getElementById('feature2-desc').textContent = t.feature2Desc;
+        document.getElementById('feature3-title').textContent = t.feature3Title;
+        document.getElementById('feature3-desc').textContent = t.feature3Desc;
+        document.getElementById('privacy-link').textContent = t.privacyLink;
+        document.getElementById('imprint-link').textContent = t.imprintLink;
+        document.getElementById('terms-link').textContent = t.termsLink;
+        document.getElementById('footer-text').textContent = t.footerText;
         
         const selectElement = document.getElementById('employee-count');
         selectElement.options[0].textContent = t.selectPlaceholder;
+
+        // Update language buttons
+        document.getElementById('lang-de').className = currentLanguage === 'de' ? 'lang-btn active' : 'lang-btn';
+        document.getElementById('lang-en').className = currentLanguage === 'en' ? 'lang-btn active' : 'lang-btn';
+      }
+
+      function updateTheme() {
+        if (currentTheme === 'dark') {
+          document.body.classList.add('dark');
+          document.getElementById('theme-icon').innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
+        } else {
+          document.body.classList.remove('dark');
+          document.getElementById('theme-icon').innerHTML = '<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>';
+        }
       }
 
       function addMessage(type, content) {
-        const chatContainer = document.getElementById('chat-container');
+        const chatMessages = document.getElementById('chat-messages');
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
         
@@ -608,10 +1000,10 @@
         bubbleDiv.textContent = content;
         
         messageDiv.appendChild(bubbleDiv);
-        chatContainer.appendChild(messageDiv);
+        chatMessages.appendChild(messageDiv);
         
         // Scroll to bottom
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
       }
 
       function updateProgress() {
@@ -623,8 +1015,19 @@
         else if (currentStep === 'questions') currentStepNumber = 2 + currentQuestionIndex;
         else currentStepNumber = totalSteps;
         
-        const percentage = (currentStepNumber / totalSteps) * 100;
+        const percentage = Math.min((currentStepNumber / totalSteps) * 100, 100);
         document.getElementById('progress').style.width = percentage + '%';
+        
+        const t = translations[currentLanguage];
+        if (currentStep === 'consent') {
+          document.getElementById('progress-text').textContent = t.progressText;
+        } else if (currentStep === 'contact') {
+          document.getElementById('progress-text').textContent = `Schritt ${currentStepNumber + 1} von ${totalSteps + 1}`;
+        } else if (currentStep === 'questions') {
+          document.getElementById('progress-text').textContent = `${t.questionPrefix} ${currentQuestionIndex + 1} von ${assessmentQuestions.length}`;
+        } else {
+          document.getElementById('progress-text').textContent = 'Assessment abgeschlossen';
+        }
       }
 
       function showStep(step) {
@@ -632,7 +1035,7 @@
         document.getElementById('consent-form').classList.add('hidden');
         document.getElementById('contact-form').classList.add('hidden');
         document.getElementById('question-form').classList.add('hidden');
-        document.getElementById('completion-message').classList.add('hidden');
+        document.getElementById('completion-form').classList.add('hidden');
         
         // Show requested form
         if (step === 'consent') {
@@ -642,7 +1045,7 @@
         } else if (step === 'questions') {
           document.getElementById('question-form').classList.remove('hidden');
         } else if (step === 'completed') {
-          document.getElementById('completion-message').classList.remove('hidden');
+          document.getElementById('completion-form').classList.remove('hidden');
         }
         
         currentStep = step;
@@ -737,6 +1140,7 @@
       // Event Listeners
       document.addEventListener('DOMContentLoaded', function() {
         updateLanguage();
+        updateTheme();
         updateProgress();
         
         // Initialize welcome messages
@@ -746,6 +1150,31 @@
         
         // Create session
         createSession();
+
+        // Language toggle
+        document.getElementById('lang-de').addEventListener('click', function() {
+          currentLanguage = 'de';
+          updateLanguage();
+        });
+        
+        document.getElementById('lang-en').addEventListener('click', function() {
+          currentLanguage = 'en';
+          updateLanguage();
+        });
+
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+          currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+          updateTheme();
+          localStorage.setItem('grovia-theme', currentTheme);
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('grovia-theme');
+        if (savedTheme) {
+          currentTheme = savedTheme;
+          updateTheme();
+        }
 
         // Consent form
         const dataProcessingCheckbox = document.getElementById('data-processing');
@@ -776,7 +1205,7 @@
           contactInfo = { name, email, company, employees };
           
           const t = translations[currentLanguage];
-          addMessage('bot', `${t.assessmentStart.replace('Lassen', `Vielen Dank, ${name}! Lassen`)}`);
+          addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
           
           setTimeout(() => {
             showStep('questions');
@@ -847,15 +1276,10 @@
             }
           }
           
+          const t = translations[currentLanguage];
           questionSubmitBtn.disabled = false;
-          questionSubmitBtn.textContent = translations[currentLanguage].sendBtn;
+          questionSubmitBtn.textContent = t.sendBtn;
         }
-
-        // Language toggle
-        document.getElementById('language-toggle').addEventListener('click', function() {
-          currentLanguage = currentLanguage === 'de' ? 'en' : 'de';
-          updateLanguage();
-        });
       });
     </script>
   </body>
