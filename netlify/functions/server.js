@@ -1,12 +1,26 @@
 const express = require('express');
 const serverless = require('serverless-http');
-const { Pool } = require('@neondatabase/serverless');
+const { Pool, neonConfig } = require('@neondatabase/serverless');
+const ws = require('ws');
+
+// Configure Neon for serverless
+neonConfig.webSocketConstructor = ws;
 
 const app = express();
 app.use(express.json());
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Database connection with error handling
+let pool;
+try {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
+  pool = new Pool({ connectionString: process.env.DATABASE_URL });
+} catch (error) {
+  console.error('Database connection error:', error);
+}
 
+// AI Service configuration
 const CONFIG = {
   AI_MODEL: process.env.AI_MODEL || 'anthropic/claude-3.5-sonnet:beta',
   AI_TEMPERATURE: parseFloat(process.env.AI_TEMPERATURE || '0.8'),
@@ -18,6 +32,7 @@ const CONFIG = {
   CONSULTATION_SWEET_SPOT_MAX: parseInt(process.env.CONSULTATION_MAX || '75')
 };
 
+// AI Analysis function with improved error handling
 async function analyzeResponse(questionId, questionText, userResponse, language) {
   const isFollowUp = questionId.includes('_followup');
   
@@ -55,13 +70,26 @@ Respond in JSON format:
 
 Keep explanations under 80 words and overwhelmingly positive. Focus on building confidence and excitement about AI potential.`;
 
+  // Check if OpenRouter API key is available
+  if (!process.env.OPENROUTER_API_KEY) {
+    console.error('OPENROUTER_API_KEY not configured');
+    return {
+      needsFollowUp: false,
+      explanation: language === 'de' 
+        ? 'Danke für Ihre Antwort. Lassen Sie uns zur nächsten Frage übergehen.'
+        : 'Thank you for your response. Let\'s move to the next question.',
+      analysis: 'Response received',
+      score: 3
+    };
+  }
+
   try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://ai-readiness-assessment.com',
+        'HTTP-Referer': 'https://ai-assessment.grovia-digital.com',
         'X-Title': 'AI Readiness Assessment'
       },
       body: JSON.stringify({
@@ -73,6 +101,7 @@ Keep explanations under 80 words and overwhelmingly positive. Focus on building 
     });
 
     if (!response.ok) {
+      console.error(`OpenRouter API error: ${response.status} - ${response.statusText}`);
       throw new Error(`OpenRouter API error: ${response.status}`);
     }
 
@@ -99,6 +128,7 @@ Keep explanations under 80 words and overwhelmingly positive. Focus on building 
   }
 }
 
+// Calculate readiness score
 function calculateReadinessScore(responses) {
   const scores = Object.values(responses)
     .map(r => r.score || 3)
@@ -112,10 +142,29 @@ function calculateReadinessScore(responses) {
   return Math.max(CONFIG.MIN_OVERALL_SCORE, Math.min(percentage, CONFIG.MAX_REALISTIC_SCORE));
 }
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    database: pool ? 'connected' : 'not configured',
+    openrouter: process.env.OPENROUTER_API_KEY ? 'configured' : 'not configured'
+  });
+});
+
+// Create or get assessment session
 app.post('/api/assessment/session', async (req, res) => {
   try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
     const { sessionId, language = 'de' } = req.body;
     
+    if (!sessionId) {
+      return res.status(400).json({ message: 'Session ID required' });
+    }
+
+    // Check if session already exists
     const existingResult = await pool.query(
       'SELECT * FROM assessment_sessions WHERE session_id = $1',
       [sessionId]
@@ -125,6 +174,7 @@ app.post('/api/assessment/session', async (req, res) => {
       return res.json(existingResult.rows[0]);
     }
     
+    // Create new session
     const result = await pool.query(
       'INSERT INTO assessment_sessions (session_id, language, responses, current_step, consent_data_processing, consent_contact_permission, is_completed, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
       [sessionId, language, '{}', 1, false, false, false, new Date()]
@@ -137,8 +187,13 @@ app.post('/api/assessment/session', async (req, res) => {
   }
 });
 
+// Get assessment session
 app.get('/api/assessment/session/:sessionId', async (req, res) => {
   try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
     const { sessionId } = req.params;
     const result = await pool.query(
       'SELECT * FROM assessment_sessions WHERE session_id = $1',
@@ -156,14 +211,20 @@ app.get('/api/assessment/session/:sessionId', async (req, res) => {
   }
 });
 
+// Analyze response endpoint
 app.post('/api/assessment/analyze', async (req, res) => {
   try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
     const { sessionId, questionId, questionText, userResponse, language } = req.body;
     
     if (!sessionId || !questionId || !questionText || !userResponse || !language) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    // Get current session
     const sessionResult = await pool.query(
       'SELECT * FROM assessment_sessions WHERE session_id = $1',
       [sessionId]
@@ -174,8 +235,11 @@ app.post('/api/assessment/analyze', async (req, res) => {
     }
     
     const session = sessionResult.rows[0];
+    
+    // Analyze response with AI
     const aiAnalysis = await analyzeResponse(questionId, questionText, userResponse, language);
     
+    // Update session with new response
     const currentResponses = session.responses || {};
     currentResponses[questionId] = {
       userResponse,
@@ -199,8 +263,13 @@ app.post('/api/assessment/analyze', async (req, res) => {
   }
 });
 
+// Update assessment session
 app.patch('/api/assessment/session/:sessionId', async (req, res) => {
   try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
     const { sessionId } = req.params;
     const updates = req.body;
     
@@ -208,6 +277,7 @@ app.patch('/api/assessment/session/:sessionId', async (req, res) => {
     const values = [];
     let paramCounter = 1;
     
+    // Convert camelCase to snake_case for database fields
     Object.entries(updates).forEach(([key, value]) => {
       const dbKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
       fields.push(`${dbKey} = $${paramCounter}`);
@@ -235,9 +305,18 @@ app.patch('/api/assessment/session/:sessionId', async (req, res) => {
   }
 });
 
+// Complete assessment
 app.post('/api/assessment/complete', async (req, res) => {
   try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
     const { sessionId } = req.body;
+    
+    if (!sessionId) {
+      return res.status(400).json({ message: 'Session ID required' });
+    }
     
     const sessionResult = await pool.query(
       'SELECT * FROM assessment_sessions WHERE session_id = $1',
@@ -266,6 +345,7 @@ app.post('/api/assessment/complete', async (req, res) => {
   }
 });
 
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(500).json({ message: 'Internal server error' });
