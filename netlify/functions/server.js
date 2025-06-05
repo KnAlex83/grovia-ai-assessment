@@ -5,10 +5,8 @@ const { Pool } = require('@neondatabase/serverless');
 const app = express();
 app.use(express.json());
 
-// Database connection
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-// AI Service configuration
 const CONFIG = {
   AI_MODEL: process.env.AI_MODEL || 'anthropic/claude-3.5-sonnet:beta',
   AI_TEMPERATURE: parseFloat(process.env.AI_TEMPERATURE || '0.8'),
@@ -20,7 +18,6 @@ const CONFIG = {
   CONSULTATION_SWEET_SPOT_MAX: parseInt(process.env.CONSULTATION_MAX || '75')
 };
 
-// AI Analysis function
 async function analyzeResponse(questionId, questionText, userResponse, language) {
   const isFollowUp = questionId.includes('_followup');
   
@@ -102,7 +99,6 @@ Keep explanations under 80 words and overwhelmingly positive. Focus on building 
   }
 }
 
-// Calculate readiness score
 function calculateReadinessScore(responses) {
   const scores = Object.values(responses)
     .map(r => r.score || 3)
@@ -116,7 +112,6 @@ function calculateReadinessScore(responses) {
   return Math.max(CONFIG.MIN_OVERALL_SCORE, Math.min(percentage, CONFIG.MAX_REALISTIC_SCORE));
 }
 
-// Routes
 app.post('/api/assessment/session', async (req, res) => {
   try {
     const { sessionId, language = 'de' } = req.body;
@@ -271,7 +266,6 @@ app.post('/api/assessment/complete', async (req, res) => {
   }
 });
 
-// Error handling
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(500).json({ message: 'Internal server error' });
