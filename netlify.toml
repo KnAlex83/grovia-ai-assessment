@@ -1,13 +1,13 @@
 [build]
   publish = "public"
-  command = "echo 'No build needed - files are pre-built'"
+  command = "npm install && npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  to = "/.netlify/functions/server"
   status = 200
 
 [[redirects]]
@@ -15,8 +15,14 @@
   to = "/.netlify/functions/export-data"
   status = 200
 
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
 [functions]
   directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 [[headers]]
   for = "/*"
