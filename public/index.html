@@ -7,7 +7,7 @@
     <meta name="description" content="Evaluate your company's AI readiness with our comprehensive assessment tool. Get personalized recommendations and a detailed report." />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <style>
-      /* Exact replica of preview mode styling */
+      /* Exact replica of preview mode styling with bug fixes */
       :root {
         /* Grovia Digital Professional Color Palette - Exact Match */
         --background: 0 0% 100%; /* Pure white */
@@ -174,9 +174,11 @@
         background: hsl(var(--muted));
       }
 
+      /* FIXED: Fancy Theme Toggle - Exact Match to Preview */
       .theme-toggle {
-        width: 2.5rem;
-        height: 2.5rem;
+        position: relative;
+        width: 2rem;
+        height: 2rem;
         border: 1px solid hsl(var(--border));
         border-radius: 0.375rem;
         background: hsl(var(--background));
@@ -186,10 +188,40 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
+        overflow: hidden;
       }
 
       .theme-toggle:hover {
         background: hsl(var(--muted));
+        transform: scale(1.05);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .theme-icon {
+        width: 1rem;
+        height: 1rem;
+        transition: all 0.3s ease;
+        position: absolute;
+      }
+
+      .theme-toggle .sun-icon {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      }
+
+      .theme-toggle .moon-icon {
+        opacity: 0;
+        transform: rotate(90deg) scale(0);
+      }
+
+      .dark .theme-toggle .sun-icon {
+        opacity: 0;
+        transform: rotate(-90deg) scale(0);
+      }
+
+      .dark .theme-toggle .moon-icon {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
       }
 
       /* Main Content */
@@ -413,24 +445,39 @@
         cursor: not-allowed;
       }
 
+      /* FIXED: Question Form with Proper Submit Button */
+      .question-form-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
       .text-input-form {
         display: flex;
-        gap: 0.75rem;
-        align-items: flex-end;
+        flex-direction: column;
+        gap: 1rem;
       }
 
       .text-input-form .form-input {
         flex: 1;
         margin-bottom: 0;
+        min-height: 2.5rem;
       }
 
       .text-input-form .form-button {
-        width: auto;
+        width: 100%;
         padding: 0.75rem 1rem;
-        min-width: 80px;
+        align-self: stretch;
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
       }
 
-      /* Feature Cards - Exact Match */
+      .text-input-form .form-button:hover:not(:disabled) {
+        background: hsl(var(--primary) / 0.9);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      /* FIXED: Feature Cards with Proper Icons - Exact Match to Preview */
       .features-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -443,23 +490,61 @@
         border: 1px solid hsl(var(--border));
         border-radius: var(--radius);
         padding: 1.5rem;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
+        opacity: 0;
+        transition: opacity 0.3s ease;
       }
 
       .feature-card:hover {
-        box-shadow: var(--card-shadow);
-        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px);
+        border-color: hsl(var(--primary) / 0.3);
+      }
+
+      .feature-card:hover::before {
+        opacity: 1;
       }
 
       .feature-icon {
         width: 3rem;
         height: 3rem;
-        background: hsl(var(--primary) / 0.1);
         border-radius: var(--radius);
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:nth-child(1) .feature-icon {
+        background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--primary) / 0.2));
+        color: hsl(var(--primary));
+      }
+
+      .feature-card:nth-child(2) .feature-icon {
+        background: linear-gradient(135deg, hsl(var(--success) / 0.1), hsl(var(--success) / 0.2));
+        color: hsl(var(--success));
+      }
+
+      .feature-card:nth-child(3) .feature-icon {
+        background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(147, 51, 234, 0.2));
+        color: rgb(147, 51, 234);
+      }
+
+      .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
       }
 
       .feature-title {
@@ -467,6 +552,11 @@
         font-weight: 600;
         color: hsl(var(--foreground));
         margin-bottom: 0.5rem;
+        transition: color 0.3s ease;
+      }
+
+      .feature-card:hover .feature-title {
+        color: hsl(var(--primary));
       }
 
       .feature-description {
@@ -559,15 +649,6 @@
           padding: 1rem;
         }
 
-        .text-input-form {
-          flex-direction: column;
-        }
-
-        .text-input-form .form-button {
-          width: 100%;
-          margin-top: 0.5rem;
-        }
-
         .features-grid {
           grid-template-columns: 1fr;
         }
@@ -612,9 +693,13 @@
             <button class="lang-btn active" id="lang-de">DE</button>
             <button class="lang-btn" id="lang-en">EN</button>
           </div>
+          <!-- FIXED: Fancy Theme Toggle -->
           <button class="theme-toggle" id="theme-toggle">
-            <svg class="icon" id="theme-icon" viewBox="0 0 24 24">
+            <svg class="theme-icon sun-icon" viewBox="0 0 24 24">
               <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <svg class="theme-icon moon-icon" viewBox="0 0 24 24">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
             </svg>
           </button>
         </div>
@@ -699,8 +784,8 @@
             <button class="form-button" id="contact-submit">Assessment starten</button>
           </div>
           
-          <!-- Question Form -->
-          <div id="question-form" class="hidden">
+          <!-- FIXED: Question Form with Proper Submit Button -->
+          <div id="question-form" class="question-form-container hidden">
             <div class="text-input-form">
               <input type="text" id="question-input" class="form-input" placeholder="Ihre Antwort...">
               <button class="form-button" id="question-submit" disabled>Senden</button>
@@ -721,12 +806,12 @@
         </div>
       </div>
 
-      <!-- Feature Cards -->
+      <!-- FIXED: Feature Cards with Proper Icons and Styling -->
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">
-            <svg class="icon-large" style="color: hsl(var(--primary));" viewBox="0 0 24 24">
-              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <svg class="icon-large" viewBox="0 0 24 24">
+              <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v1a1 1 0 0 1-1 1h-2v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H4a1 1 0 0 1-1-1v-1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2m6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
             </svg>
           </div>
           <h4 class="feature-title" id="feature1-title">Detaillierte Analyse</h4>
@@ -734,7 +819,7 @@
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg class="icon-large" style="color: hsl(var(--primary));" viewBox="0 0 24 24">
+            <svg class="icon-large" viewBox="0 0 24 24">
               <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
             </svg>
           </div>
@@ -743,8 +828,8 @@
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg class="icon-large" style="color: hsl(var(--primary));" viewBox="0 0 24 24">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            <svg class="icon-large" viewBox="0 0 24 24">
+              <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
             </svg>
           </div>
           <h4 class="feature-title" id="feature3-title">Handlungsempfehlungen</h4>
@@ -766,7 +851,7 @@
     </footer>
 
     <script>
-      // Exact replica of assessment functionality
+      // Exact replica of assessment functionality with fixes
       const assessmentQuestions = [
         {
           id: '1',
@@ -983,10 +1068,8 @@
       function updateTheme() {
         if (currentTheme === 'dark') {
           document.body.classList.add('dark');
-          document.getElementById('theme-icon').innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
         } else {
           document.body.classList.remove('dark');
-          document.getElementById('theme-icon').innerHTML = '<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>';
         }
       }
 
@@ -1216,7 +1299,7 @@
           }, 1000);
         });
 
-        // Question form
+        // Question form - FIXED
         const questionInput = document.getElementById('question-input');
         const questionSubmitBtn = document.getElementById('question-submit');
         
