@@ -1,4 +1,8 @@
-const { Pool } = require('@neondatabase/serverless');
+const { Pool, neonConfig } = require('@neondatabase/serverless');
+const ws = require('ws');
+
+// Configure Neon for serverless
+neonConfig.webSocketConstructor = ws;
 
 exports.handler = async (event, context) => {
   const { queryStringParameters } = event;
@@ -112,7 +116,7 @@ exports.handler = async (event, context) => {
     console.error('Export error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Export failed' })
+      body: JSON.stringify({ error: 'Export failed', details: error.message })
     };
   } finally {
     await pool.end();
