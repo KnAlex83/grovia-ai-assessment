@@ -7,277 +7,837 @@
     <meta name="description" content="Evaluate your company's AI readiness with our comprehensive assessment tool. Get personalized recommendations and a detailed report." />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
       }
-      #root {
+      
+      .container {
         width: 100%;
-        max-width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
       }
-      .loading {
+      
+      .assessment-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+      
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      
+      .header h1 {
+        color: #333;
+        font-size: 2rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+      
+      .header p {
+        color: #666;
+        font-size: 1.1rem;
+      }
+      
+      .chat-container {
+        height: 500px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+      }
+      
+      .message {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
+        margin-bottom: 15px;
+        animation: fadeIn 0.3s ease-in;
+      }
+      
+      .message.user {
+        justify-content: flex-end;
+      }
+      
+      .message.bot {
+        justify-content: flex-start;
+      }
+      
+      .message-bubble {
+        max-width: 70%;
+        padding: 12px 18px;
+        border-radius: 18px;
+        font-size: 15px;
+        line-height: 1.4;
+      }
+      
+      .message.user .message-bubble {
+        background: #007bff;
         color: white;
+        border-bottom-right-radius: 4px;
       }
-      .spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(255,255,255,0.3);
-        border-top: 4px solid white;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
+      
+      .message.bot .message-bubble {
+        background: #e9ecef;
+        color: #333;
+        border-bottom-left-radius: 4px;
       }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+      
+      .input-container {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+      }
+      
+      .form-group {
+        margin-bottom: 20px;
+      }
+      
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+      }
+      
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+        transition: border-color 0.2s;
+      }
+      
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+      }
+      
+      .checkbox-group {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 15px;
+      }
+      
+      .checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 10px;
+        margin-top: 2px;
+      }
+      
+      .checkbox-group label {
+        margin-bottom: 0;
+        cursor: pointer;
+        flex: 1;
+      }
+      
+      .btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+        min-width: 120px;
+      }
+      
+      .btn:hover:not(:disabled) {
+        background: #0056b3;
+      }
+      
+      .btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+      }
+      
+      .btn-secondary {
+        background: #6c757d;
+      }
+      
+      .btn-secondary:hover:not(:disabled) {
+        background: #545b62;
+      }
+      
+      .text-input-form {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+      }
+      
+      .text-input-form input {
+        flex: 1;
+      }
+      
+      .language-toggle {
+        text-align: center;
+        margin-top: 20px;
+      }
+      
+      .language-toggle button {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+      }
+      
+      .language-toggle button:hover {
+        background: rgba(255,255,255,0.3);
+      }
+      
+      .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      
+      .progress-fill {
+        height: 100%;
+        background: #007bff;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+      }
+      
+      .loading-dots {
+        display: inline-block;
+      }
+      
+      .loading-dots::after {
+        content: '';
+        animation: dots 1.5s steps(5, end) infinite;
+      }
+      
+      @keyframes dots {
+        0%, 20% { content: ''; }
+        40% { content: '.'; }
+        60% { content: '..'; }
+        80%, 100% { content: '...'; }
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .summary-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+      
+      .score-display {
+        text-align: center;
+        margin: 20px 0;
+      }
+      
+      .score-number {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #007bff;
+      }
+      
+      .score-label {
+        font-size: 1.1rem;
+        color: #666;
+      }
+      
+      .recommendations {
+        margin-top: 20px;
+      }
+      
+      .recommendations h3 {
+        color: #333;
+        margin-bottom: 15px;
+      }
+      
+      .recommendations ul {
+        list-style: none;
+        padding: 0;
+      }
+      
+      .recommendations li {
+        padding: 8px 0;
+        border-bottom: 1px solid #e9ecef;
+      }
+      
+      .recommendations li:last-child {
+        border-bottom: none;
+      }
+      
+      .hidden {
+        display: none;
+      }
+      
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+        
+        .assessment-card {
+          padding: 20px;
+        }
+        
+        .header h1 {
+          font-size: 1.5rem;
+        }
+        
+        .chat-container {
+          height: 400px;
+        }
+        
+        .text-input-form {
+          flex-direction: column;
+        }
+        
+        .text-input-form input {
+          margin-bottom: 10px;
+        }
       }
     </style>
   </head>
   <body>
-    <div id="root">
-      <div class="loading">
-        <div class="spinner"></div>
-        <p>Loading AI Assessment...</p>
+    <div class="container">
+      <div class="assessment-card">
+        <div class="header">
+          <h1 id="main-title">AI Readiness Assessment</h1>
+          <p id="main-subtitle">Bewerten Sie die KI-Bereitschaft Ihres Unternehmens</p>
+        </div>
+        
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress" style="width: 0%"></div>
+        </div>
+        
+        <div class="chat-container" id="chat-container">
+          <!-- Messages will be added here -->
+        </div>
+        
+        <div class="input-container">
+          <!-- Consent Form -->
+          <div id="consent-form">
+            <h3 id="consent-title">Einverständniserklärung</h3>
+            <div class="checkbox-group">
+              <input type="checkbox" id="data-processing" required>
+              <label for="data-processing" id="data-processing-label">
+                Ich stimme der Verarbeitung meiner Daten für das Assessment zu.
+              </label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="contact-permission">
+              <label for="contact-permission" id="contact-permission-label">
+                Ich erlaube die Kontaktaufnahme für weitere Informationen.
+              </label>
+            </div>
+            <button class="btn" id="consent-submit" disabled>Weiter</button>
+          </div>
+          
+          <!-- Contact Form -->
+          <div id="contact-form" class="hidden">
+            <h3 id="contact-title">Kontaktinformationen</h3>
+            <div class="form-group">
+              <label for="contact-name" id="name-label">Name *</label>
+              <input type="text" id="contact-name" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-email" id="email-label">E-Mail *</label>
+              <input type="email" id="contact-email" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-company" id="company-label">Unternehmen *</label>
+              <input type="text" id="contact-company" required>
+            </div>
+            <div class="form-group">
+              <label for="employee-count" id="employees-label">Mitarbeiteranzahl</label>
+              <select id="employee-count">
+                <option value="">Bitte wählen</option>
+                <option value="1-10">1-10</option>
+                <option value="11-50">11-50</option>
+                <option value="51-200">51-200</option>
+                <option value="201-500">201-500</option>
+                <option value="500+">500+</option>
+              </select>
+            </div>
+            <button class="btn" id="contact-submit">Assessment starten</button>
+          </div>
+          
+          <!-- Question Form -->
+          <div id="question-form" class="hidden">
+            <div class="text-input-form">
+              <input type="text" id="question-input" placeholder="Ihre Antwort...">
+              <button class="btn" id="question-submit" disabled>Senden</button>
+            </div>
+          </div>
+          
+          <!-- Completion Message -->
+          <div id="completion-message" class="hidden">
+            <div class="summary-card">
+              <h3 id="completion-title">Assessment abgeschlossen!</h3>
+              <div class="score-display">
+                <div class="score-number" id="final-score">--</div>
+                <div class="score-label" id="score-label">AI Readiness Score</div>
+              </div>
+              <p id="completion-text">
+                Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <script type="module">
-      // Latest AI Assessment Application with (Frage 1) numbering
-      import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from 'react/jsx-runtime';
-      import React, { useState, useRef, useEffect } from 'react';
-      import { createRoot } from 'react-dom/client';
+    
+    <div class="language-toggle">
+      <button id="language-toggle">Switch to English</button>
+    </div>
 
-      // Assessment Questions with Latest Features
+    <script>
+      // Assessment Application - Pure JavaScript Version
+      
       const assessmentQuestions = [
         {
           id: '1',
           text: {
             de: 'Was ist das Hauptziel Ihres Unternehmens bei der Einführung von KI?',
             en: 'What is your company\'s main goal when introducing AI?'
-          },
-          type: 'text'
+          }
         },
         {
-          id: '2', 
+          id: '2',
           text: {
             de: 'Welche Erfahrungen haben Sie bereits mit KI-Technologien gemacht?',
             en: 'What experience do you already have with AI technologies?'
-          },
-          type: 'text'
+          }
         },
         {
           id: '3',
           text: {
             de: 'Wie würden Sie Ihre aktuelle IT-Infrastruktur bewerten?',
             en: 'How would you rate your current IT infrastructure?'
-          },
-          type: 'text'
+          }
         },
         {
           id: '4',
           text: {
             de: 'Wie sammeln und speichern Sie derzeit Ihre Geschäftsdaten?',
             en: 'How do you currently collect and store your business data?'
-          },
-          type: 'text'
+          }
         },
         {
           id: '5',
           text: {
             de: 'Wie gehen Sie mit Datenschutz und Compliance um?',
             en: 'How do you handle data protection and compliance?'
-          },
-          type: 'text'
+          }
         },
         {
           id: '6',
           text: {
             de: 'Welche Geschäftsprozesse möchten Sie automatisieren?',
             en: 'Which business processes would you like to automate?'
-          },
-          type: 'text'
+          }
         },
         {
           id: '7',
           text: {
             de: 'Wie ist die KI-Kompetenz in Ihrem Team?',
             en: 'What is the AI competency level in your team?'
-          },
-          type: 'text'
+          }
         },
         {
           id: '8',
           text: {
             de: 'Wie unterstützt das Management KI-Initiativen?',
             en: 'How does management support AI initiatives?'
-          },
-          type: 'text'
+          }
         },
         {
           id: '9',
           text: {
             de: 'Welche Risiken sehen Sie bei der KI-Einführung?',
             en: 'What risks do you see in AI implementation?'
-          },
-          type: 'text'
+          }
         },
         {
           id: '10',
           text: {
             de: 'Welchen Zeitrahmen stellen Sie sich für die KI-Implementierung vor?',
             en: 'What timeframe do you envision for AI implementation?'
-          },
-          type: 'text'
+          }
         }
       ];
 
-      // Generate unique session ID
+      const translations = {
+        de: {
+          mainTitle: 'AI Readiness Assessment',
+          mainSubtitle: 'Bewerten Sie die KI-Bereitschaft Ihres Unternehmens',
+          consentTitle: 'Einverständniserklärung',
+          dataProcessingLabel: 'Ich stimme der Verarbeitung meiner Daten für das Assessment zu.',
+          contactPermissionLabel: 'Ich erlaube die Kontaktaufnahme für weitere Informationen.',
+          continueBtn: 'Weiter',
+          contactTitle: 'Kontaktinformationen',
+          nameLabel: 'Name *',
+          emailLabel: 'E-Mail *',
+          companyLabel: 'Unternehmen *',
+          employeesLabel: 'Mitarbeiteranzahl',
+          selectPlaceholder: 'Bitte wählen',
+          startAssessment: 'Assessment starten',
+          inputPlaceholder: 'Ihre Antwort...',
+          sendBtn: 'Senden',
+          completionTitle: 'Assessment abgeschlossen!',
+          completionText: 'Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.',
+          scoreLabel: 'AI Readiness Score',
+          languageToggle: 'Switch to English',
+          questionPrefix: 'Frage',
+          followUpPrefix: 'Nachfrage',
+          welcomeMsg1: 'Hallo! Willkommen zum AI Readiness Assessment. Ich helfe Ihnen dabei, die KI-Bereitschaft Ihres Unternehmens zu bewerten.',
+          welcomeMsg2: 'Das Assessment dauert etwa 5-10 Minuten. Am Ende erhalten Sie einen detaillierten Report per E-Mail.',
+          consentThanks: 'Vielen Dank! Bevor wir mit dem Assessment beginnen, benötigen wir einige Kontaktdaten.',
+          assessmentStart: 'Lassen Sie uns nun mit dem Assessment beginnen.',
+          errorMsg: 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.'
+        },
+        en: {
+          mainTitle: 'AI Readiness Assessment',
+          mainSubtitle: 'Evaluate your company\'s AI readiness',
+          consentTitle: 'Consent Declaration',
+          dataProcessingLabel: 'I agree to the processing of my data for the assessment.',
+          contactPermissionLabel: 'I allow contact for further information.',
+          continueBtn: 'Continue',
+          contactTitle: 'Contact Information',
+          nameLabel: 'Name *',
+          emailLabel: 'Email *',
+          companyLabel: 'Company *',
+          employeesLabel: 'Number of Employees',
+          selectPlaceholder: 'Please select',
+          startAssessment: 'Start Assessment',
+          inputPlaceholder: 'Your answer...',
+          sendBtn: 'Send',
+          completionTitle: 'Assessment completed!',
+          completionText: 'Thank you! You will receive a detailed report via email shortly.',
+          scoreLabel: 'AI Readiness Score',
+          languageToggle: 'Auf Deutsch wechseln',
+          questionPrefix: 'Question',
+          followUpPrefix: 'Follow-up Question',
+          welcomeMsg1: 'Hello! Welcome to the AI Readiness Assessment. I will help you evaluate your company\'s AI readiness.',
+          welcomeMsg2: 'The assessment takes about 5-10 minutes. At the end, you will receive a detailed report via email.',
+          consentThanks: 'Thank you! Before we begin the assessment, we need some contact information.',
+          assessmentStart: 'Let\'s now begin the assessment.',
+          errorMsg: 'Sorry, there was an error. Please try again.'
+        }
+      };
+
+      // Global state
+      let currentLanguage = 'de';
+      let sessionId = generateSessionId();
+      let currentStep = 'consent';
+      let currentQuestionIndex = 0;
+      let waitingForFollowUp = false;
+      let questionsWithFollowUp = new Set();
+      let responses = {};
+      let contactInfo = {};
+
       function generateSessionId() {
         return Math.random().toString(36).substring(2) + Date.now().toString(36);
       }
 
-      // Main Assessment Component with Latest Features
-      function AssessmentApp() {
-        const [language, setLanguage] = useState('de');
-        const [sessionId] = useState(() => generateSessionId());
-        const [currentStep, setCurrentStep] = useState('consent');
-        const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-        const [messages, setMessages] = useState([]);
-        const [consents, setConsents] = useState({
-          dataProcessing: false,
-          contactPermission: false
-        });
-        const [contactInfo, setContactInfo] = useState({});
-        const [responses, setResponses] = useState({});
-        const [waitingForFollowUp, setWaitingForFollowUp] = useState(false);
-        const [questionsWithFollowUp, setQuestionsWithFollowUp] = useState(new Set());
-        const [isLoading, setIsLoading] = useState(false);
-        const messagesEndRef = useRef(null);
+      function updateLanguage() {
+        const t = translations[currentLanguage];
+        
+        document.getElementById('main-title').textContent = t.mainTitle;
+        document.getElementById('main-subtitle').textContent = t.mainSubtitle;
+        document.getElementById('consent-title').textContent = t.consentTitle;
+        document.getElementById('data-processing-label').textContent = t.dataProcessingLabel;
+        document.getElementById('contact-permission-label').textContent = t.contactPermissionLabel;
+        document.getElementById('consent-submit').textContent = t.continueBtn;
+        document.getElementById('contact-title').textContent = t.contactTitle;
+        document.getElementById('name-label').textContent = t.nameLabel;
+        document.getElementById('email-label').textContent = t.emailLabel;
+        document.getElementById('company-label').textContent = t.companyLabel;
+        document.getElementById('employees-label').textContent = t.employeesLabel;
+        document.getElementById('contact-submit').textContent = t.startAssessment;
+        document.getElementById('question-input').placeholder = t.inputPlaceholder;
+        document.getElementById('question-submit').textContent = t.sendBtn;
+        document.getElementById('completion-title').textContent = t.completionTitle;
+        document.getElementById('completion-text').textContent = t.completionText;
+        document.getElementById('score-label').textContent = t.scoreLabel;
+        document.getElementById('language-toggle').textContent = t.languageToggle;
+        
+        const selectElement = document.getElementById('employee-count');
+        selectElement.options[0].textContent = t.selectPlaceholder;
+      }
 
-        const scrollToBottom = () => {
-          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        };
+      function addMessage(type, content) {
+        const chatContainer = document.getElementById('chat-container');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
+        
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'message-bubble';
+        bubbleDiv.textContent = content;
+        
+        messageDiv.appendChild(bubbleDiv);
+        chatContainer.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
 
-        useEffect(() => {
-          scrollToBottom();
-        }, [messages]);
+      function updateProgress() {
+        const totalSteps = assessmentQuestions.length + 2; // +2 for consent and contact
+        let currentStepNumber = 0;
+        
+        if (currentStep === 'consent') currentStepNumber = 0;
+        else if (currentStep === 'contact') currentStepNumber = 1;
+        else if (currentStep === 'questions') currentStepNumber = 2 + currentQuestionIndex;
+        else currentStepNumber = totalSteps;
+        
+        const percentage = (currentStepNumber / totalSteps) * 100;
+        document.getElementById('progress').style.width = percentage + '%';
+      }
 
-        useEffect(() => {
-          // Initialize welcome messages
-          const welcomeMessages = [
-            {
-              id: '1',
-              type: 'bot',
-              content: language === 'de' 
-                ? 'Hallo! Willkommen zum AI Readiness Assessment. Ich helfe Ihnen dabei, die KI-Bereitschaft Ihres Unternehmens zu bewerten.'
-                : 'Hello! Welcome to the AI Readiness Assessment. I will help you evaluate your company\'s AI readiness.',
-              timestamp: new Date()
-            },
-            {
-              id: '2',
-              type: 'bot',
-              content: language === 'de'
-                ? 'Das Assessment dauert etwa 5-10 Minuten. Am Ende erhalten Sie einen detaillierten Report per E-Mail.'
-                : 'The assessment takes about 5-10 minutes. At the end, you will receive a detailed report via email.',
-              timestamp: new Date()
-            }
-          ];
-          setMessages(welcomeMessages);
-        }, [language]);
+      function showStep(step) {
+        // Hide all forms
+        document.getElementById('consent-form').classList.add('hidden');
+        document.getElementById('contact-form').classList.add('hidden');
+        document.getElementById('question-form').classList.add('hidden');
+        document.getElementById('completion-message').classList.add('hidden');
+        
+        // Show requested form
+        if (step === 'consent') {
+          document.getElementById('consent-form').classList.remove('hidden');
+        } else if (step === 'contact') {
+          document.getElementById('contact-form').classList.remove('hidden');
+        } else if (step === 'questions') {
+          document.getElementById('question-form').classList.remove('hidden');
+        } else if (step === 'completed') {
+          document.getElementById('completion-message').classList.remove('hidden');
+        }
+        
+        currentStep = step;
+        updateProgress();
+      }
 
-        const addMessage = (type, content) => {
-          const newMessage = {
-            id: Date.now().toString(),
-            type,
-            content,
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, newMessage]);
-        };
+      async function createSession() {
+        try {
+          const response = await fetch('/api/assessment/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId, language: currentLanguage })
+          });
+          
+          if (!response.ok) throw new Error('Failed to create session');
+          
+          const data = await response.json();
+          console.log('Session created:', data);
+        } catch (error) {
+          console.error('Error creating session:', error);
+        }
+      }
 
-        const handleConsentSubmit = (consentData) => {
-          setConsents(consentData);
-          if (consentData.dataProcessing) {
-            addMessage('bot', language === 'de' 
-              ? 'Vielen Dank! Bevor wir mit dem Assessment beginnen, benötigen wir einige Kontaktdaten.'
-              : 'Thank you! Before we begin the assessment, we need some contact information.');
-            setTimeout(() => {
-              setCurrentStep('contact-info');
-            }, 1000);
+      async function submitResponse(questionId, userResponse, questionText) {
+        try {
+          const response = await fetch('/api/assessment/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId,
+              questionId,
+              questionText,
+              userResponse,
+              language: currentLanguage
+            })
+          });
+
+          if (!response.ok) throw new Error('Failed to analyze response');
+          
+          const data = await response.json();
+          return data.analysis;
+        } catch (error) {
+          console.error('Error submitting response:', error);
+          const t = translations[currentLanguage];
+          addMessage('bot', t.errorMsg);
+          return null;
+        }
+      }
+
+      async function completeAssessment() {
+        try {
+          const response = await fetch('/api/assessment/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId })
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            document.getElementById('final-score').textContent = data.readinessScore + '%';
+            showStep('completed');
+            
+            const t = translations[currentLanguage];
+            addMessage('bot', `${t.completionText} ${t.scoreLabel}: ${data.readinessScore}%`);
           }
-        };
+        } catch (error) {
+          console.error('Error completing assessment:', error);
+        }
+      }
 
-        const handleContactInfoSubmit = (contactData) => {
-          setContactInfo(contactData);
-          addMessage('bot', language === 'de' 
-            ? `Vielen Dank, ${contactData.name}! Lassen Sie uns nun mit dem Assessment beginnen.`
-            : `Thank you, ${contactData.name}! Let's now begin the assessment.`);
+      function proceedToNextQuestion() {
+        waitingForFollowUp = false;
+        
+        if (currentQuestionIndex < assessmentQuestions.length - 1) {
+          currentQuestionIndex++;
+          
+          const nextQuestion = assessmentQuestions[currentQuestionIndex];
+          const questionText = nextQuestion.text[currentLanguage];
+          const t = translations[currentLanguage];
+          const numberedQuestion = `(${t.questionPrefix} ${currentQuestionIndex + 1}) ${questionText}`;
           
           setTimeout(() => {
-            setCurrentStep('questions');
-            const firstQuestion = assessmentQuestions[0];
-            const questionText = firstQuestion.text[language];
-            const questionPrefix = language === 'de' ? 'Frage' : 'Question';
-            const numberedQuestion = `(${questionPrefix} 1) ${questionText}`;
             addMessage('bot', numberedQuestion);
           }, 1000);
-        };
+        } else {
+          completeAssessment();
+        }
+        
+        updateProgress();
+      }
 
-        const handleTextResponse = async (userResponse) => {
-          setIsLoading(true);
+      // Event Listeners
+      document.addEventListener('DOMContentLoaded', function() {
+        updateLanguage();
+        updateProgress();
+        
+        // Initialize welcome messages
+        const t = translations[currentLanguage];
+        setTimeout(() => addMessage('bot', t.welcomeMsg1), 500);
+        setTimeout(() => addMessage('bot', t.welcomeMsg2), 1500);
+        
+        // Create session
+        createSession();
+
+        // Consent form
+        const dataProcessingCheckbox = document.getElementById('data-processing');
+        const consentSubmitBtn = document.getElementById('consent-submit');
+        
+        dataProcessingCheckbox.addEventListener('change', function() {
+          consentSubmitBtn.disabled = !this.checked;
+        });
+        
+        consentSubmitBtn.addEventListener('click', function() {
+          const t = translations[currentLanguage];
+          addMessage('bot', t.consentThanks);
+          setTimeout(() => showStep('contact'), 1000);
+        });
+
+        // Contact form
+        document.getElementById('contact-submit').addEventListener('click', function() {
+          const name = document.getElementById('contact-name').value;
+          const email = document.getElementById('contact-email').value;
+          const company = document.getElementById('contact-company').value;
+          const employees = document.getElementById('employee-count').value;
+          
+          if (!name || !email || !company) {
+            alert('Please fill in all required fields');
+            return;
+          }
+          
+          contactInfo = { name, email, company, employees };
+          
+          const t = translations[currentLanguage];
+          addMessage('bot', `${t.assessmentStart.replace('Lassen', `Vielen Dank, ${name}! Lassen`)}`);
+          
+          setTimeout(() => {
+            showStep('questions');
+            const firstQuestion = assessmentQuestions[0];
+            const questionText = firstQuestion.text[currentLanguage];
+            const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
+            addMessage('bot', numberedQuestion);
+          }, 1000);
+        });
+
+        // Question form
+        const questionInput = document.getElementById('question-input');
+        const questionSubmitBtn = document.getElementById('question-submit');
+        
+        questionInput.addEventListener('input', function() {
+          questionSubmitBtn.disabled = !this.value.trim();
+        });
+        
+        questionInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter' && !questionSubmitBtn.disabled) {
+            handleQuestionSubmit();
+          }
+        });
+        
+        questionSubmitBtn.addEventListener('click', handleQuestionSubmit);
+
+        async function handleQuestionSubmit() {
+          const userResponse = questionInput.value.trim();
+          if (!userResponse) return;
+          
+          questionSubmitBtn.disabled = true;
+          questionSubmitBtn.innerHTML = '<span class="loading-dots">Analyzing</span>';
+          
           addMessage('user', userResponse);
-
-          try {
-            const currentQuestion = assessmentQuestions[currentQuestionIndex];
-            const questionId = waitingForFollowUp ? `${currentQuestion.id}_followup` : currentQuestion.id;
-            const questionText = currentQuestion.text[language];
-
-            const response = await fetch('/api/assessment/analyze', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                sessionId,
-                questionId,
-                questionText,
-                userResponse,
-                language
-              })
-            });
-
-            if (!response.ok) throw new Error('Failed to analyze response');
-            
-            const data = await response.json();
-            const { analysis } = data;
-
+          questionInput.value = '';
+          
+          const currentQuestion = assessmentQuestions[currentQuestionIndex];
+          const questionId = waitingForFollowUp ? `${currentQuestion.id}_followup` : currentQuestion.id;
+          const questionText = currentQuestion.text[currentLanguage];
+          
+          const analysis = await submitResponse(questionId, userResponse, questionText);
+          
+          if (analysis) {
             // Add AI explanation
             if (analysis.explanation) {
               setTimeout(() => {
                 addMessage('bot', analysis.explanation);
               }, 500);
             }
-
+            
             // Store response
-            setResponses(prev => ({
-              ...prev,
-              [questionId]: { userResponse, ...analysis }
-            }));
-
+            responses[questionId] = { userResponse, ...analysis };
+            
             // Check for follow-up
             if (analysis.needsFollowUp && analysis.followUpQuestion && !questionsWithFollowUp.has(currentQuestion.id)) {
               setTimeout(() => {
-                const followUpPrefix = language === 'de' ? 'Nachfrage' : 'Follow-up Question';
-                const followUpMessage = `(${followUpPrefix} ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`;
+                const t = translations[currentLanguage];
+                const followUpMessage = `(${t.followUpPrefix} ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`;
                 addMessage('bot', followUpMessage);
-                setWaitingForFollowUp(true);
-                setQuestionsWithFollowUp(prev => new Set([...prev, currentQuestion.id]));
+                waitingForFollowUp = true;
+                questionsWithFollowUp.add(currentQuestion.id);
               }, 1500);
             } else {
               // Move to next question
@@ -285,385 +845,18 @@
                 proceedToNextQuestion();
               }, 2000);
             }
-          } catch (error) {
-            console.error('Error:', error);
-            addMessage('bot', language === 'de' 
-              ? 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.'
-              : 'Sorry, there was an error. Please try again.');
-          } finally {
-            setIsLoading(false);
           }
-        };
-
-        const proceedToNextQuestion = () => {
-          setWaitingForFollowUp(false);
           
-          if (currentQuestionIndex < assessmentQuestions.length - 1) {
-            const nextIndex = currentQuestionIndex + 1;
-            setCurrentQuestionIndex(nextIndex);
-            
-            const nextQuestion = assessmentQuestions[nextIndex];
-            const questionText = nextQuestion.text[language];
-            const questionPrefix = language === 'de' ? 'Frage' : 'Question';
-            const numberedQuestion = `(${questionPrefix} ${nextIndex + 1}) ${questionText}`;
-            
-            setTimeout(() => {
-              addMessage('bot', numberedQuestion);
-            }, 500);
-          } else {
-            completeAssessment();
-          }
-        };
+          questionSubmitBtn.disabled = false;
+          questionSubmitBtn.textContent = translations[currentLanguage].sendBtn;
+        }
 
-        const completeAssessment = async () => {
-          try {
-            const response = await fetch('/api/assessment/complete', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ sessionId })
-            });
-            
-            if (response.ok) {
-              const data = await response.json();
-              setCurrentStep('completed');
-              addMessage('bot', language === 'de'
-                ? `Vielen Dank! Ihr Assessment ist abgeschlossen. Ihre KI-Readiness beträgt ${data.readinessScore}%. Sie erhalten in Kürze einen detaillierten Report per E-Mail.`
-                : `Thank you! Your assessment is complete. Your AI readiness score is ${data.readinessScore}%. You will receive a detailed report via email shortly.`);
-            }
-          } catch (error) {
-            console.error('Error completing assessment:', error);
-          }
-        };
-
-        return _jsxs("div", {
-          style: { maxWidth: '800px', margin: '0 auto', padding: '20px' },
-          children: [
-            _jsx("div", {
-              style: {
-                background: 'white',
-                borderRadius: '12px',
-                padding: '20px',
-                minHeight: '600px',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-              },
-              children: _jsxs("div", {
-                children: [
-                  _jsx("h1", {
-                    style: { textAlign: 'center', color: '#333', marginBottom: '20px' },
-                    children: language === 'de' ? 'AI Readiness Assessment' : 'AI Readiness Assessment'
-                  }),
-                  _jsx("div", {
-                    style: { height: '500px', overflowY: 'auto', marginBottom: '20px' },
-                    children: _jsxs("div", {
-                      children: [
-                        messages.map(message => _jsx("div", {
-                          style: {
-                            display: 'flex',
-                            justifyContent: message.type === 'user' ? 'flex-end' : 'flex-start',
-                            marginBottom: '10px'
-                          },
-                          children: _jsx("div", {
-                            style: {
-                              maxWidth: '70%',
-                              padding: '12px 16px',
-                              borderRadius: '18px',
-                              backgroundColor: message.type === 'user' ? '#007bff' : '#f1f3f4',
-                              color: message.type === 'user' ? 'white' : '#333'
-                            },
-                            children: message.content
-                          })
-                        }, message.id)),
-                        _jsx("div", { ref: messagesEndRef })
-                      ]
-                    })
-                  }),
-                  currentStep === 'consent' && _jsx(ConsentForm, {
-                    language: language,
-                    onSubmit: handleConsentSubmit
-                  }),
-                  currentStep === 'contact-info' && _jsx(ContactInfoForm, {
-                    language: language,
-                    onSubmit: handleContactInfoSubmit
-                  }),
-                  currentStep === 'questions' && _jsx(TextInput, {
-                    language: language,
-                    onSubmit: handleTextResponse,
-                    disabled: isLoading
-                  })
-                ]
-              })
-            }),
-            _jsx("div", {
-              style: { textAlign: 'center', marginTop: '20px' },
-              children: _jsx("button", {
-                onClick: () => setLanguage(language === 'de' ? 'en' : 'de'),
-                style: {
-                  background: 'rgba(255,255,255,0.2)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  cursor: 'pointer'
-                },
-                children: language === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'
-              })
-            })
-          ]
+        // Language toggle
+        document.getElementById('language-toggle').addEventListener('click', function() {
+          currentLanguage = currentLanguage === 'de' ? 'en' : 'de';
+          updateLanguage();
         });
-      }
-
-      // Consent Form Component
-      function ConsentForm({ language, onSubmit }) {
-        const [consents, setConsents] = useState({
-          dataProcessing: false,
-          contactPermission: false
-        });
-
-        const handleSubmit = (e) => {
-          e.preventDefault();
-          onSubmit(consents);
-        };
-
-        return _jsx("form", {
-          onSubmit: handleSubmit,
-          style: { padding: '20px' },
-          children: _jsxs("div", {
-            children: [
-              _jsx("h3", {
-                children: language === 'de' ? 'Einverständniserklärung' : 'Consent Declaration'
-              }),
-              _jsxs("label", {
-                style: { display: 'block', marginBottom: '15px' },
-                children: [
-                  _jsx("input", {
-                    type: "checkbox",
-                    checked: consents.dataProcessing,
-                    onChange: (e) => setConsents(prev => ({ ...prev, dataProcessing: e.target.checked })),
-                    style: { marginRight: '10px' }
-                  }),
-                  language === 'de' 
-                    ? 'Ich stimme der Verarbeitung meiner Daten für das Assessment zu.'
-                    : 'I agree to the processing of my data for the assessment.'
-                ]
-              }),
-              _jsxs("label", {
-                style: { display: 'block', marginBottom: '15px' },
-                children: [
-                  _jsx("input", {
-                    type: "checkbox",
-                    checked: consents.contactPermission,
-                    onChange: (e) => setConsents(prev => ({ ...prev, contactPermission: e.target.checked })),
-                    style: { marginRight: '10px' }
-                  }),
-                  language === 'de'
-                    ? 'Ich erlaube die Kontaktaufnahme für weitere Informationen.'
-                    : 'I allow contact for further information.'
-                ]
-              }),
-              _jsx("button", {
-                type: "submit",
-                disabled: !consents.dataProcessing,
-                style: {
-                  background: consents.dataProcessing ? '#007bff' : '#ccc',
-                  color: 'white',
-                  border: 'none',
-                  padding: '12px 24px',
-                  borderRadius: '6px',
-                  cursor: consents.dataProcessing ? 'pointer' : 'not-allowed'
-                },
-                children: language === 'de' ? 'Weiter' : 'Continue'
-              })
-            ]
-          })
-        });
-      }
-
-      // Contact Info Form Component
-      function ContactInfoForm({ language, onSubmit }) {
-        const [formData, setFormData] = useState({
-          name: '',
-          email: '',
-          companyName: '',
-          employeeNumber: ''
-        });
-
-        const handleSubmit = (e) => {
-          e.preventDefault();
-          onSubmit(formData);
-        };
-
-        const handleChange = (field, value) => {
-          setFormData(prev => ({ ...prev, [field]: value }));
-        };
-
-        return _jsx("form", {
-          onSubmit: handleSubmit,
-          style: { padding: '20px' },
-          children: _jsxs("div", {
-            children: [
-              _jsx("h3", {
-                children: language === 'de' ? 'Kontaktinformationen' : 'Contact Information'
-              }),
-              _jsxs("div", {
-                style: { marginBottom: '15px' },
-                children: [
-                  _jsx("label", {
-                    children: language === 'de' ? 'Name *' : 'Name *'
-                  }),
-                  _jsx("input", {
-                    type: "text",
-                    required: true,
-                    value: formData.name,
-                    onChange: (e) => handleChange('name', e.target.value),
-                    style: {
-                      width: '100%',
-                      padding: '8px',
-                      marginTop: '5px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px'
-                    }
-                  })
-                ]
-              }),
-              _jsxs("div", {
-                style: { marginBottom: '15px' },
-                children: [
-                  _jsx("label", {
-                    children: language === 'de' ? 'E-Mail *' : 'Email *'
-                  }),
-                  _jsx("input", {
-                    type: "email",
-                    required: true,
-                    value: formData.email,
-                    onChange: (e) => handleChange('email', e.target.value),
-                    style: {
-                      width: '100%',
-                      padding: '8px',
-                      marginTop: '5px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px'
-                    }
-                  })
-                ]
-              }),
-              _jsxs("div", {
-                style: { marginBottom: '15px' },
-                children: [
-                  _jsx("label", {
-                    children: language === 'de' ? 'Unternehmen *' : 'Company *'
-                  }),
-                  _jsx("input", {
-                    type: "text",
-                    required: true,
-                    value: formData.companyName,
-                    onChange: (e) => handleChange('companyName', e.target.value),
-                    style: {
-                      width: '100%',
-                      padding: '8px',
-                      marginTop: '5px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px'
-                    }
-                  })
-                ]
-              }),
-              _jsxs("div", {
-                style: { marginBottom: '15px' },
-                children: [
-                  _jsx("label", {
-                    children: language === 'de' ? 'Mitarbeiteranzahl' : 'Number of Employees'
-                  }),
-                  _jsx("select", {
-                    value: formData.employeeNumber,
-                    onChange: (e) => handleChange('employeeNumber', e.target.value),
-                    style: {
-                      width: '100%',
-                      padding: '8px',
-                      marginTop: '5px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px'
-                    },
-                    children: [
-                      _jsx("option", { value: "", children: language === 'de' ? 'Bitte wählen' : 'Please select' }),
-                      _jsx("option", { value: "1-10", children: "1-10" }),
-                      _jsx("option", { value: "11-50", children: "11-50" }),
-                      _jsx("option", { value: "51-200", children: "51-200" }),
-                      _jsx("option", { value: "201-500", children: "201-500" }),
-                      _jsx("option", { value: "500+", children: "500+" })
-                    ]
-                  })
-                ]
-              }),
-              _jsx("button", {
-                type: "submit",
-                style: {
-                  background: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  padding: '12px 24px',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
-                },
-                children: language === 'de' ? 'Assessment starten' : 'Start Assessment'
-              })
-            ]
-          })
-        });
-      }
-
-      // Text Input Component
-      function TextInput({ language, onSubmit, disabled }) {
-        const [value, setValue] = useState('');
-
-        const handleSubmit = (e) => {
-          e.preventDefault();
-          if (value.trim()) {
-            onSubmit(value.trim());
-            setValue('');
-          }
-        };
-
-        return _jsx("form", {
-          onSubmit: handleSubmit,
-          style: { padding: '20px' },
-          children: _jsxs("div", {
-            style: { display: 'flex', gap: '10px' },
-            children: [
-              _jsx("input", {
-                type: "text",
-                value: value,
-                onChange: (e) => setValue(e.target.value),
-                placeholder: language === 'de' ? 'Ihre Antwort...' : 'Your answer...',
-                disabled: disabled,
-                style: {
-                  flex: 1,
-                  padding: '12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  fontSize: '16px'
-                }
-              }),
-              _jsx("button", {
-                type: "submit",
-                disabled: disabled || !value.trim(),
-                style: {
-                  background: disabled || !value.trim() ? '#ccc' : '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  padding: '12px 24px',
-                  borderRadius: '6px',
-                  cursor: disabled || !value.trim() ? 'not-allowed' : 'pointer'
-                },
-                children: disabled ? '...' : (language === 'de' ? 'Senden' : 'Send')
-              })
-            ]
-          })
-        });
-      }
-
-      // Initialize the app
-      const root = createRoot(document.getElementById('root'));
-      root.render(_jsx(AssessmentApp));
+      });
     </script>
   </body>
 </html>
