@@ -1300,10 +1300,19 @@
         });
         
         consentSubmitBtn.addEventListener('click', async function() {
+          // Validate required consent
           const dataProcessing = document.getElementById('data-processing').checked;
           const contactPermission = document.getElementById('contact-permission').checked;
           
-          // Save consent to database
+          if (!dataProcessing) {
+            alert('Bitte stimmen Sie der Datenverarbeitung zu, um fortzufahren.');
+            return;
+          }
+          
+          // Disable button to prevent double clicks
+          consentSubmitBtn.disabled = true;
+          
+          // Save consent to database (non-blocking)
           if (currentSessionId) {
             try {
               await fetch('/.netlify/functions/server/api/assessment/consent', {
@@ -1315,14 +1324,21 @@
                   consentContactPermission: contactPermission
                 })
               });
+              console.log('Consent saved successfully');
             } catch (error) {
               console.error('Failed to save consent:', error);
+              // Continue anyway - don't block user progression
             }
           }
           
+          // Proceed to next step
           const t = translations[currentLanguage];
           addMessage('bot', t.consentThanks);
-          setTimeout(() => showStep('contact'), 1000);
+          setTimeout(() => {
+            showStep('contact');
+            // Re-enable button for potential back navigation
+            consentSubmitBtn.disabled = false;
+          }, 1000);
         });
 
         // Contact form
