@@ -89,34 +89,56 @@ Keep explanations under 80 words and overwhelmingly positive. Focus on building 
       headers: {
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://ai-assessment.grovia-digital.com',
+        'HTTP-Referer': process.env.SITE_URL || 'https://ai-assessment.grovia-digital.com',
         'X-Title': 'AI Readiness Assessment'
       },
       body: JSON.stringify({
         model: CONFIG.AI_MODEL,
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: CONFIG.AI_MAX_TOKENS,
-        temperature: CONFIG.AI_TEMPERATURE
+        temperature: CONFIG.AI_TEMPERATURE,
+        max_tokens: CONFIG.AI_MAX_TOKENS
       })
     });
 
     if (!response.ok) {
-      console.error(`OpenRouter API error: ${response.status} - ${response.statusText}`);
-      throw new Error(`OpenRouter API error: ${response.status}`);
+      throw new Error(`AI API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const content = data.choices[0].message.content;
-    const aiResponse = JSON.parse(content);
+    const content = data.choices?.[0]?.message?.content;
     
-    if (aiResponse.score < CONFIG.MIN_QUESTION_SCORE) {
-      aiResponse.score = CONFIG.MIN_QUESTION_SCORE;
+    if (!content) {
+      throw new Error('No content in AI response');
     }
-    
-    return aiResponse;
+
+    // Parse JSON response with fallback
+    try {
+      const analysis = JSON.parse(content);
+      
+      // Validate required fields
+      if (typeof analysis.needsFollowUp !== 'boolean' || 
+          typeof analysis.explanation !== 'string' ||
+          typeof analysis.score !== 'number') {
+        throw new Error('Invalid AI response format');
+      }
+      
+      // Ensure score is within valid range
+      analysis.score = Math.max(3, Math.min(5, analysis.score));
+      
+      return analysis;
+    } catch (parseError) {
+      console.error('Failed to parse AI response:', content);
+      return {
+        needsFollowUp: false,
+        explanation: language === 'de' 
+          ? 'Danke für Ihre Antwort. Lassen Sie uns zur nächsten Frage übergehen.'
+          : 'Thank you for your response. Let\'s move to the next question.',
+        analysis: 'Response received',
+        score: 3
+      };
+    }
   } catch (error) {
-    console.error('Error analyzing response:', error);
-    
+    console.error('AI analysis error:', error);
     return {
       needsFollowUp: false,
       explanation: language === 'de' 
@@ -128,28 +150,40 @@ Keep explanations under 80 words and overwhelmingly positive. Focus on building 
   }
 }
 
-// Calculate readiness score
+// Simple scoring algorithm
 function calculateReadinessScore(responses) {
-  const scores = Object.values(responses)
-    .map(r => r.score || 3)
-    .filter(score => typeof score === 'number');
-  
-  if (scores.length === 0) return 65;
-  
-  const average = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-  const percentage = Math.round((average / 5) * 100);
-  
-  return Math.max(CONFIG.MIN_OVERALL_SCORE, Math.min(percentage, CONFIG.MAX_REALISTIC_SCORE));
-}
+  const weights = {
+    '1': 15, // Main goal clarity
+    '2': 10, // AI experience
+    '3': 15, // IT infrastructure
+    '4': 15, // Data quality
+    '5': 10, // Data compliance
+    '6': 10, // Process optimization
+    '7': 10, // Team readiness
+    '8': 10, // Management support
+    '9': 5,  // Risk awareness
+    '10': 0, // Timeline (not scored)
+  };
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    database: pool ? 'connected' : 'not configured',
-    openrouter: process.env.OPENROUTER_API_KEY ? 'configured' : 'not configured'
+  let totalScore = 0;
+  let maxPossibleScore = 0;
+
+  Object.entries(weights).forEach(([questionId, weight]) => {
+    if (weight === 0) return;
+    
+    maxPossibleScore += weight;
+    const response = responses[questionId];
+    
+    if (response && response.score) {
+      totalScore += (response.score / 5) * weight;
+    }
   });
-});
+
+  if (maxPossibleScore === 0) return 0;
+  
+  const percentage = (totalScore / maxPossibleScore) * 100;
+  return Math.min(CONFIG.MAX_REALISTIC_SCORE, Math.round(percentage));
+}
 
 // Create or get assessment session
 app.post('/api/assessment/session', async (req, res) => {
@@ -163,21 +197,21 @@ app.post('/api/assessment/session', async (req, res) => {
     if (!sessionId) {
       return res.status(400).json({ message: 'Session ID required' });
     }
-
-    // Check if session already exists
-    const existingResult = await pool.query(
+    
+    // Check if session exists
+    const existingSession = await pool.query(
       'SELECT * FROM assessment_sessions WHERE session_id = $1',
       [sessionId]
     );
     
-    if (existingResult.rows.length > 0) {
-      return res.json(existingResult.rows[0]);
+    if (existingSession.rows.length > 0) {
+      return res.json(existingSession.rows[0]);
     }
     
     // Create new session
     const result = await pool.query(
-      'INSERT INTO assessment_sessions (session_id, language, responses, current_step, consent_data_processing, consent_contact_permission, is_completed, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [sessionId, language, '{}', 1, false, false, false, new Date()]
+      'INSERT INTO assessment_sessions (session_id, language, current_step, responses, consent_data_processing, consent_contact_permission, is_completed) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [sessionId, language, 1, JSON.stringify({}), false, false, false]
     );
     
     res.json(result.rows[0]);
@@ -195,6 +229,7 @@ app.get('/api/assessment/session/:sessionId', async (req, res) => {
     }
 
     const { sessionId } = req.params;
+    
     const result = await pool.query(
       'SELECT * FROM assessment_sessions WHERE session_id = $1',
       [sessionId]
@@ -211,7 +246,57 @@ app.get('/api/assessment/session/:sessionId', async (req, res) => {
   }
 });
 
-// Analyze response endpoint
+// Save consent data - NEW ENDPOINT
+app.post('/api/assessment/consent', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    const { sessionId, consentDataProcessing, consentContactPermission } = req.body;
+    
+    if (!sessionId || typeof consentDataProcessing !== 'boolean') {
+      return res.status(400).json({ message: 'Missing required consent data' });
+    }
+
+    await pool.query(
+      'UPDATE assessment_sessions SET consent_data_processing = $1, consent_contact_permission = $2 WHERE session_id = $3',
+      [consentDataProcessing, consentContactPermission || false, sessionId]
+    );
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving consent:', error);
+    res.status(500).json({ message: 'Failed to save consent' });
+  }
+});
+
+// Save contact information - NEW ENDPOINT
+app.post('/api/assessment/contact', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    const { sessionId, contactName, email, companyName, employeeNumber } = req.body;
+    
+    if (!sessionId || !contactName || !email || !companyName) {
+      return res.status(400).json({ message: 'Missing required contact information' });
+    }
+
+    await pool.query(
+      'UPDATE assessment_sessions SET contact_name = $1, email = $2, company_name = $3, employee_number = $4 WHERE session_id = $5',
+      [contactName, email, companyName, employeeNumber, sessionId]
+    );
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving contact info:', error);
+    res.status(500).json({ message: 'Failed to save contact information' });
+  }
+});
+
+// Analyze response with AI
 app.post('/api/assessment/analyze', async (req, res) => {
   try {
     if (!pool) {
@@ -233,9 +318,9 @@ app.post('/api/assessment/analyze', async (req, res) => {
     if (sessionResult.rows.length === 0) {
       return res.status(404).json({ message: 'Session not found' });
     }
-    
+
     const session = sessionResult.rows[0];
-    
+
     // Analyze response with AI
     const aiAnalysis = await analyzeResponse(questionId, questionText, userResponse, language);
     
@@ -248,6 +333,7 @@ app.post('/api/assessment/analyze', async (req, res) => {
       timestamp: new Date().toISOString()
     };
 
+    // Update session
     await pool.query(
       'UPDATE assessment_sessions SET responses = $1 WHERE session_id = $2',
       [JSON.stringify(currentResponses), sessionId]
@@ -273,24 +359,40 @@ app.patch('/api/assessment/session/:sessionId', async (req, res) => {
     const { sessionId } = req.params;
     const updates = req.body;
     
-    const fields = [];
+    // Build dynamic update query
+    const updateFields = [];
     const values = [];
-    let paramCounter = 1;
+    let valueIndex = 1;
     
-    // Convert camelCase to snake_case for database fields
+    const allowedFields = [
+      'current_step', 'responses', 'consent_data_processing', 
+      'consent_contact_permission', 'contact_name', 'email', 
+      'company_name', 'employee_number', 'readiness_score', 
+      'is_completed', 'language'
+    ];
+    
     Object.entries(updates).forEach(([key, value]) => {
-      const dbKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-      fields.push(`${dbKey} = $${paramCounter}`);
-      values.push(typeof value === 'object' ? JSON.stringify(value) : value);
-      paramCounter++;
+      const dbField = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+      if (allowedFields.includes(dbField)) {
+        updateFields.push(`${dbField} = $${valueIndex}`);
+        values.push(typeof value === 'object' ? JSON.stringify(value) : value);
+        valueIndex++;
+      }
     });
     
-    if (fields.length === 0) {
+    if (updateFields.length === 0) {
       return res.status(400).json({ message: 'No valid fields to update' });
     }
     
+    if (updates.isCompleted) {
+      updateFields.push(`completed_at = $${valueIndex}`);
+      values.push(new Date());
+      valueIndex++;
+    }
+    
     values.push(sessionId);
-    const query = `UPDATE assessment_sessions SET ${fields.join(', ')} WHERE session_id = $${paramCounter} RETURNING *`;
+    
+    const query = `UPDATE assessment_sessions SET ${updateFields.join(', ')} WHERE session_id = $${valueIndex} RETURNING *`;
     
     const result = await pool.query(query, values);
     
@@ -342,6 +444,107 @@ app.post('/api/assessment/complete', async (req, res) => {
   } catch (error) {
     console.error('Error completing assessment:', error);
     res.status(500).json({ message: 'Failed to complete assessment' });
+  }
+});
+
+// Send email report
+app.post('/api/assessment/send-report', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    const { sessionId, name, email, companyName, employeeNumber } = req.body;
+    
+    const sessionResult = await pool.query(
+      'SELECT * FROM assessment_sessions WHERE session_id = $1',
+      [sessionId]
+    );
+    
+    if (sessionResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+
+    const session = sessionResult.rows[0];
+
+    if (!session.is_completed) {
+      return res.status(400).json({ message: 'Assessment not completed' });
+    }
+
+    // Update session with contact info if not already set
+    if (name || email || companyName || employeeNumber) {
+      await pool.query(
+        'UPDATE assessment_sessions SET contact_name = COALESCE($1, contact_name), email = COALESCE($2, email), company_name = COALESCE($3, company_name), employee_number = COALESCE($4, employee_number) WHERE session_id = $5',
+        [name, email, companyName, employeeNumber, sessionId]
+      );
+    }
+
+    // Store email report record
+    await pool.query(
+      'INSERT INTO email_reports (session_id, email, company_name, report_data) VALUES ($1, $2, $3, $4)',
+      [sessionId, email || session.email, companyName || session.company_name, JSON.stringify({ readinessScore: session.readiness_score, responses: session.responses })]
+    );
+
+    res.json({ success: true, message: 'Report sent successfully' });
+  } catch (error) {
+    console.error('Error sending report:', error);
+    res.status(500).json({ message: 'Failed to send report' });
+  }
+});
+
+// Admin endpoint to export all assessment data
+app.get('/api/admin/export-data', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    // Get all assessment sessions
+    const sessionsResult = await pool.query(
+      'SELECT * FROM assessment_sessions ORDER BY created_at DESC'
+    );
+    
+    // Get all email reports
+    const reportsResult = await pool.query(
+      'SELECT * FROM email_reports ORDER BY sent_at DESC'
+    );
+    
+    const sessions = sessionsResult.rows;
+    const emailReports = reportsResult.rows;
+    
+    // Format data for export
+    const exportData = {
+      sessions: sessions.map(session => ({
+        sessionId: session.session_id,
+        contactName: session.contact_name,
+        email: session.email,
+        companyName: session.company_name,
+        employeeNumber: session.employee_number,
+        consentDataProcessing: session.consent_data_processing,
+        consentContactPermission: session.consent_contact_permission,
+        language: session.language,
+        readinessScore: session.readiness_score,
+        responses: session.responses,
+        isCompleted: session.is_completed,
+        createdAt: session.created_at,
+        completedAt: session.completed_at
+      })),
+      emailReports: emailReports.map(report => ({
+        sessionId: report.session_id,
+        email: report.email,
+        companyName: report.company_name,
+        reportData: report.report_data,
+        sentAt: report.sent_at
+      })),
+      totalSessions: sessions.length,
+      completedSessions: sessions.filter(s => s.is_completed).length,
+      exportedAt: new Date().toISOString()
+    };
+    
+    res.json(exportData);
+  } catch (error) {
+    console.error('Error exporting data:', error);
+    res.status(500).json({ message: 'Failed to export data' });
   }
 });
 
