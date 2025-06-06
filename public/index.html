@@ -1299,8 +1299,7 @@
           consentSubmitBtn.disabled = !this.checked;
         });
         
-        consentSubmitBtn.addEventListener('click', async function() {
-          // Validate required consent
+        consentSubmitBtn.addEventListener('click', function() {
           const dataProcessing = document.getElementById('data-processing').checked;
           const contactPermission = document.getElementById('contact-permission').checked;
           
@@ -1309,36 +1308,18 @@
             return;
           }
           
-          // Disable button to prevent double clicks
-          consentSubmitBtn.disabled = true;
+          // Store consent data locally for now
+          window.consentData = {
+            dataProcessing: dataProcessing,
+            contactPermission: contactPermission,
+            timestamp: new Date().toISOString()
+          };
           
-          // Save consent to database (non-blocking)
-          if (currentSessionId) {
-            try {
-              await fetch('/.netlify/functions/server/api/assessment/consent', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  sessionId: currentSessionId,
-                  consentDataProcessing: dataProcessing,
-                  consentContactPermission: contactPermission
-                })
-              });
-              console.log('Consent saved successfully');
-            } catch (error) {
-              console.error('Failed to save consent:', error);
-              // Continue anyway - don't block user progression
-            }
-          }
+          console.log('Consent recorded:', window.consentData);
           
-          // Proceed to next step
           const t = translations[currentLanguage];
           addMessage('bot', t.consentThanks);
-          setTimeout(() => {
-            showStep('contact');
-            // Re-enable button for potential back navigation
-            consentSubmitBtn.disabled = false;
-          }, 1000);
+          setTimeout(() => showStep('contact'), 1000);
         });
 
         // Contact form
