@@ -1299,14 +1299,34 @@
           consentSubmitBtn.disabled = !this.checked;
         });
         
-        consentSubmitBtn.addEventListener('click', function() {
+        consentSubmitBtn.addEventListener('click', async function() {
+          const dataProcessing = document.getElementById('data-processing').checked;
+          const contactPermission = document.getElementById('contact-permission').checked;
+          
+          // Save consent to database
+          if (currentSessionId) {
+            try {
+              await fetch('/.netlify/functions/server/api/assessment/consent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  sessionId: currentSessionId,
+                  consentDataProcessing: dataProcessing,
+                  consentContactPermission: contactPermission
+                })
+              });
+            } catch (error) {
+              console.error('Failed to save consent:', error);
+            }
+          }
+          
           const t = translations[currentLanguage];
           addMessage('bot', t.consentThanks);
           setTimeout(() => showStep('contact'), 1000);
         });
 
         // Contact form
-        document.getElementById('contact-submit').addEventListener('click', function() {
+        document.getElementById('contact-submit').addEventListener('click', async function() {
           const name = document.getElementById('contact-name').value;
           const email = document.getElementById('contact-email').value;
           const company = document.getElementById('contact-company').value;
@@ -1318,6 +1338,25 @@
           }
           
           contactInfo = { name, email, company, employees };
+          
+          // Save contact data to database
+          if (currentSessionId) {
+            try {
+              await fetch('/.netlify/functions/server/api/assessment/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  sessionId: currentSessionId,
+                  contactName: name,
+                  email: email,
+                  companyName: company,
+                  employeeNumber: employees
+                })
+              });
+            } catch (error) {
+              console.error('Failed to save contact info:', error);
+            }
+          }
           
           const t = translations[currentLanguage];
           addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
