@@ -1353,10 +1353,7 @@
           console.log('Contact data recorded:', window.contactData);
           
         const t = translations[currentLanguage];
-          addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`, 'contact_complete', { 
-            messageType: 'system',
-            contactData: { name, email, company, employees }
-          });
+          addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
           
           setTimeout(() => {
             showStep('questions');
