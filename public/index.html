@@ -1105,7 +1105,7 @@
         }
       }
 
-      function addMessage(type, content, questionId = null, aiAnalysis = null) {
+      function addMessage(type, content) {
         const chatMessages = document.getElementById('chat-messages');
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
@@ -1117,33 +1117,10 @@
         messageDiv.appendChild(bubbleDiv);
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        // Save all messages to database for complete conversation log
-        if (currentSessionId) {
-          saveChatMessage(type, content, questionId, aiAnalysis);
-        }
       }
       
       // New function to save individual chat messages
-      async function saveChatMessage(type, content, questionId = null, aiAnalysis = null) {
-        try {
-          await fetch('/.netlify/functions/server', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              endpoint: '/api/chat/message',
-              sessionId: currentSessionId,
-              messageType: type,
-              content: content,
-              questionId: questionId,
-              aiAnalysis: aiAnalysis
-            })
-          });
-        } catch (error) {
-          console.error('Failed to save chat message:', error);
-        }
-      }
-
+     
       function updateProgress() {
         const totalSteps = assessmentQuestions.length + 2;
         let currentStepNumber = 0;
