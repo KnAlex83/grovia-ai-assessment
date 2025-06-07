@@ -1116,11 +1116,67 @@
         
         messageDiv.appendChild(bubbleDiv);
         chatMessages.appendChild(messageDiv);
-        
-        // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Save to database
+        saveChatMessage(type, content);
+      }
+            // Save consent data to database
+      async function saveConsentData(consentDataProcessing, consentContactPermission) {
+        try {
+          await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/consent',
+              sessionId: sessionId,
+              consentDataProcessing: consentDataProcessing,
+              consentContactPermission: consentContactPermission
+            })
+          });
+        } catch (error) {
+          console.error('Failed to save consent data:', error);
+        }
       }
 
+      // Save contact data to database
+      async function saveContactData(contactName, email, companyName, employeeNumber) {
+        try {
+          await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/contact',
+              sessionId: sessionId,
+              contactName: contactName,
+              email: email,
+              companyName: companyName,
+              employeeNumber: employeeNumber
+            })
+          });
+        } catch (error) {
+          console.error('Failed to save contact data:', error);
+        }
+      }
+
+      // Save chat message to database
+      async function saveChatMessage(messageType, content, questionId = null) {
+        try {
+          await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/chat-message',
+              sessionId: sessionId,
+              messageType: messageType,
+              content: content,
+              questionId: questionId
+            })
+          });
+        } catch (error) {
+          console.error('Failed to save chat message:', error);
+        }
+      }
       function updateProgress() {
         const totalSteps = assessmentQuestions.length + 2;
         let currentStepNumber = 0;
@@ -1299,14 +1355,20 @@
           consentSubmitBtn.disabled = !this.checked;
         });
         
-        consentSubmitBtn.addEventListener('click', function() {
+        consentSubmitBtn.addEventListener('click', async function() {
+          const dataProcessing = document.getElementById('data-processing').checked;
+          const contactPermission = document.getElementById('contact-permission').checked;
+          
+          // Save consent to database
+          await saveConsentData(dataProcessing, contactPermission);
+          
           const t = translations[currentLanguage];
           addMessage('bot', t.consentThanks);
           setTimeout(() => showStep('contact'), 1000);
         });
 
         // Contact form
-        document.getElementById('contact-submit').addEventListener('click', function() {
+                document.getElementById('contact-submit').addEventListener('click', async function() {
           const name = document.getElementById('contact-name').value;
           const email = document.getElementById('contact-email').value;
           const company = document.getElementById('contact-company').value;
@@ -1316,6 +1378,9 @@
             alert('Please fill in all required fields');
             return;
           }
+          
+          // Save contact data to database
+          await saveContactData(name, email, company, employees);
           
           contactInfo = { name, email, company, employees };
           
@@ -1330,7 +1395,6 @@
             addMessage('bot', numberedQuestion);
           }, 1000);
         });
-
         // Question form
         const questionInput = document.getElementById('question-input');
         const questionSubmitBtn = document.getElementById('question-submit');
