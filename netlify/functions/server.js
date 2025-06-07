@@ -9,6 +9,14 @@ neonConfig.webSocketConstructor = ws;
 const app = express();
 app.use(express.json());
 
+// Add routing middleware for database operations
+app.use((req, res, next) => {
+  if (req.body && req.body.endpoint) {
+    req.url = req.body.endpoint;
+    delete req.body.endpoint;
+  }
+  next();
+});
 // Database connection with error handling
 let pool;
 try {
