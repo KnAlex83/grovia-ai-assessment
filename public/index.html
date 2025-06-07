@@ -1105,7 +1105,7 @@
         }
       }
 
-      function addMessage(type, content) {
+      function addMessage(type, content, questionId = null, aiAnalysis = null) {
         const chatMessages = document.getElementById('chat-messages');
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
@@ -1116,9 +1116,32 @@
         
         messageDiv.appendChild(bubbleDiv);
         chatMessages.appendChild(messageDiv);
-        
-        // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Save all messages to database for complete conversation log
+        if (currentSessionId) {
+          saveChatMessage(type, content, questionId, aiAnalysis);
+        }
+      }
+      
+      // New function to save individual chat messages
+      async function saveChatMessage(type, content, questionId = null, aiAnalysis = null) {
+        try {
+          await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/chat/message',
+              sessionId: currentSessionId,
+              messageType: type,
+              content: content,
+              questionId: questionId,
+              aiAnalysis: aiAnalysis
+            })
+          });
+        } catch (error) {
+          console.error('Failed to save chat message:', error);
+        }
       }
 
       function updateProgress() {
@@ -1223,8 +1246,12 @@
             document.getElementById('final-score').textContent = data.readinessScore + '%';
             showStep('completed');
             
-            const t = translations[currentLanguage];
-            addMessage('bot', `${t.completionText} ${t.scoreLabel}: ${data.readinessScore}%`);
+        const t = translations[currentLanguage];
+            addMessage('bot', `${t.completionText} ${t.scoreLabel}: ${data.readinessScore}%`, 'assessment_complete', {
+              messageType: 'completion',
+              readinessScore: data.readinessScore,
+              isCompleted: true
+            });
           }
         } catch (error) {
           console.error('Error completing assessment:', error);
@@ -1243,7 +1270,7 @@
           const numberedQuestion = `(${t.questionPrefix} ${currentQuestionIndex + 1}) ${questionText}`;
           
           setTimeout(() => {
-            addMessage('bot', numberedQuestion);
+            addMessage('bot', numberedQuestion, nextQuestion.id);
           }, 1000);
         } else {
           completeAssessment();
@@ -1259,9 +1286,10 @@
         updateProgress();
         
         // Initialize welcome messages
-        const t = translations[currentLanguage];
-        setTimeout(() => addMessage('bot', t.welcomeMsg1), 500);
-        setTimeout(() => addMessage('bot', t.welcomeMsg2), 1500);
+              // Initialize welcome messages with logging
+      const t = translations[currentLanguage];
+        setTimeout(() => addMessage('bot', t.welcomeMsg1, 'welcome_1', { messageType: 'welcome' }), 500);
+        setTimeout(() => addMessage('bot', t.welcomeMsg2, 'welcome_2', { messageType: 'welcome' }), 1500);
         
         // Create session
         createSession();
@@ -1347,15 +1375,18 @@
           
           console.log('Contact data recorded:', window.contactData);
           
-          const t = translations[currentLanguage];
-          addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
+        const t = translations[currentLanguage];
+          addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`, 'contact_complete', { 
+            messageType: 'system',
+            contactData: { name, email, company, employees }
+          });
           
           setTimeout(() => {
             showStep('questions');
             const firstQuestion = assessmentQuestions[0];
             const questionText = firstQuestion.text[currentLanguage];
             const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
-            addMessage('bot', numberedQuestion);
+            addMessage('bot', numberedQuestion, firstQuestion.id);
           }, 1000);
         });
 
@@ -1373,29 +1404,28 @@
           }
         });
         
-        questionSubmitBtn.addEventListener('click', handleQuestionSubmit);
-
-        async function handleQuestionSubmit() {
+        questionSubmitBtn.addEventListener('click', async function() {
           const userResponse = questionInput.value.trim();
           if (!userResponse) return;
           
           questionSubmitBtn.disabled = true;
           questionSubmitBtn.innerHTML = '<span class="loading-dots">Analyzing</span>';
           
-          addMessage('user', userResponse);
-          questionInput.value = '';
-          
           const currentQuestion = assessmentQuestions[currentQuestionIndex];
           const questionId = waitingForFollowUp ? `${currentQuestion.id}_followup` : currentQuestion.id;
-          const questionText = currentQuestion.text[currentLanguage];
           
+          // Add user message with question context
+          addMessage('user', userResponse, questionId);
+          questionInput.value = '';
+          
+          const questionText = currentQuestion.text[currentLanguage];
           const analysis = await submitResponse(questionId, userResponse, questionText);
           
           if (analysis) {
-            // Add AI explanation
+            // Add AI explanation with complete analysis data
             if (analysis.explanation) {
               setTimeout(() => {
-                addMessage('bot', analysis.explanation);
+                addMessage('bot', analysis.explanation, questionId, analysis);
               }, 500);
             }
             
@@ -1407,7 +1437,10 @@
               setTimeout(() => {
                 const t = translations[currentLanguage];
                 const followUpMessage = `(${t.followUpPrefix} ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`;
-                addMessage('bot', followUpMessage);
+                addMessage('bot', followUpMessage, `${currentQuestion.id}_followup`, { 
+                  isFollowUp: true, 
+                  followUpQuestion: analysis.followUpQuestion 
+                });
                 waitingForFollowUp = true;
                 questionsWithFollowUp.add(currentQuestion.id);
               }, 1500);
