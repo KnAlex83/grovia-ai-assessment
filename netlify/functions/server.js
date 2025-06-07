@@ -296,6 +296,43 @@ app.post('/api/assessment/contact', async (req, res) => {
   }
 });
 
+// Save chat message for conversation logging
+app.post('/api/assessment/chat-message', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    const { sessionId, messageType, content, questionId } = req.body;
+    
+    if (!sessionId || !messageType || !content) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Create chat_messages table if it doesn't exist
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        message_type VARCHAR(20) NOT NULL,
+        content TEXT NOT NULL,
+        question_id VARCHAR(100),
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // Insert chat message
+    await pool.query(
+      'INSERT INTO chat_messages (session_id, message_type, content, question_id) VALUES ($1, $2, $3, $4)',
+      [sessionId, messageType, content, questionId || null]
+    );
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving chat message:', error);
+    res.status(500).json({ message: 'Failed to save chat message' });
+  }
+});
 // Analyze response with AI
 app.post('/api/assessment/analyze', async (req, res) => {
   try {
