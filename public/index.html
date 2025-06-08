@@ -1177,6 +1177,35 @@
           console.error('Failed to save chat message:', error);
         }
       }
+            // Send complete assessment data to n8n webhook
+      async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
+        try {
+          const webhookUrl = "https://your-n8n-domain.com/webhook/ai-assessment-complete";
+          
+          const assessmentData = await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/complete-data',
+              sessionId: sessionId
+            })
+          });
+          
+          if (assessmentData.ok) {
+            const completeData = await assessmentData.json();
+            
+            await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(completeData)
+            });
+            
+            console.log('Complete assessment data sent to n8n successfully');
+          }
+        } catch (error) {
+          console.error('Failed to send complete assessment data to n8n:', error);
+        }
+      }
       function updateProgress() {
         const totalSteps = assessmentQuestions.length + 2;
         let currentStepNumber = 0;
@@ -1266,7 +1295,7 @@
         }
       }
 
-      async function completeAssessment() {
+            async function completeAssessment() {
         try {
           const response = await fetch('/api/assessment/complete', {
             method: 'POST',
@@ -1281,6 +1310,9 @@
             
             const t = translations[currentLanguage];
             addMessage('bot', `${t.completionText} ${t.scoreLabel}: ${data.readinessScore}%`);
+            
+            // Send complete assessment data to n8n
+            await sendCompleteAssessmentToN8n(sessionId, data.readinessScore);
           }
         } catch (error) {
           console.error('Error completing assessment:', error);
