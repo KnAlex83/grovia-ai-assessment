@@ -884,6 +884,11 @@
 
     <script>
       // Complete assessment functionality with fixed form handling
+      // Global variables for duplicate prevention
+      let contactSubmitted = false;
+      let sessionId = '';
+      let contactName = '';
+      let contactInfo = {};
       const assessmentQuestions = [
         {
           id: '1',
@@ -1180,8 +1185,11 @@
             // Send complete assessment data to n8n webhook
       async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
         try {
+          console.log('Starting webhook process for session:', sessionId);
+    
           const webhookUrl = "https://your-n8n-domain.com/webhook/ai-assessment-complete";
-          
+    
+          console.log('Fetching complete assessment data...');
           const assessmentData = await fetch('/.netlify/functions/server', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1190,17 +1198,26 @@
               sessionId: sessionId
             })
           });
-          
+    
           if (assessmentData.ok) {
             const completeData = await assessmentData.json();
-            
-            await fetch(webhookUrl, {
+            console.log('Assessment data retrieved successfully');
+            console.log('Data payload:', completeData);
+      
+            console.log('Sending to n8n webhook...');
+            const webhookResponse = await fetch(webhookUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(completeData)
             });
-            
-            console.log('Complete assessment data sent to n8n successfully');
+      
+            if (webhookResponse.ok) {
+              console.log('Complete assessment data sent to n8n successfully');
+            } else {
+              console.error('N8N webhook failed with status:', webhookResponse.status);
+            }
+          } else {
+              console.error('Failed to retrieve assessment data:', assessmentData.status);
           }
         } catch (error) {
           console.error('Failed to send complete assessment data to n8n:', error);
@@ -1295,13 +1312,18 @@
         }
       }
 
-            async function completeAssessment() {
-        try {
-          const response = await fetch('/api/assessment/complete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId })
-          });
+          async function completeAssessment() {
+  try {
+    console.log('Completing assessment for session:', sessionId);
+    
+    const response = await fetch('/.netlify/functions/server', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        endpoint: '/api/assessment/complete',
+        sessionId
+      })
+    });
           
           if (response.ok) {
             const data = await response.json();
@@ -1400,33 +1422,56 @@
         });
 
         // Contact form
-                document.getElementById('contact-submit').addEventListener('click', async function() {
-          const name = document.getElementById('contact-name').value;
-          const email = document.getElementById('contact-email').value;
-          const company = document.getElementById('contact-company').value;
-          const employees = document.getElementById('employee-count').value;
-          
-          if (!name || !email || !company) {
-            alert('Please fill in all required fields');
-            return;
-          }
-          
-          // Save contact data to database
-          await saveContactData(name, email, company, employees);
-          
-          contactInfo = { name, email, company, employees };
-          
-          const t = translations[currentLanguage];
-          addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
-          
-          setTimeout(() => {
-            showStep('questions');
-            const firstQuestion = assessmentQuestions[0];
-            const questionText = firstQuestion.text[currentLanguage];
-            const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
-            addMessage('bot', numberedQuestion);
-          }, 1000);
-        });
+             document.getElementById('contact-submit').addEventListener('click', async function() {
+  // Prevent multiple submissions
+  if (window.contactSubmitted) {
+    console.log('Contact already submitted, ignoring duplicate');
+    return;
+  }
+  
+  const name = document.getElementById('contact-name').value;
+  const email = document.getElementById('contact-email').value;
+  const company = document.getElementById('contact-company').value;
+  const employees = document.getElementById('employee-count').value;
+  
+  if (!name || !email || !company) {
+    alert('Please fill in all required fields');
+    return;
+  }
+  
+  // Mark as submitted to prevent duplicates
+  window.contactSubmitted = true;
+  
+  // Disable the button to prevent multiple clicks
+  this.disabled = true;
+  this.textContent = 'Processing...';
+  
+  try {
+    // Save contact data to database
+    await saveContactData(name, email, company, employees);
+    
+    contactInfo = { name, email, company, employees };
+    contactName = name;
+    
+    const t = translations[currentLanguage];
+    addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
+    
+    setTimeout(() => {
+      showStep('questions');
+      const firstQuestion = assessmentQuestions[0];
+      const questionText = firstQuestion.text[currentLanguage];
+      const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
+      addMessage('bot', numberedQuestion);
+    }, 1000);
+    
+  } catch (error) {
+    console.error('Error submitting contact form:', error);
+    // Reset on error
+    window.contactSubmitted = false;
+    this.disabled = false;
+    this.textContent = translations[currentLanguage].startAssessment;
+  }
+}); 
         // Question form
         const questionInput = document.getElementById('question-input');
         const questionSubmitBtn = document.getElementById('question-submit');
