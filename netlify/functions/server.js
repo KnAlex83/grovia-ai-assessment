@@ -328,7 +328,80 @@ app.post('/api/assessment/chat-message', async (req, res) => {
         created_at TIMESTAMP DEFAULT NOW()
       )
     `);
+// Get complete assessment data for webhook
+app.post('/api/assessment/complete-data', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
 
+    const { sessionId } = req.body;
+    
+    if (!sessionId) {
+      return res.status(400).json({ message: 'Session ID required' });
+    }
+
+    // Get assessment session data
+    const sessionResult = await pool.query(
+      'SELECT * FROM assessment_sessions WHERE session_id = $1',
+      [sessionId]
+    );
+
+    if (sessionResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+
+    const session = sessionResult.rows[0];
+
+    // Get complete chat conversation
+    const chatResult = await pool.query(
+      'SELECT message_type, content, question_id, timestamp FROM chat_messages WHERE session_id = $1 ORDER BY timestamp ASC',
+      [sessionId]
+    );
+
+    // Prepare complete data payload for n8n
+    const completeData = {
+      session_id: session.session_id,
+      language: session.language,
+      
+      consent: {
+        data_processing: session.consent_data_processing,
+        contact_permission: session.consent_contact_permission
+      },
+      
+      contact: {
+        name: session.contact_name,
+        email: session.email,
+        company_name: session.company_name,
+        employee_number: session.employee_number
+      },
+      
+      assessment: {
+        readiness_score: session.readiness_score,
+        is_completed: session.is_completed,
+        responses: session.responses,
+        created_at: session.created_at,
+        completed_at: session.completed_at
+      },
+      
+      chat_conversation: chatResult.rows.map(msg => ({
+        type: msg.message_type,
+        content: msg.content,
+        question_id: msg.question_id,
+        timestamp: msg.timestamp
+      })),
+      
+      webhook_sent_at: new Date().toISOString(),
+      total_messages: chatResult.rows.length
+    };
+
+    res.json(completeData);
+
+  } catch (error) {
+    console.error('Error getting complete assessment data:', error);
+    res.status(500).json({ message: 'Failed to get complete assessment data' });
+  }
+});
     // Insert chat message
     await pool.query(
       'INSERT INTO chat_messages (session_id, message_type, content, question_id) VALUES ($1, $2, $3, $4)',
