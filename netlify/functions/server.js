@@ -593,6 +593,74 @@ app.get('/api/admin/export-data', async (req, res) => {
   }
 });
 
+// Get complete assessment data for webhook
+app.post('/api/assessment/complete-data', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    const { sessionId } = req.body;
+    
+    if (!sessionId) {
+      return res.status(400).json({ message: 'Session ID required' });
+    }
+
+    const sessionResult = await pool.query(
+      'SELECT * FROM assessment_sessions WHERE session_id = $1',
+      [sessionId]
+    );
+
+    if (sessionResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+
+    const session = sessionResult.rows[0];
+
+    const chatResult = await pool.query(
+      'SELECT message_type, content, question_id, timestamp FROM chat_messages WHERE session_id = $1 ORDER BY timestamp ASC',
+      [sessionId]
+    );
+
+    const webhookPayload = {
+      session_id: session.session_id,
+      language: session.language,
+      consent: {
+        data_processing: session.consent_data_processing,
+        contact_permission: session.consent_contact_permission
+      },
+      contact: {
+        name: session.contact_name,
+        email: session.email,
+        company_name: session.company_name,
+        employee_number: session.employee_number
+      },
+      assessment: {
+        readiness_score: session.readiness_score,
+        is_completed: session.is_completed,
+        responses: session.responses,
+        created_at: session.created_at,
+        completed_at: session.completed_at
+      },
+      chat_conversation: chatResult.rows.map(msg => ({
+        type: msg.message_type,
+        content: msg.content,
+        question_id: msg.question_id,
+        timestamp: msg.timestamp
+      })),
+      metadata: {
+        webhook_generated_at: new Date().toISOString(),
+        total_messages: chatResult.rows.length
+      }
+    };
+
+    res.json(webhookPayload);
+  } catch (error) {
+    console.error('Error preparing webhook data:', error);
+    res.status(500).json({ message: 'Failed to prepare assessment data' });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
