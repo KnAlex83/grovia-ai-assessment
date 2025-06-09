@@ -1360,14 +1360,14 @@
   try {
     console.log('Completing assessment for session:', sessionId);
     
-    const response = await fetch('/.netlify/functions/server', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        endpoint: '/api/assessment/complete',
-        sessionId
-      })
-    });
+          const response = await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/complete',
+              sessionId
+            })
+          });
           
           if (response.ok) {
             const data = await response.json();
@@ -1384,7 +1384,16 @@
           console.error('Error completing assessment:', error);
         }
       }
+      function askQuestion(index) {
+        const question = assessmentQuestions[index];
+        const questionText = question.text[currentLanguage];
+        const t = translations[currentLanguage];
+        const numberedQuestion = `(${t.questionPrefix} ${index + 1}) ${questionText}`;
+        addMessage('bot', numberedQuestion);
+      }
 
+      function proceedToNextQuestion() {
+        waitingForFollowUp = false;
       function proceedToNextQuestion() {
         waitingForFollowUp = false;
         
@@ -1503,7 +1512,11 @@
             setTimeout(() => {
               showStep('questions');
               currentQuestionIndex = 0;
-              askQuestion(0);
+              const firstQuestion = assessmentQuestions[0];
+              const questionText = firstQuestion.text[currentLanguage];
+              const t = translations[currentLanguage];
+              const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
+              addMessage('bot', numberedQuestion);
             }, 1000);
             
           } catch (error) {
