@@ -1173,10 +1173,51 @@
               questionId: questionId
             })
           });
-        } catch (error) {
+                } catch (error) {
           console.error('Failed to save chat message:', error);
         }
       }
+
+      // Send complete assessment data to n8n webhook
+      async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
+        try {
+          console.log('Sending webhook to n8n for session:', sessionId);
+          
+          // Replace with your actual n8n webhook URL
+          const webhookUrl = "https://your-n8n-domain.com/webhook/ai-assessment-complete";
+          
+          const response = await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/complete-data',
+              sessionId: sessionId
+            })
+          });
+          
+          if (response.ok) {
+            const completeData = await response.json();
+            console.log('Assessment data retrieved successfully');
+            
+            const webhookResponse = await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(completeData)
+            });
+            
+            if (webhookResponse.ok) {
+              console.log('Complete assessment data sent to n8n successfully');
+            } else {
+              console.error('N8N webhook failed with status:', webhookResponse.status);
+            }
+          } else {
+            console.error('Failed to retrieve assessment data:', response.status);
+          }
+        } catch (error) {
+          console.error('Failed to send complete assessment data to n8n:', error);
+        }
+      }
+
       function updateProgress() {
         const totalSteps = assessmentQuestions.length + 2;
         let currentStepNumber = 0;
@@ -1266,12 +1307,15 @@
         }
       }
 
-      async function completeAssessment() {
+              async function completeAssessment() {
         try {
-          const response = await fetch('/api/assessment/complete', {
+          const response = await fetch('/.netlify/functions/server', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId })
+            body: JSON.stringify({
+              endpoint: '/api/assessment/complete',
+              sessionId
+            })
           });
           
           if (response.ok) {
@@ -1281,6 +1325,10 @@
             
             const t = translations[currentLanguage];
             addMessage('bot', `${t.completionText} ${t.scoreLabel}: ${data.readinessScore}%`);
+            
+            // Send complete assessment data to n8n
+            console.log('Triggering n8n webhook...');
+            await sendCompleteAssessmentToN8n(sessionId, data.readinessScore);
           }
         } catch (error) {
           console.error('Error completing assessment:', error);
