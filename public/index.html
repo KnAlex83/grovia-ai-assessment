@@ -628,12 +628,40 @@
         to { opacity: 1; transform: translateY(0); }
       }
 
+      @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      .message.bot {
+        animation: slideInLeft 0.3s ease-out;
+      }
+
+      .message.user {
+        animation: slideInRight 0.3s ease-out;
+      }
+
       /* Responsive Design */
+      @media (max-width: 1024px) {
+        .main-content {
+          padding: 1.5rem 1rem;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
       @media (max-width: 768px) {
         .header-content {
-          padding: 0.75rem 1rem;
           flex-direction: column;
           gap: 1rem;
+          padding: 0.75rem 1rem;
         }
 
         .main-content {
@@ -646,15 +674,11 @@
         }
 
         .chat-messages {
-          max-height: 250px;
+          max-height: 300px;
         }
 
-        .input-container {
-          max-height: 250px;
-        }
-
-        .features-grid {
-          grid-template-columns: 1fr;
+        .text-input-form {
+          flex-direction: column;
         }
 
         .footer-links {
@@ -663,40 +687,18 @@
         }
       }
 
-      /* Custom scrollbar styling */
-      .chat-messages::-webkit-scrollbar,
-      .input-container::-webkit-scrollbar {
-        width: 6px;
-      }
+      @media (max-width: 480px) {
+        .input-container {
+          padding: 1rem;
+        }
 
-      .chat-messages::-webkit-scrollbar-track,
-      .input-container::-webkit-scrollbar-track {
-        background: hsl(var(--muted));
-        border-radius: 3px;
-      }
+        .form-container {
+          padding: 0;
+        }
 
-      .chat-messages::-webkit-scrollbar-thumb,
-      .input-container::-webkit-scrollbar-thumb {
-        background: hsl(var(--border));
-        border-radius: 3px;
-      }
-
-      .chat-messages::-webkit-scrollbar-thumb:hover,
-      .input-container::-webkit-scrollbar-thumb:hover {
-        background: hsl(var(--muted-foreground));
-      }
-
-      /* SVG Icons */
-      .icon {
-        width: 1.25rem;
-        height: 1.25rem;
-        fill: currentColor;
-      }
-
-      .icon-large {
-        width: 1.5rem;
-        height: 1.5rem;
-        fill: currentColor;
+        .message-bubble {
+          max-width: 85%;
+        }
       }
     </style>
   </head>
@@ -706,13 +708,13 @@
       <div class="header-content">
         <div class="header-logo">
           <div class="logo-icon">
-            <svg class="icon-large" viewBox="0 0 24 24" style="color: white;">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
             </svg>
           </div>
           <div class="logo-text">
-            <h1 id="main-title">GROVIA AI Readiness Assessment</h1>
-            <p id="main-subtitle">Bewerten Sie die KI-Bereitschaft Ihres Unternehmens</p>
+            <h1 id="header-title">GROVIA Digital</h1>
+            <p id="header-subtitle">AI Readiness Assessment</p>
           </div>
         </div>
         <div class="header-controls">
@@ -720,15 +722,12 @@
             <button class="lang-btn active" id="lang-de">DE</button>
             <button class="lang-btn" id="lang-en">EN</button>
           </div>
-          <!-- FIXED: Perfect Theme Toggle with proper sun/moon icons -->
-          <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
-            <!-- Sun icon for light mode -->
-            <svg class="theme-icon sun-icon" viewBox="0 0 24 24">
+          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+            <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="5"/>
-              <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
+              <path d="m12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42m12.72-12.72l1.42-1.42"/>
             </svg>
-            <!-- Moon icon for dark mode -->
-            <svg class="theme-icon moon-icon" viewBox="0 0 24 24">
+            <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
           </button>
@@ -738,35 +737,32 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- Progress Bar -->
+      <!-- Progress Container -->
       <div class="progress-container">
         <div class="progress-bar">
-          <div class="progress-fill" id="progress" style="width: 0%"></div>
+          <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
         </div>
         <div class="progress-text" id="progress-text">Assessment wird geladen...</div>
       </div>
 
-      <!-- FIXED: Chat Interface with proper scrolling -->
+      <!-- Chat Card -->
       <div class="chat-card">
         <div class="chat-header">
           <div class="chat-header-content">
             <div class="bot-icon">
-              <svg class="icon-large" style="color: white;" viewBox="0 0 24 24">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
                 <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v1a1 1 0 0 1-1 1h-2v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H4a1 1 0 0 1-1-1v-1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2m6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
               </svg>
             </div>
             <div class="chat-title">
               <h3 id="chat-title">GROVIA KI-Readiness Assessment</h3>
-              <p id="chat-subtitle">Ihr digitaler Berater</p>
+              <p id="chat-subtitle">Ihr persönlicher KI-Berater</p>
             </div>
           </div>
         </div>
-        
         <div class="chat-messages" id="chat-messages">
-          <!-- Messages will be added here -->
+          <!-- Messages will be added here dynamically -->
         </div>
-        
-        <!-- FIXED: Input container with proper scrolling -->
         <div class="input-container">
           <!-- Consent Form -->
           <div id="consent-form" class="form-container">
@@ -774,18 +770,18 @@
             <div class="checkbox-group">
               <input type="checkbox" id="data-processing" class="checkbox-input" required>
               <label for="data-processing" class="checkbox-label" id="data-processing-label">
-                Ich stimme der Verarbeitung meiner Daten für das Assessment zu.
+                Ich stimme der Verarbeitung meiner Daten für das Assessment zu. Die Daten werden ausschließlich zur Bewertung der KI-Bereitschaft verwendet und DSGVO-konform behandelt.
               </label>
             </div>
             <div class="checkbox-group">
               <input type="checkbox" id="contact-permission" class="checkbox-input">
               <label for="contact-permission" class="checkbox-label" id="contact-permission-label">
-                Ich erlaube die Kontaktaufnahme für weitere Informationen.
+                Ich erlaube die Kontaktaufnahme durch GROVIA Digital für weitere Informationen zu KI-Lösungen und Beratungsdienstleistungen.
               </label>
             </div>
-            <button class="form-button" id="consent-submit" disabled>Weiter</button>
+            <button class="form-button" id="consent-submit">Weiter zum Assessment</button>
           </div>
-          
+
           <!-- Contact Form -->
           <div id="contact-form" class="form-container hidden">
             <h3 class="form-title" id="contact-title">Kontaktinformationen</h3>
@@ -794,7 +790,7 @@
               <input type="text" id="contact-name" class="form-input" required>
             </div>
             <div class="form-group">
-              <label for="contact-email" class="form-label" id="email-label">E-Mail *</label>
+              <label for="contact-email" class="form-label" id="email-label">E-Mail Adresse *</label>
               <input type="email" id="contact-email" class="form-input" required>
             </div>
             <div class="form-group">
@@ -802,20 +798,19 @@
               <input type="text" id="contact-company" class="form-input" required>
             </div>
             <div class="form-group">
-              <label for="employee-count" class="form-label" id="employees-label">Mitarbeiteranzahl</label>
+              <label for="employee-count" class="form-label" id="employees-label">Anzahl der Mitarbeiter</label>
               <select id="employee-count" class="form-select">
                 <option value="">Bitte wählen</option>
-                <option value="1-10">1-10</option>
-                <option value="11-50">11-50</option>
-                <option value="51-200">51-200</option>
-                <option value="201-500">201-500</option>
-                <option value="500+">500+</option>
+                <option value="1-10">1-10 Mitarbeiter</option>
+                <option value="11-50">11-50 Mitarbeiter</option>
+                <option value="51-200">51-200 Mitarbeiter</option>
+                <option value="201-500">201-500 Mitarbeiter</option>
+                <option value="500+">Mehr als 500 Mitarbeiter</option>
               </select>
             </div>
-            <!-- FIXED: Submit button always visible -->
             <button class="form-button" id="contact-submit">Assessment starten</button>
           </div>
-          
+
           <!-- Question Form -->
           <div id="question-form" class="question-form-container hidden">
             <div class="text-input-form">
@@ -823,16 +818,16 @@
               <button class="form-button" id="question-submit" disabled>Senden</button>
             </div>
           </div>
-          
-          <!-- Completion Message -->
+
+          <!-- Completion Form -->
           <div id="completion-form" class="form-container hidden">
-            <h3 class="form-title" id="completion-title">Assessment abgeschlossen!</h3>
+            <h3 class="form-title" id="completion-title">Assessment erfolgreich abgeschlossen!</h3>
             <div style="text-align: center; margin: 2rem 0;">
               <div style="font-size: 3rem; font-weight: bold; color: hsl(var(--primary)); margin-bottom: 0.5rem;" id="final-score">--</div>
-              <div style="font-size: 1.125rem; color: hsl(var(--muted-foreground));" id="score-label">AI Readiness Score</div>
+              <div style="font-size: 1.25rem; color: hsl(var(--muted-foreground));" id="score-label">AI Readiness Score</div>
             </div>
             <p style="text-align: center; color: hsl(var(--muted-foreground));" id="completion-text">
-              Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.
+              Vielen Dank für Ihre Teilnahme! Sie erhalten in Kürze einen detaillierten Bericht mit personalisierten Empfehlungen per E-Mail.
             </p>
           </div>
         </div>
@@ -842,30 +837,31 @@
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">
-            <svg class="icon-large" viewBox="0 0 24 24">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v1a1 1 0 0 1-1 1h-2v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H4a1 1 0 0 1-1-1v-1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2m6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
             </svg>
           </div>
-          <h4 class="feature-title" id="feature1-title">Detaillierte Analyse</h4>
-          <p class="feature-description" id="feature1-desc">Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens</p>
+          <h4 class="feature-title" id="feature1-title">KI-gestützte Analyse</h4>
+          <p class="feature-description" id="feature1-desc">Umfassende Bewertung Ihrer digitalen Reife durch modernste AI-Technologie</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg class="icon-large" viewBox="0 0 24 24">
-              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+              <path d="M9 12l2 2 4-4"/>
             </svg>
           </div>
-          <h4 class="feature-title" id="feature2-title">DSGVO-konform</h4>
-          <p class="feature-description" id="feature2-desc">Ihre Daten werden sicher und datenschutzkonform verarbeitet</p>
+          <h4 class="feature-title" id="feature2-title">100% DSGVO-konform</h4>
+          <p class="feature-description" id="feature2-desc">Ihre Daten werden sicher und datenschutzkonform verarbeitet und gespeichert</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg class="icon-large" viewBox="0 0 24 24">
-              <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 6L9 17l-5-5"/>
             </svg>
           </div>
           <h4 class="feature-title" id="feature3-title">Handlungsempfehlungen</h4>
-          <p class="feature-description" id="feature3-desc">Konkrete nächste Schritte für Ihre KI-Strategie</p>
+          <p class="feature-description" id="feature3-desc">Konkrete, personalisierte nächste Schritte für Ihre KI-Strategie</p>
         </div>
       </div>
     </main>
@@ -874,675 +870,16 @@
     <footer class="footer">
       <div class="footer-content">
         <div class="footer-links">
-          <a href="https://grovia-digital.com/datenschutz/" class="footer-link" id="privacy-link" target="_blank" rel="noopener">Datenschutz</a>
-          <a href="https://grovia-digital.com/impressum/" class="footer-link" id="imprint-link" target="_blank" rel="noopener">Impressum</a>
-          <a href="https://grovia-digital.com/terms-conditions/" class="footer-link" id="terms-link" target="_blank" rel="noopener">AGB</a>
+          <a href="#" class="footer-link" id="privacy-link">Datenschutz</a>
+          <a href="#" class="footer-link" id="imprint-link">Impressum</a>
+          <a href="#" class="footer-link" id="terms-link">AGB</a>
         </div>
         <p class="footer-copyright" id="footer-text">© 2025 GROVIA AI Readiness Assessment. Alle Rechte vorbehalten.</p>
       </div>
     </footer>
 
     <script>
-      // Complete assessment functionality with fixed form handling
-      const assessmentQuestions = [
-        {
-          id: '1',
-          text: {
-            de: 'Was ist das Hauptziel Ihres Unternehmens bei der Einführung von KI?',
-            en: 'What is your company\'s main goal when introducing AI?'
-          }
-        },
-        {
-          id: '2',
-          text: {
-            de: 'Beschreiben Sie Ihre bisherigen Erfahrungen mit digitalen Technologien und Automatisierung in Ihrem Unternehmen.',
-            en: 'Describe your previous experiences with digital technologies and automation in your company.'
-          }
-        },
-        {
-          id: '3',
-          text: {
-            de: 'Wie bewerten Sie Ihre aktuelle IT-Infrastruktur und Datenqualität für KI-Anwendungen?',
-            en: 'How do you assess your current IT infrastructure and data quality for AI applications?'
-          }
-        },
-        {
-          id: '4',
-          text: {
-            de: 'Welche konkreten Geschäftsprobleme oder Ineffizienzen möchten Sie mit KI lösen?',
-            en: 'What specific business problems or inefficiencies would you like to solve with AI?'
-          }
-        },
-        {
-          id: '5',
-          text: {
-            de: 'Wie gehen Sie mit Datenschutz und Compliance um?',
-            en: 'How do you handle data protection and compliance?'
-          }
-        },
-        {
-          id: '6',
-          text: {
-            de: 'Wie schätzen Sie die KI-Bereitschaft und Lernfähigkeit Ihres Teams ein?',
-            en: 'How do you assess your team\'s AI readiness and learning capability?'
-          }
-        },
-        {
-          id: '7',
-          text: {
-            de: 'Welche Unterstützung erhalten Sie von der Geschäftsführung für digitale Innovationen und welches Budget steht für KI-Projekte zur Verfügung?',
-            en: 'What support do you receive from management for digital innovations and what budget is available for AI projects?'
-          }
-        },
-        {
-          id: '8',
-          text: {
-            de: 'Was sind Ihre größten Bedenken oder Hindernisse bei der KI-Einführung?',
-            en: 'What are your biggest concerns or obstacles in implementing AI?'
-          }
-        },
-        {
-          id: '9',
-          text: {
-            de: 'Welche Erfolgskriterien würden Sie für eine KI-Initiative definieren?',
-            en: 'What success criteria would you define for an AI initiative?'
-          }
-        },
-        {
-          id: '10',
-          text: {
-            de: 'In welchem Zeitrahmen und mit welchen Ressourcen planen Sie die KI-Einführung?',
-            en: 'In what timeframe and with what resources do you plan to implement AI?'
-          }
-        }
-      ];
-
-      const translations = {
-        de: {
-          mainTitle: 'GROVIA AI Readiness Assessment',
-          mainSubtitle: 'Bewerten Sie die KI-Bereitschaft Ihres Unternehmens',
-          chatTitle: 'GROVIA KI-Readiness Assessment',
-          chatSubtitle: 'Ihr digitaler Berater',
-          consentTitle: 'Einverständniserklärung',
-          dataProcessingLabel: 'Ich stimme der Verarbeitung meiner Daten für das Assessment zu.',
-          contactPermissionLabel: 'Ich erlaube die Kontaktaufnahme für weitere Informationen.',
-          continueBtn: 'Weiter',
-          contactTitle: 'Kontaktinformationen',
-          nameLabel: 'Name *',
-          emailLabel: 'E-Mail *',
-          companyLabel: 'Unternehmen *',
-          employeesLabel: 'Mitarbeiteranzahl',
-          selectPlaceholder: 'Bitte wählen',
-          startAssessment: 'Assessment starten',
-          inputPlaceholder: 'Ihre Antwort...',
-          sendBtn: 'Senden',
-          completionTitle: 'Assessment abgeschlossen!',
-          completionText: 'Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.',
-          scoreLabel: 'AI Readiness Score',
-          questionPrefix: 'Frage',
-          followUpPrefix: 'Nachfrage',
-          welcomeMsg1: 'Hallo! Willkommen zum AI Readiness Assessment. Ich helfe Ihnen dabei, die KI-Bereitschaft Ihres Unternehmens zu bewerten.',
-          welcomeMsg2: 'Das Assessment dauert etwa 5-10 Minuten. Am Ende erhalten Sie einen detaillierten Report per E-Mail.',
-          consentThanks: 'Vielen Dank! Bevor wir mit dem Assessment beginnen, benötigen wir einige Kontaktdaten.',
-          assessmentStart: 'Lassen Sie uns nun mit dem Assessment beginnen.',
-          errorMsg: 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.',
-          progressText: 'Assessment wird geladen...',
-          feature1Title: 'Detaillierte Analyse',
-          feature1Desc: 'Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens',
-          feature2Title: 'DSGVO-konform',
-          feature2Desc: 'Ihre Daten werden sicher und datenschutzkonform verarbeitet',
-          feature3Title: 'Handlungsempfehlungen',
-          feature3Desc: 'Konkrete nächste Schritte für Ihre KI-Strategie',
-          privacyLink: 'Datenschutz',
-          imprintLink: 'Impressum',
-          termsLink: 'AGB',
-          footerText: '© 2025 GROVIA AI Readiness Assessment. Alle Rechte vorbehalten.'
-        },
-        en: {
-          mainTitle: 'GROVIA AI Readiness Assessment',
-          mainSubtitle: 'Evaluate your company\'s AI readiness',
-          chatTitle: 'GROVIA AI Readiness Assessment',
-          chatSubtitle: 'Your digital consultant',
-          consentTitle: 'Consent Declaration',
-          dataProcessingLabel: 'I agree to the processing of my data for the assessment.',
-          contactPermissionLabel: 'I allow contact for further information.',
-          continueBtn: 'Continue',
-          contactTitle: 'Contact Information',
-          nameLabel: 'Name *',
-          emailLabel: 'Email *',
-          companyLabel: 'Company *',
-          employeesLabel: 'Number of Employees',
-          selectPlaceholder: 'Please select',
-          startAssessment: 'Start Assessment',
-          inputPlaceholder: 'Your answer...',
-          sendBtn: 'Send',
-          completionTitle: 'Assessment completed!',
-          completionText: 'Thank you! You will receive a detailed report via email shortly.',
-          scoreLabel: 'AI Readiness Score',
-          questionPrefix: 'Question',
-          followUpPrefix: 'Follow-up Question',
-          welcomeMsg1: 'Hello! Welcome to the AI Readiness Assessment. I will help you evaluate your company\'s AI readiness.',
-          welcomeMsg2: 'The assessment takes about 5-10 minutes. At the end, you will receive a detailed report via email.',
-          consentThanks: 'Thank you! Before we begin the assessment, we need some contact information.',
-          assessmentStart: 'Let\'s now begin the assessment.',
-          errorMsg: 'Sorry, there was an error. Please try again.',
-          progressText: 'Loading assessment...',
-          feature1Title: 'Detailed Analysis',
-          feature1Desc: 'Comprehensive evaluation of all AI-relevant areas of your company',
-          feature2Title: 'GDPR Compliant',
-          feature2Desc: 'Your data is processed securely and in compliance with data protection',
-          feature3Title: 'Action Recommendations',
-          feature3Desc: 'Concrete next steps for your AI strategy',
-          privacyLink: 'Privacy',
-          imprintLink: 'Imprint',
-          termsLink: 'Terms',
-          footerText: '© 2025 GROVIA AI Readiness Assessment. All rights reserved.'
-        }
-      };
-
-      // Global state
-      let currentLanguage = 'de';
-      let currentTheme = 'light';
-      let sessionId = generateSessionId();
-      let currentStep = 'consent';
-      let currentQuestionIndex = 0;
-      let waitingForFollowUp = false;
-      let questionsWithFollowUp = new Set();
-      let responses = {};
-      let contactInfo = {};
-
-      function generateSessionId() {
-        return Math.random().toString(36).substring(2) + Date.now().toString(36);
-      }
-
-      function updateLanguage() {
-        const t = translations[currentLanguage];
-        
-        document.getElementById('main-title').textContent = t.mainTitle;
-        document.getElementById('main-subtitle').textContent = t.mainSubtitle;
-        document.getElementById('chat-title').textContent = t.chatTitle;
-        document.getElementById('chat-subtitle').textContent = t.chatSubtitle;
-        document.getElementById('consent-title').textContent = t.consentTitle;
-        document.getElementById('data-processing-label').textContent = t.dataProcessingLabel;
-        document.getElementById('contact-permission-label').textContent = t.contactPermissionLabel;
-        document.getElementById('consent-submit').textContent = t.continueBtn;
-        document.getElementById('contact-title').textContent = t.contactTitle;
-        document.getElementById('name-label').textContent = t.nameLabel;
-        document.getElementById('email-label').textContent = t.emailLabel;
-        document.getElementById('company-label').textContent = t.companyLabel;
-        document.getElementById('employees-label').textContent = t.employeesLabel;
-        document.getElementById('contact-submit').textContent = t.startAssessment;
-        document.getElementById('question-input').placeholder = t.inputPlaceholder;
-        document.getElementById('question-submit').textContent = t.sendBtn;
-        document.getElementById('completion-title').textContent = t.completionTitle;
-        document.getElementById('completion-text').textContent = t.completionText;
-        document.getElementById('score-label').textContent = t.scoreLabel;
-        document.getElementById('progress-text').textContent = t.progressText;
-        document.getElementById('feature1-title').textContent = t.feature1Title;
-        document.getElementById('feature1-desc').textContent = t.feature1Desc;
-        document.getElementById('feature2-title').textContent = t.feature2Title;
-        document.getElementById('feature2-desc').textContent = t.feature2Desc;
-        document.getElementById('feature3-title').textContent = t.feature3Title;
-        document.getElementById('feature3-desc').textContent = t.feature3Desc;
-        document.getElementById('privacy-link').textContent = t.privacyLink;
-        document.getElementById('imprint-link').textContent = t.imprintLink;
-        document.getElementById('terms-link').textContent = t.termsLink;
-        document.getElementById('footer-text').textContent = t.footerText;
-        
-        const selectElement = document.getElementById('employee-count');
-        selectElement.options[0].textContent = t.selectPlaceholder;
-
-        // Update language buttons
-        document.getElementById('lang-de').className = currentLanguage === 'de' ? 'lang-btn active' : 'lang-btn';
-        document.getElementById('lang-en').className = currentLanguage === 'en' ? 'lang-btn active' : 'lang-btn';
-      }
-
-      function updateTheme() {
-        if (currentTheme === 'dark') {
-          document.body.classList.add('dark');
-        } else {
-          document.body.classList.remove('dark');
-        }
-      }
-
-      function addMessage(type, content) {
-        const chatMessages = document.getElementById('chat-messages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${type}`;
-        
-        const bubbleDiv = document.createElement('div');
-        bubbleDiv.className = 'message-bubble';
-        bubbleDiv.textContent = content;
-        
-        messageDiv.appendChild(bubbleDiv);
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        // Save to database
-        saveChatMessage(type, content);
-      }
-            // Save consent data to database
-      async function saveConsentData(consentDataProcessing, consentContactPermission) {
-        try {
-          await fetch('/.netlify/functions/server', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              endpoint: '/api/assessment/consent',
-              sessionId: sessionId,
-              consentDataProcessing: consentDataProcessing,
-              consentContactPermission: consentContactPermission
-            })
-          });
-        } catch (error) {
-          console.error('Failed to save consent data:', error);
-        }
-      }
-
-      // Save contact data to database
-      async function saveContactData(contactName, email, companyName, employeeNumber) {
-        try {
-          await fetch('/.netlify/functions/server', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              endpoint: '/api/assessment/contact',
-              sessionId: sessionId,
-              contactName: contactName,
-              email: email,
-              companyName: companyName,
-              employeeNumber: employeeNumber
-            })
-          });
-        } catch (error) {
-          console.error('Failed to save contact data:', error);
-        }
-      }
-
-      // Save chat message to database
-      async function saveChatMessage(messageType, content, questionId = null) {
-        try {
-          await fetch('/.netlify/functions/server', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              endpoint: '/api/assessment/chat-message',
-              sessionId: sessionId,
-              messageType: messageType,
-              content: content,
-              questionId: questionId
-            })
-          });
-                } catch (error) {
-          console.error('Failed to save chat message:', error);
-        }
-      }
-
-            // Send complete assessment data to n8n webhook
-      async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
-        try {
-          console.log('Preparing webhook for session:', sessionId);
-          
-          // Wait a moment to ensure all database writes are committed
-          await new Promise(resolve => setTimeout(resolve, 5000));
-          
-          const webhookUrl = "https://grovia.app.n8n.cloud/webhook/ai-assessment-complete";
-          
-          const response = await fetch('/.netlify/functions/server', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              endpoint: '/api/assessment/complete-data',
-              sessionId: sessionId
-            })
-          });
-          
-          if (response.ok) {
-            const completeData = await response.json();
-            console.log('Assessment data retrieved:', completeData);
-            
-            // Validate that essential data is present
-            const hasEmail = completeData.contact && completeData.contact.email;
-            const hasResponses = completeData.assessment && completeData.assessment.responses && Object.keys(completeData.assessment.responses).length > 0;
-            const hasConsent = completeData.consent && completeData.consent.data_processing !== undefined;
-            
-            if (!hasEmail || !hasResponses || !hasConsent) {
-              console.error('Incomplete session data detected:', {
-                hasEmail,
-                hasResponses,
-                hasConsent,
-                data: completeData
-              });
-              return;
-            }
-            
-            console.log('Data validation passed, sending to n8n...');
-            const webhookResponse = await fetch(webhookUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(completeData)
-            });
-            
-            if (webhookResponse.ok) {
-              console.log('✅ Webhook sent successfully to n8n');
-            } else {
-              const errorText = await webhookResponse.text();
-              console.error('❌ N8N webhook failed:', webhookResponse.status, errorText);
-            }
-          } else {
-            const errorText = await response.text();
-            console.error('Failed to retrieve assessment data:', response.status, errorText);
-          }
-        } catch (error) {
-          console.error('Webhook error:', error);
-        }
-      }
-
-      function updateProgress() {
-        const totalSteps = assessmentQuestions.length + 2;
-        let currentStepNumber = 0;
-        
-        if (currentStep === 'consent') currentStepNumber = 0;
-        else if (currentStep === 'contact') currentStepNumber = 1;
-        else if (currentStep === 'questions') currentStepNumber = 2 + currentQuestionIndex;
-        else currentStepNumber = totalSteps;
-        
-        const percentage = Math.min((currentStepNumber / totalSteps) * 100, 100);
-        document.getElementById('progress').style.width = percentage + '%';
-        
-        const t = translations[currentLanguage];
-        if (currentStep === 'consent') {
-          document.getElementById('progress-text').textContent = t.progressText;
-        } else if (currentStep === 'contact') {
-          document.getElementById('progress-text').textContent = `Schritt ${currentStepNumber + 1} von ${totalSteps + 1}`;
-        } else if (currentStep === 'questions') {
-          document.getElementById('progress-text').textContent = `${t.questionPrefix} ${currentQuestionIndex + 1} von ${assessmentQuestions.length}`;
-        } else {
-          document.getElementById('progress-text').textContent = 'Assessment abgeschlossen';
-        }
-      }
-
-      function showStep(step) {
-        // Hide all forms
-        document.getElementById('consent-form').classList.add('hidden');
-        document.getElementById('contact-form').classList.add('hidden');
-        document.getElementById('question-form').classList.add('hidden');
-        document.getElementById('completion-form').classList.add('hidden');
-        
-        // Show requested form
-        if (step === 'consent') {
-          document.getElementById('consent-form').classList.remove('hidden');
-        } else if (step === 'contact') {
-          document.getElementById('contact-form').classList.remove('hidden');
-        } else if (step === 'questions') {
-          document.getElementById('question-form').classList.remove('hidden');
-        } else if (step === 'completed') {
-          document.getElementById('completion-form').classList.remove('hidden');
-        }
-        
-        currentStep = step;
-        updateProgress();
-      }
-
-      async function createSession() {
-        try {
-          const response = await fetch('/api/assessment/session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, language: currentLanguage })
-          });
-          
-          if (!response.ok) throw new Error('Failed to create session');
-          
-          const data = await response.json();
-          console.log('Session created:', data);
-        } catch (error) {
-          console.error('Error creating session:', error);
-        }
-      }
-
-      async function submitResponse(questionId, userResponse, questionText) {
-        try {
-          const response = await fetch('/api/assessment/analyze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              sessionId,
-              questionId,
-              questionText,
-              userResponse,
-              language: currentLanguage
-            })
-          });
-
-          if (!response.ok) throw new Error('Failed to analyze response');
-          
-          const data = await response.json();
-          return data.analysis;
-        } catch (error) {
-          console.error('Error submitting response:', error);
-          const t = translations[currentLanguage];
-          addMessage('bot', t.errorMsg);
-          return null;
-        }
-      }
-
-              async function completeAssessment() {
-        try {
-          const response = await fetch('/.netlify/functions/server', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              endpoint: '/api/assessment/complete',
-              sessionId
-            })
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            document.getElementById('final-score').textContent = data.readinessScore + '%';
-            showStep('completed');
-            
-            const t = translations[currentLanguage];
-            addMessage('bot', `${t.completionText} ${t.scoreLabel}: ${data.readinessScore}%`);
-            
-            // Send complete assessment data to n8n
-            console.log('Triggering n8n webhook...');
-            await sendCompleteAssessmentToN8n(sessionId, data.readinessScore);
-          }
-        } catch (error) {
-          console.error('Error completing assessment:', error);
-        }
-      }
-
-      function proceedToNextQuestion() {
-        waitingForFollowUp = false;
-        
-        if (currentQuestionIndex < assessmentQuestions.length - 1) {
-          currentQuestionIndex++;
-          
-          const nextQuestion = assessmentQuestions[currentQuestionIndex];
-          const questionText = nextQuestion.text[currentLanguage];
-          const t = translations[currentLanguage];
-          const numberedQuestion = `(${t.questionPrefix} ${currentQuestionIndex + 1}) ${questionText}`;
-          
-          setTimeout(() => {
-            addMessage('bot', numberedQuestion);
-          }, 1000);
-        } else {
-          completeAssessment();
-        }
-        
-        updateProgress();
-      }
-
-      // Event Listeners
-      document.addEventListener('DOMContentLoaded', function() {
-        updateLanguage();
-        updateTheme();
-        updateProgress();
-        
-        // Initialize welcome messages
-        const t = translations[currentLanguage];
-        setTimeout(() => addMessage('bot', t.welcomeMsg1), 500);
-        setTimeout(() => addMessage('bot', t.welcomeMsg2), 1500);
-        
-        // Create session
-        createSession();
-
-        // Language toggle
-        document.getElementById('lang-de').addEventListener('click', function() {
-          currentLanguage = 'de';
-          updateLanguage();
-        });
-        
-        document.getElementById('lang-en').addEventListener('click', function() {
-          currentLanguage = 'en';
-          updateLanguage();
-        });
-
-        // Theme toggle
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-          currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-          updateTheme();
-          localStorage.setItem('grovia-theme', currentTheme);
-        });
-
-        // Load saved theme
-        const savedTheme = localStorage.getItem('grovia-theme');
-        if (savedTheme) {
-          currentTheme = savedTheme;
-          updateTheme();
-        }
-
-        // Consent form
-        const dataProcessingCheckbox = document.getElementById('data-processing');
-        const consentSubmitBtn = document.getElementById('consent-submit');
-        
-        dataProcessingCheckbox.addEventListener('change', function() {
-          consentSubmitBtn.disabled = !this.checked;
-        });
-        
-        consentSubmitBtn.addEventListener('click', async function() {
-          const dataProcessing = document.getElementById('data-processing').checked;
-          const contactPermission = document.getElementById('contact-permission').checked;
-          
-          // Save consent to database
-          await saveConsentData(dataProcessing, contactPermission);
-          
-          const t = translations[currentLanguage];
-          addMessage('bot', t.consentThanks);
-          setTimeout(() => showStep('contact'), 1000);
-        });
-
-        // Contact form
-                         document.getElementById('contact-submit').addEventListener('click', async function() {
-          // Prevent multiple submissions
-          if (this.disabled) return;
-          
-          const name = document.getElementById('contact-name').value;
-          const email = document.getElementById('contact-email').value;
-          const company = document.getElementById('contact-company').value;
-          const employees = document.getElementById('employee-count').value;
-          
-          if (!name || !email || !company) {
-            alert('Please fill in all required fields');
-            return;
-          }
-          
-          // Disable button to prevent duplicates
-          this.disabled = true;
-          this.textContent = 'Processing...';
-          
-          try {
-            // Save contact data to database
-            saveContactData(name, email, company, employees);
-            
-            contactInfo = { name, email, company, employees };
-            contactName = name;
-            
-            const t = translations[currentLanguage];
-            addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
-            
-            setTimeout(() => {
-              showStep('questions');
-              const firstQuestion = assessmentQuestions[0];
-              const questionText = firstQuestion.text[currentLanguage];
-              const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
-              addMessage('bot', numberedQuestion);
-            }, 300);
-          } catch (error) {
-            console.error('Error submitting contact form:', error);
-            // Re-enable button on error
-            this.disabled = false;
-            this.textContent = t.startAssessment;
-          }
-        });
-        // Question form
-        const questionInput = document.getElementById('question-input');
-        const questionSubmitBtn = document.getElementById('question-submit');
-        
-        questionInput.addEventListener('input', function() {
-          questionSubmitBtn.disabled = !this.value.trim();
-        });
-        
-        questionInput.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter' && !questionSubmitBtn.disabled) {
-            handleQuestionSubmit();
-          }
-        });
-        
-        questionSubmitBtn.addEventListener('click', handleQuestionSubmit);
-
-        async function handleQuestionSubmit() {
-          const userResponse = questionInput.value.trim();
-          if (!userResponse) return;
-          
-          questionSubmitBtn.disabled = true;
-          questionSubmitBtn.innerHTML = '<span class="loading-dots">Analyzing</span>';
-          
-          addMessage('user', userResponse);
-          questionInput.value = '';
-          
-          const currentQuestion = assessmentQuestions[currentQuestionIndex];
-          const questionId = waitingForFollowUp ? `${currentQuestion.id}_followup` : currentQuestion.id;
-          const questionText = currentQuestion.text[currentLanguage];
-          
-          const analysis = await submitResponse(questionId, userResponse, questionText);
-          
-          if (analysis) {
-            // Add AI explanation
-            if (analysis.explanation) {
-              setTimeout(() => {
-                addMessage('bot', analysis.explanation);
-              }, 500);
-            }
-            
-            // Store response
-            responses[questionId] = { userResponse, ...analysis };
-            
-            // Check for follow-up
-            if (analysis.needsFollowUp && analysis.followUpQuestion && !questionsWithFollowUp.has(currentQuestion.id)) {
-              setTimeout(() => {
-                const t = translations[currentLanguage];
-                const followUpMessage = `(${t.followUpPrefix} ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`;
-                addMessage('bot', followUpMessage);
-                waitingForFollowUp = true;
-                questionsWithFollowUp.add(currentQuestion.id);
-              }, 1500);
-            } else {
-              // Move to next question
-              setTimeout(() => {
-                proceedToNextQuestion();
-              }, 2000);
-            }
-          }
-          
-          const t = translations[currentLanguage];
-          questionSubmitBtn.disabled = false;
-          questionSubmitBtn.textContent = t.sendBtn;
-        }
-      });
+      const _0xa1b2=[{id:'1',text:{de:atob('V2FzIGlzdCBkYXMgSGF1cHR6aWVsIElocmVzIFVudGVybmVobWVucyBiZWkgZGVyIEVpbmbDvGhydW5nIHZvbiBLST8='),en:atob('V2hhdCBpcyB5b3VyIGNvbXBhbnkncyBtYWluIGdvYWwgd2hlbiBpbnRyb2R1Y2luZyBBST8=')}},{id:'2',text:{de:atob('QmVzY2hyZWliZW4gU2llIElocmUgYmlzaGVyaWdlbiBFcmZhaHJ1bmdlbiBtaXQgZGlnaXRhbGVuIFRlY2hub2xvZ2llbiBpbiBJaHJlbSBVbnRlcm5laG1lbi4='),en:atob('RGVzY3JpYmUgeW91ciBwcmV2aW91cyBleHBlcmllbmNlcyB3aXRoIGRpZ2l0YWwgdGVjaG5vbG9naWVzIGluIHlvdXIgY29tcGFueS4=')}},{id:'3',text:{de:atob('V2llIGJld2VydGVuIFNpZSBJaHJlIGFrdHVlbGxlIElULUluZnJhc3RydWt0dXIgdW5kIERhdGVucXVhbGl0w6R0IGbDvHIgS0ktQW53ZW5kdW5nZW4/'),en:atob('SG93IGRvIHlvdSBhc3Nlc3MgeW91ciBjdXJyZW50IElUIGluZnJhc3RydWN0dXJlIGFuZCBkYXRhIHF1YWxpdHkgZm9yIEFJIGFwcGxpY2F0aW9ucz8=')}},{id:'4',text:{de:atob('V2VsY2hlIGtvbmtyZXRlbiBHZXNjaMOkZnRzcHJvYmxlbWUgb2RlciBJbmVmZml6aWVuemVuIG3DtmNodGVuIFNpZSBtaXQgS0kgbMO2c2VuPw=='),en:atob('V2hhdCBzcGVjaWZpYyBidXNpbmVzcyBwcm9ibGVtcyBvciBpbmVmZmljaWVuY2llcyB3b3VsZCB5b3UgbGlrZSB0byBzb2x2ZSB3aXRoIEFJPw==')}},{id:'5',text:{de:atob('V2llIGdlaGVuIFNpZSBtaXQgRGF0ZW5zY2h1dHogdW5kIENvbXBsaWFuY2UgdW0/'),en:atob('SG93IGRvIHlvdSBoYW5kbGUgZGF0YSBwcm90ZWN0aW9uIGFuZCBjb21wbGlhbmNlPw==')}},{id:'6',text:{de:atob('V2llIHNjaMOkdHplbiBTaWUgZGllIEtJLUJlcmVpdHNjaGFmdCB1bmQgTGVybmbDpGhpZ2tlaXQgSWhyZXMgVGVhbXMgZWluPw=='),en:atob('SG93IGRvIHlvdSBhc3Nlc3MgeW91ciB0ZWFtJ3MgQUkgcmVhZGluZXNzIGFuZCBsZWFybmluZyBjYXBhYmlsaXR5Pw==')}},{id:'7',text:{de:atob('V2VsY2hlIFVudGVyc3TDvHR6dW5nIGVyaGFsdGVuIFNpZSB2b24gZGVyIEdlc2Now6RmdHNmw65ocnVuZyBmw65yIGRpZ2l0YWxlIElubm92YXRpb25lbiB1bmQgd2VsY2hlcyBCdWRnZXQgc3RlaHQgZsO8ciBLSS1Qcm9qZWt0ZSB6dXIgVmVyZsO8Z3VuZz8='),en:atob('V2hhdCBzdXBwb3J0IGRvIHlvdSByZWNlaXZlIGZyb20gbWFuYWdlbWVudCBmb3IgZGlnaXRhbCBpbm5vdmF0aW9ucyBhbmQgd2hhdCBidWRnZXQgaXMgYXZhaWxhYmxlIGZvciBBSSBwcm9qZWN0cz8=')}},{id:'8',text:{de:atob('V2FzIHNpbmQgSWhyZSBncsO2w59ldGVuIEJlZGVua2VuIG9kZXIgSGluZGVybmlzc2UgYmVpIGRlciBLSS1FaW5mw65ocnVuZz8='),en:atob('V2hhdCBhcmUgeW91ciBiaWdnZXN0IGNvbmNlcm5zIG9yIG9ic3RhY2xlcyBpbiBpbXBsZW1lbnRpbmcgQUk/')}},{id:'9',text:{de:atob('V2VsY2hlIEVyZm9sZ3Nrcml0ZXJpZW4gd8O8cmRlbiBTaWUgZsO8ciBlaW5lIEtJLUluaXRpYXRpdmUgZGVmaW5pZXJlbj8='),en:atob('V2hhdCBzdWNjZXNzIGNyaXRlcmlhIHdvdWxkIHlvdSBkZWZpbmUgZm9yIGFuIEFJIGluaXRpYXRpdmU/')}},{id:'10',text:{de:atob('SW4gd2VsY2hlbSBaZWl0cmFobWVuIHVuZCBtaXQgd2VsY2hlbiBSZXNzb3VyY2VuIHBsYW5lbiBTaWUgZGllIEtJLUVpbmbDvGhydW5nPw=='),en:atob('SW4gd2hhdCB0aW1lZnJhbWUgYW5kIHdpdGggd2hhdCByZXNvdXJjZXMgZG8geW91IHBsYW4gdG8gaW1wbGVtZW50IEFJPw==')}}];const _0xc3d4={de:{headerTitle:atob('R1JPVklBIERpZ2l0YWw='),headerSubtitle:atob('QUkgUmVhZGluZXNzIEFzc2Vzc21lbnQ='),chatTitle:atob('R1JPVklBIEtJLVJlYWRpbmVzcyBBc3Nlc3NtZW50'),chatSubtitle:atob('SWhyIHBlcnPDtm5saWNoZXIgS0ktQmVyYXRlcg=='),consentTitle:atob('RWludmVyc3TDpG5kbmlzZXJrbMOkcnVuZw=='),dataProcessingLabel:atob('SWNoIHN0aW1tZSBkZXIgVmVyYXJiZWl0dW5nIG1laW5lciBEYXRlbiBmw65yIGRhcyBBc3Nlc3NtZW50IHp1LiBEaWUgRGF0ZW4gd2VyZGVuIGF1c3NjaGxpZcOfbGljaCB6dXIgQmV3ZXJ0dW5nIGRlciBLSS1CZXJlaXRzY2hhZnQgdmVyd2VuZGV0IHVuZCBEU0dWTy1rb25mb3JtIGJlaGFuZGVsdC4='),contactPermissionLabel:atob('SWNoIGVybGF1YmUgZGllIEtvbnRha3RhdWZuYWhtZSBkdXJjaCBHUk9WSUEgRGlnaXRhbCBmw65yIHdlaXRlcmUgSW5mb3JtYXRpb25lbiB6dSBLSS1Mw69zdW5nZW4gdW5kIEJlcmF0dW5nc2RpZW5zdGxlaXN0dW5nZW4u'),continueBtn:atob('V2VpdGVyIHp1bSBBc3Nlc3NtZW50'),contactTitle:atob('S29udGFrdGluZm9ybWF0aW9uZW4='),nameLabel:atob('TmFtZSAq'),emailLabel:atob('RS1NYWlsIEFkcmVzc2UgKg=='),companyLabel:atob('VW50ZXJuZWhtZW4gKg=='),employeesLabel:atob('QW56YWhsIGRlciBNaXRhcmJlaXRlcg=='),selectPlaceholder:atob('Qml0dGUgd8OkaGxlbg=='),startAssessment:atob('QXNzZXNzbWVudCBzdGFydGVu'),inputPlaceholder:atob('SWhyZSBBbnR3b3J0Li4u'),sendBtn:atob('U2VuZGVu'),completionTitle:atob('QXNzZXNzbWVudCBlcmZvbGdyZWljaCBhYmdlc2NobG9zc2VuIQ=='),completionText:atob('VmllbGVuIERhbmsgZsO4ciBJaHJlIFRlaWxuYWhtZSEgU2llIGVyaGFsdGVuIGluIEvDvHJ6ZSBlaW5lbiBkZXRhaWxsaWVydGVuIEJlcmljaHQgbWl0IHBlcnNvbmFsaXNpZXJ0ZW4gRW1wZmVobHVuZ2VuIHBlciBFLU1haWwu'),scoreLabel:atob('QUkgUmVhZGluZXNzIFNjb3Jl'),questionPrefix:atob('RnJhZ2U='),followUpPrefix:atob('TmFjaGZyYWdl'),welcomeMsg1:atob('SGFsbG8hIFdpbGxrb21tZW4genVtIEdST1ZJQSBBSSBSZWFkaW5lc3MgQXNzZXNzbWVudC4gSWNoIGJpbiBJaHIgcGVyc8O2bmxpY2hlciBLSS1CZXJhdGVyIHVuZCBoZWxmZSBJaG5lbiBkYWJlaSwgZGllIEtJLUJlcmVpdHNjaGFmdCBJaHJlcyBVbnRlcm5laG1lbnMgenUgYmV3ZXJ0ZW4u'),welcomeMsg2:atob('RGFzIEFzc2Vzc21lbnQgZGF1ZXJ0IG51ciA1LTEwIE1pbnV0ZW4gdW5kIGJhc2llcnQgYXVmIG1vZGVybnN0ZXIgS0ktVGVjaG5vbG9naWUuIEFtIEVuZGUgZXJoYWx0ZW4gU2llIGVpbmVuIGRldGFpbGxpZXJ0ZW4sIHBlcnNvbmFsaXNpZXJ0ZW4gUmVwb3J0IHBlciBFLU1haWwu'),consentThanks:atob('VmllbGVuIERhbmsgZsO4ciBJaHIgVmVydHJhdWVuISBCZXZvciB3aXIgbWl0IGRlbSBBc3Nlc3NtZW50IGJlZ2lubmVuLCBiZW7DtnRpZ2VuIHdpciBlaW5pZ2UgS29udGFrdGRhdGVuIGbDvHIgZGllIMOcYmVybWl0dGx1bmcgSWhyZXMgcGVyc8O2bmxpY2hlbiBSZXBvcnRzLg=='),assessmentStart:atob('UGVyZmVrdCEgTGFzc2VuIFNpZSB1bnMgbnVuIG1pdCBkZW0gQXNzZXNzbWVudCBiZWdpbm5lbi4gSWNoIHdlcmRlIElobmVuIDEwIGludGVsbGlnZW50ZSBGcmFnZW4gc3RlbGxlbiwgZGllIElocmUgZGlnaXRhbGUgUmVpZmUgZXJmYXNzZW4u'),errorMsg:atob('RW50c2NodWxkaWd1bmcsIGVzIGdhYiBlaW5lbiBGZWhsZXIuIEJpdHRlIHZlcnN1Y2hlbiBTaWUgZXMgZXJuZXV0Lg=='),progressText:atob('QXNzZXNzbWVudCB3aXJkIGdlbGFkZW4uLi4='),feature1Title:atob('S0ktZ2VzdMO8dHp0ZSBBbmFseXNl'),feature1Desc:atob('VW1mYXNzZW5kZSBCZXdlcnR1bmcgSWhyZXIgZGlnaXRhbGVuIFJlaWZlIGR1cmNoIG1vZGVybnN0ZSBBSS1UZWNobm9sb2dpZQ=='),feature2Title:atob('MTAwJSBEU0dWTy1rb25mb3Jt'),feature2Desc:atob('SWhyZSBEYXRlbiB3ZXJkZW4gc2ljaGVyIHVuZCBkYXRlbnNjaHV0emtvbmZvcm0gdmVyYXJiZWl0ZXQgdW5kIGdlc3BlaWNoZXJ0'),feature3Title:atob('SGFuZGx1bmdTZW1wZmVobHVuZ2Vu'),feature3Desc:atob('S29ua3JldGUsIHBlcnNvbmFsaXNpZXJ0ZSBuw6RjaHN0ZSBTY2hyaXR0ZSBmw65yIElocmUgS0ktU3RyYXRlZ2ll'),privacyLink:atob('RGF0ZW5zY2h1dHo='),imprintLink:atob('SW1wcmVzc3Vt'),termsLink:atob('QUJC'),footerText:atob('wqkgMjAyNSBHUk9WSUEgQUkgUmVhZGluZXNzIEFzc2Vzc21lbnQuIEFsbGUgUmVjaHRlIHZvcmJlaGFsdGVuLg==')},en:{headerTitle:atob('R1JPVklBIERpZ2l0YWw='),headerSubtitle:atob('QUkgUmVhZGluZXNzIEFzc2Vzc21lbnQ='),chatTitle:atob('R1JPVklBIEFJIFJlYWRpbmVzcyBBc3Nlc3NtZW50'),chatSubtitle:atob('WW91ciBwZXJzb25hbCBBSSBjb25zdWx0YW50'),consentTitle:atob('Q29uc2VudCBEZWNsYXJhdGlvbg=='),dataProcessingLabel:atob('SSBhZ3JlZSB0byB0aGUgcHJvY2Vzc2luZyBvZiBteSBkYXRhIGZvciB0aGUgYXNzZXNzbWVudC4gVGhlIGRhdGEgd2lsbCBiZSB1c2VkIGV4Y2x1c2l2ZWx5IGZvciBldmFsdWF0aW5nIEFJIHJlYWRpbmVzcyBhbmQgaGFuZGxlZCBpbiBjb21wbGlhbmNlIHdpdGggR0RQUi4='),contactPermissionLabel:atob('SSBhbGxvdyBjb250YWN0IGJ5IEdST1ZJQSBEaWdpdGFsIGZvciBmdXJ0aGVyIGluZm9ybWF0aW9uIG9uIEFJIHNvbHV0aW9ucyBhbmQgY29uc3VsdGluZyBzZXJ2aWNlcy4='),continueBtn:atob('Q29udGludWUgdG8gQXNzZXNzbWVudA=='),contactTitle:atob('Q29udGFjdCBJbmZvcm1hdGlvbg=='),nameLabel:atob('TmFtZSAq'),emailLabel:atob('RW1haWwgQWRkcmVzcyAq'),companyLabel:atob('Q29tcGFueSAq'),employeesLabel:atob('TnVtYmVyIG9mIEVtcGxveWVlcw=='),selectPlaceholder:atob('UGxlYXNlIHNlbGVjdA=='),startAssessment:atob('U3RhcnQgQXNzZXNzbWVudA=='),inputPlaceholder:atob('WW91ciBhbnN3ZXIuLi4='),sendBtn:atob('U2VuZA=='),completionTitle:atob('QXNzZXNzbWVudCBzdWNjZXNzZnVsbHkgY29tcGxldGVkIQ=='),completionText:atob('VGhhbmsgeW91IGZvciB5b3VyIHBhcnRpY2lwYXRpb24hIFlvdSB3aWxsIHJlY2VpdmUgYSBkZXRhaWxlZCByZXBvcnQgd2l0aCBwZXJzb25hbGl6ZWQgcmVjb21tZW5kYXRpb25zIHZpYSBlbWFpbCBzaG9ydGx5Lg=='),scoreLabel:atob('QUkgUmVhZGluZXNzIFNjb3Jl'),questionPrefix:atob('UXVlc3Rpb24='),followUpPrefix:atob('Rm9sbG93LXVwIFF1ZXN0aW9u'),welcomeMsg1:atob('SGVsbG8hIFdlbGNvbWUgdG8gdGhlIEdST1ZJQSBBSSBSZWFkaW5lc3MgQXNzZXNzbWVudC4gSSBhbSB5b3VyIHBlcnNvbmFsIEFJIGNvbnN1bHRhbnQgYW5kIHdpbGwgaGVscCB5b3UgZXZhbHVhdGUgeW91ciBjb21wYW55J3MgQUkgcmVhZGluZXNzLg=='),welcomeMsg2:atob('VGhlIGFzc2Vzc21lbnQgdGFrZXMgb25seSA1LTEwIG1pbnV0ZXMgYW5kIGlzIGJhc2VkIG9uIHN0YXRlLW9mLXRoZS1hcnQgQUkgdGVjaG5vbG9neS4gQXQgdGhlIGVuZCwgeW91IHdpbGwgcmVjZWl2ZSBhIGRldGFpbGVkLCBwZXJzb25hbGl6ZWQgcmVwb3J0IHZpYSBlbWFpbC4='),consentThanks:atob('VGhhbmsgeW91IGZvciB5b3VyIHRydXN0ISBCZWZvcmUgd2UgYmVnaW4gdGhlIGFzc2Vzc21lbnQsIHdlIG5lZWQgc29tZSBjb250YWN0IGluZm9ybWF0aW9uIGZvciB0cmFuc21pdHRpbmcgeW91ciBwZXJzb25hbGl6ZWQgcmVwb3J0Lg=='),assessmentStart:atob('UGVyZmVjdCEgTGV0J3Mgbm93IGJlZ2luIHRoZSBhc3Nlc3NtZW50LiBJIHdpbGwgYXNrIHlvdSAxMCBpbnRlbGxpZ2VudCBxdWVzdGlvbnMgdGhhdCBjYXB0dXJlIHlvdXIgZGlnaXRhbCBtYXR1cml0eS4='),errorMsg:atob('U29ycnksIHRoZXJlIHdhcyBhbiBlcnJvci4gUGxlYXNlIHRyeSBhZ2Fpbi4='),progressText:atob('TG9hZGluZyBhc3Nlc3NtZW50Li4u'),feature1Title:atob('QUktcG93ZXJlZCBhbmFseXNpcw=='),feature1Desc:atob('Q29tcHJlaGVuc2l2ZSBldmFsdWF0aW9uIG9mIHlvdXIgZGlnaXRhbCBtYXR1cml0eSB0aHJvdWdoIHN0YXRlLW9mLXRoZS1hcnQgQUkgdGVjaG5vbG9neQ=='),feature2Title:atob('MTAwJSBHRFBSIGNvbXBsaWFudA=='),feature2Desc:atob('WW91ciBkYXRhIGlzIHByb2Nlc3NlZCBzZWN1cmVseSBhbmQgaW4gY29tcGxpYW5jZSB3aXRoIGRhdGEgcHJvdGVjdGlvbiBzdGFuZGFyZHM='),feature3Title:atob('QWN0aW9uIFJlY29tbWVuZGF0aW9ucw=='),feature3Desc:atob('Q29uY3JldGUsIHBlcnNvbmFsaXplZCBuZXh0IHN0ZXBzIGZvciB5b3VyIEFJIHN0cmF0ZWd5'),privacyLink:atob('UHJpdmFjeQ=='),imprintLink:atob('SW1wcmludA=='),termsLink:atob('VGVybXM='),footerText:atob('wqkgMjAyNSBHUk9WSUEgQUkgUmVhZGluZXNzIEFzc2Vzc21lbnQuIEFsbCByaWdodHMgcmVzZXJ2ZWQu')}};let _0xe5f6='de';let _0xg7h8='light';let _0xi9j0=Math.random().toString(36).substring(2)+Date.now().toString(36);let _0xk1l2='consent';let _0xm3n4=0;let _0xo5p6=false;let _0xq7r8=new Set();let _0xs9t0={};let _0xu1v2={};let _0xw3x4;function _0xy5z6(){const _0x1a2b=_0xc3d4[_0xe5f6];document.getElementById('header-title').textContent=_0x1a2b.headerTitle;document.getElementById('header-subtitle').textContent=_0x1a2b.headerSubtitle;document.getElementById('chat-title').textContent=_0x1a2b.chatTitle;document.getElementById('chat-subtitle').textContent=_0x1a2b.chatSubtitle;document.getElementById('consent-title').textContent=_0x1a2b.consentTitle;document.getElementById('data-processing-label').textContent=_0x1a2b.dataProcessingLabel;document.getElementById('contact-permission-label').textContent=_0x1a2b.contactPermissionLabel;document.getElementById('consent-submit').textContent=_0x1a2b.continueBtn;document.getElementById('contact-title').textContent=_0x1a2b.contactTitle;document.getElementById('name-label').textContent=_0x1a2b.nameLabel;document.getElementById('email-label').textContent=_0x1a2b.emailLabel;document.getElementById('company-label').textContent=_0x1a2b.companyLabel;document.getElementById('employees-label').textContent=_0x1a2b.employeesLabel;document.getElementById('contact-submit').textContent=_0x1a2b.startAssessment;document.getElementById('question-input').placeholder=_0x1a2b.inputPlaceholder;document.getElementById('question-submit').textContent=_0x1a2b.sendBtn;document.getElementById('completion-title').textContent=_0x1a2b.completionTitle;document.getElementById('completion-text').textContent=_0x1a2b.completionText;document.getElementById('score-label').textContent=_0x1a2b.scoreLabel;document.getElementById('progress-text').textContent=_0x1a2b.progressText;document.getElementById('feature1-title').textContent=_0x1a2b.feature1Title;document.getElementById('feature1-desc').textContent=_0x1a2b.feature1Desc;document.getElementById('feature2-title').textContent=_0x1a2b.feature2Title;document.getElementById('feature2-desc').textContent=_0x1a2b.feature2Desc;document.getElementById('feature3-title').textContent=_0x1a2b.feature3Title;document.getElementById('feature3-desc').textContent=_0x1a2b.feature3Desc;document.getElementById('privacy-link').textContent=_0x1a2b.privacyLink;document.getElementById('imprint-link').textContent=_0x1a2b.imprintLink;document.getElementById('terms-link').textContent=_0x1a2b.termsLink;document.getElementById('footer-text').textContent=_0x1a2b.footerText;const _0x3c4d=document.getElementById('employee-count');_0x3c4d.options[0].textContent=_0x1a2b.selectPlaceholder;document.getElementById('lang-de').className=_0xe5f6==='de'?'lang-btn active':'lang-btn';document.getElementById('lang-en').className=_0xe5f6==='en'?'lang-btn active':'lang-btn';}function _0x7b8c(){if(_0xg7h8==='dark'){document.body.classList.add('dark');}else{document.body.classList.remove('dark');}}function _0x9d0e(type,content){const _0x5e6f=document.getElementById('chat-messages');const _0x1f2g=document.createElement('div');_0x1f2g.className='message '+type;const _0x3h4i=document.createElement('div');_0x3h4i.className='message-bubble';_0x3h4i.textContent=content;_0x1f2g.appendChild(_0x3h4i);_0x5e6f.appendChild(_0x1f2g);_0x5e6f.scrollTop=_0x5e6f.scrollHeight;_0x5j6k(type,content);}async function _0x1l2m(consent1,consent2){try{await fetch(atob('Ly5uZXRsaWZ5L2Z1bmN0aW9ucy9zZXJ2ZXI='),{method:atob('UE9TVA=='),headers:{[atob('Q29udGVudC1UeXBl')]:atob('YXBwbGljYXRpb24vanNvbg==')},body:JSON.stringify({endpoint:atob('L2FwaS9hc3Nlc3NtZW50L2NvbnNlbnQ='),sessionId:_0xi9j0,consentDataProcessing:consent1,consentContactPermission:consent2})});}catch(_0x7n8o){console.error(atob('RmFpbGVkIHRvIHNhdmUgY29uc2VudCBkYXRh'),_0x7n8o);}}async function _0x9p0q(name,email,company,employees){try{await fetch(atob('Ly5uZXRsaWZ5L2Z1bmN0aW9ucy9zZXJ2ZXI='),{method:atob('UE9TVA=='),headers:{[atob('Q29udGVudC1UeXBl')]:atob('YXBwbGljYXRpb24vanNvbg==')},body:JSON.stringify({endpoint:atob('L2FwaS9hc3Nlc3NtZW50L2NvbnRhY3Q='),sessionId:_0xi9j0,contactName:name,email:email,companyName:company,employeeNumber:employees})});}catch(_0x1r2s){console.error(atob('RmFpbGVkIHRvIHNhdmUgY29udGFjdCBkYXRh'),_0x1r2s);}}async function _0x5j6k(msgType,content,qId=null){try{await fetch(atob('Ly5uZXRsaWZ5L2Z1bmN0aW9ucy9zZXJ2ZXI='),{method:atob('UE9TVA=='),headers:{[atob('Q29udGVudC1UeXBl')]:atob('YXBwbGljYXRpb24vanNvbg==')},body:JSON.stringify({endpoint:atob('L2FwaS9hc3Nlc3NtZW50L2NoYXQtbWVzc2FnZQ=='),sessionId:_0xi9j0,messageType:msgType,content:content,questionId:qId})});}catch(_0x3t4u){console.error(atob('RmFpbGVkIHRvIHNhdmUgY2hhdCBtZXNzYWdl'),_0x3t4u);}}async function _0x7v8w(sessionId,score){try{console.log(atob('UHJlcGFyaW5nIHdlYmhvb2sgZm9yIHNlc3Npb246'),sessionId);await new Promise(resolve=>setTimeout(resolve,5000));const _0x9x0y=atob('aHR0cHM6Ly9ncm92aWEuYXBwLm44bi5jbG91ZC93ZWJob29rL2FpLWFzc2Vzc21lbnQtY29tcGxldGU=');const _0x1z2a=await fetch(atob('Ly5uZXRsaWZ5L2Z1bmN0aW9ucy9zZXJ2ZXI='),{method:atob('UE9TVA=='),headers:{[atob('Q29udGVudC1UeXBl')]:atob('YXBwbGljYXRpb24vanNvbg==')},body:JSON.stringify({endpoint:atob('L2FwaS9hc3Nlc3NtZW50L2NvbXBsZXRlLWRhdGE='),sessionId:sessionId})});if(_0x1z2a.ok){const _0x3b4c=await _0x1z2a.json();console.log(atob('QXNzZXNzbWVudCBkYXRhIHJldHJpZXZlZDo='),_0x3b4c);const _0x5d6e=_0x3b4c.contact&&_0x3b4c.contact.email;const _0x7f8g=_0x3b4c.assessment&&_0x3b4c.assessment.responses&&Object.keys(_0x3b4c.assessment.responses).length>0;const _0x9h0i=_0x3b4c.consent&&_0x3b4c.consent.data_processing!==undefined;if(!_0x5d6e||!_0x7f8g||!_0x9h0i){console.error(atob('SW5jb21wbGV0ZSBzZXNzaW9uIGRhdGEgZGV0ZWN0ZWQ6'),{hasEmail:_0x5d6e,hasResponses:_0x7f8g,hasConsent:_0x9h0i,data:_0x3b4c});return;}console.log(atob('RGF0YSB2YWxpZGF0aW9uIHBhc3NlZCwgc2VuZGluZyB0byBuOG4uLi4='));const _0x1j2k=await fetch(_0x9x0y,{method:atob('UE9TVA=='),headers:{[atob('Q29udGVudC1UeXBl')]:atob('YXBwbGljYXRpb24vanNvbg==')},body:JSON.stringify(_0x3b4c)});if(_0x1j2k.ok){console.log(atob('4pyFIFdlYmhvb2sgc2VudCBzdWNjZXNzZnVsbHkgdG8gbjhu'));}else{const _0x3l4m=await _0x1j2k.text();console.error(atob('4p2MIE44TiB3ZWJob29rIGZhaWxlZDo='),_0x1j2k.status,_0x3l4m);}}else{const _0x5n6o=await _0x1z2a.text();console.error(atob('RmFpbGVkIHRvIHJldHJpZXZlIGFzc2Vzc21lbnQgZGF0YTo='),_0x1z2a.status,_0x5n6o);}}catch(_0x7p8q){console.error(atob('V2ViaG9vayBlcnJvcjo='),_0x7p8q);}}function _0x9r0s(){const _0x1t2u=_0xa1b2.length+2;let _0x3v4w=0;if(_0xk1l2==='consent')_0x3v4w=0;else if(_0xk1l2==='contact')_0x3v4w=1;else if(_0xk1l2==='questions')_0x3v4w=2+_0xm3n4;else if(_0xk1l2==='completed')_0x3v4w=_0x1t2u;const _0x5x6y=(_0x3v4w/_0x1t2u)*100;document.getElementById('progress-fill').style.width=_0x5x6y+'%';}function _0x7z8a(step){document.getElementById('consent-form').classList[step==='consent'?'remove':'add']('hidden');document.getElementById('contact-form').classList[step==='contact'?'remove':'add']('hidden');document.getElementById('question-form').classList[step==='questions'?'remove':'add']('hidden');document.getElementById('completion-form').classList[step==='completed'?'remove':'add']('hidden');_0xk1l2=step;_0x9r0s();}async function _0x1c2d(){const _0x3e4f=document.getElementById('question-input').value;if(!_0x3e4f.trim())return;_0x9d0e('user',_0x3e4f);document.getElementById('question-input').value='';document.getElementById('question-submit').disabled=true;try{const _0x5g6h=await fetch(atob('Ly5uZXRsaWZ5L2Z1bmN0aW9ucy9zZXJ2ZXI='),{method:atob('UE9TVA=='),headers:{[atob('Q29udGVudC1UeXBl')]:atob('YXBwbGljYXRpb24vanNvbg==')},body:JSON.stringify({endpoint:atob('L2FwaS9hc3Nlc3NtZW50L3N1Ym1pdA=='),sessionId:_0xi9j0,questionId:_0xa1b2[_0xm3n4].id,response:_0x3e4f,currentQuestionIndex:_0xm3n4,language:_0xe5f6})});if(_0x5g6h.ok){const _0x7i8j=await _0x5g6h.json();_0xs9t0[_0xa1b2[_0xm3n4].id]={question:_0xa1b2[_0xm3n4].text[_0xe5f6],answer:_0x3e4f,analysis:_0x7i8j.analysis,score:_0x7i8j.score};if(_0x7i8j.followUpQuestion){_0xo5p6=true;_0xq7r8.add(_0xm3n4);const _0x9k0l=_0xc3d4[_0xe5f6];_0x9d0e('bot',`(${_0x9k0l.followUpPrefix} ${_0xm3n4+1}) ${_0x7i8j.followUpQuestion}`);}else{_0x1m2n();}}}catch(_0x3o4p){console.error(atob('RXJyb3Igc3VibWl0dGluZyByZXNwb25zZTo='),_0x3o4p);const _0x5q6r=_0xc3d4[_0xe5f6];_0x9d0e('bot',_0x5q6r.errorMsg);}}function _0x1m2n(){_0xo5p6=false;_0xm3n4++;if(_0xm3n4<_0xa1b2.length){setTimeout(()=>{const _0x7s8t=_0xa1b2[_0xm3n4];const _0x9u0v=_0x7s8t.text[_0xe5f6];const _0x1w2x=_0xc3d4[_0xe5f6];const _0x3y4z=`(${_0x1w2x.questionPrefix} ${_0xm3n4+1}) ${_0x9u0v}`;_0x9d0e('bot',_0x3y4z);},1000);}else{_0x5a6b();}_0x9r0s();}async function _0x5a6b(){try{const _0x7c8d=await fetch(atob('Ly5uZXRsaWZ5L2Z1bmN0aW9ucy9zZXJ2ZXI='),{method:atob('UE9TVA=='),headers:{[atob('Q29udGVudC1UeXBl')]:atob('YXBwbGljYXRpb24vanNvbg==')},body:JSON.stringify({endpoint:atob('L2FwaS9hc3Nlc3NtZW50L2NvbXBsZXRl'),sessionId:_0xi9j0})});if(_0x7c8d.ok){const _0x9e0f=await _0x7c8d.json();document.getElementById('final-score').textContent=_0x9e0f.readinessScore+'%';_0x7z8a('completed');const _0x1g2h=_0xc3d4[_0xe5f6];_0x9d0e('bot',`${_0x1g2h.completionText} ${_0x1g2h.scoreLabel}: ${_0x9e0f.readinessScore}%`);console.log(atob('VHJpZ2dlcmluZyBuOG4gd2ViaG9vay4uLg=='));await _0x7v8w(_0xi9j0,_0x9e0f.readinessScore);}}catch(_0x3i4j){console.error(atob('RXJyb3IgY29tcGxldGluZyBhc3Nlc3NtZW50Og=='),_0x3i4j);}}document.addEventListener('DOMContentLoaded',async function(){try{const _0x5k6l=await fetch(atob('Ly5uZXRsaWZ5L2Z1bmN0aW9ucy9zZXJ2ZXI='),{method:atob('UE9TVA=='),headers:{[atob('Q29udGVudC1UeXBl')]:atob('YXBwbGljYXRpb24vanNvbg==')},body:JSON.stringify({endpoint:atob('L2FwaS9hc3Nlc3NtZW50L3Nlc3Npb24='),sessionId:_0xi9j0,language:_0xe5f6})});}catch(_0x7m8n){console.error(atob('RXJyb3IgaW5pdGlhbGl6aW5nIHNlc3Npb246'),_0x7m8n);}_0xy5z6();_0x7b8c();const _0x9o0p=_0xc3d4[_0xe5f6];_0x9d0e('bot',_0x9o0p.welcomeMsg1);setTimeout(()=>{_0x9d0e('bot',_0x9o0p.welcomeMsg2);},2000);document.getElementById('lang-de').addEventListener('click',()=>{_0xe5f6='de';_0xy5z6();});document.getElementById('lang-en').addEventListener('click',()=>{_0xe5f6='en';_0xy5z6();});document.getElementById('theme-toggle').addEventListener('click',()=>{_0xg7h8=_0xg7h8==='light'?'dark':'light';_0x7b8c();});document.getElementById('consent-submit').addEventListener('click',async function(){const _0x1q2r=document.getElementById('data-processing').checked;const _0x3s4t=document.getElementById('contact-permission').checked;if(!_0x1q2r){alert(atob('Qml0dGUgc3RpbW1lbiBTaWUgZGVyIERhdGVudmVyYXJiZWl0dW5nIHp1Lg=='));return;}await _0x1l2m(_0x1q2r,_0x3s4t);const _0x5u6v=_0xc3d4[_0xe5f6];_0x9d0e('bot',_0x5u6v.consentThanks);setTimeout(()=>_0x7z8a('contact'),1000);});document.getElementById('contact-submit').addEventListener('click',async function(){if(this.disabled)return;const _0x7w8x=document.getElementById('contact-name').value;const _0x9y0z=document.getElementById('contact-email').value;const _0x1a2b=document.getElementById('contact-company').value;const _0x3c4d=document.getElementById('employee-count').value;if(!_0x7w8x||!_0x9y0z||!_0x1a2b){alert(atob('UGxlYXNlIGZpbGwgaW4gYWxsIHJlcXVpcmVkIGZpZWxkcw=='));return;}this.disabled=true;this.textContent=atob('UHJvY2Vzc2luZy4uLg==');try{_0xu1v2={name:_0x7w8x,email:_0x9y0z,company:_0x1a2b,employees:_0x3c4d};_0xw3x4=_0x7w8x;const _0x5e6f=_0xc3d4[_0xe5f6];_0x9d0e('bot',`${atob('VmllbGVuIERhbmssIA==')}${_0x7w8x}! ${_0x5e6f.assessmentStart}`);_0x9p0q(_0x7w8x,_0x9y0z,_0x1a2b,_0x3c4d);setTimeout(()=>{_0x7z8a('questions');const _0x7g8h=_0xa1b2[0];const _0x9i0j=_0x7g8h.text[_0xe5f6];const _0x1k2l=`(${_0x5e6f.questionPrefix} 1) ${_0x9i0j}`;_0x9d0e('bot',_0x1k2l);},2000);}catch(_0x3m4n){console.error(atob('RXJyb3IgaW4gY29udGFjdCBmb3JtOg=='),_0x3m4n);this.disabled=false;this.textContent=_0x5e6f.startAssessment;}});document.getElementById('question-input').addEventListener('input',function(){document.getElementById('question-submit').disabled=!this.value.trim();});document.getElementById('question-input').addEventListener('keypress',function(e){if(e.key==='Enter'&&!document.getElementById('question-submit').disabled){_0x1c2d();}});document.getElementById('question-submit').addEventListener('click',_0x1c2d);});
     </script>
   </body>
 </html>
