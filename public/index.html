@@ -1392,9 +1392,26 @@
         addMessage('bot', numberedQuestion);
       }
 
-      function proceedToNextQuestion() {
+            function proceedToNextQuestion() {
         waitingForFollowUp = false;
-      function proceedToNextQuestion() {
+        
+        if (currentQuestionIndex < assessmentQuestions.length - 1) {
+          currentQuestionIndex++;
+          
+          const nextQuestion = assessmentQuestions[currentQuestionIndex];
+          const questionText = nextQuestion.text[currentLanguage];
+          const t = translations[currentLanguage];
+          const numberedQuestion = `(${t.questionPrefix} ${currentQuestionIndex + 1}) ${questionText}`;
+          
+          setTimeout(() => {
+            addMessage('bot', numberedQuestion);
+          }, 1000);
+        } else {
+          completeAssessment();
+        }
+        
+        updateProgress();
+      }
         waitingForFollowUp = false;
         
         if (currentQuestionIndex < assessmentQuestions.length - 1) {
