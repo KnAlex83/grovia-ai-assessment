@@ -1456,7 +1456,7 @@
           
           try {
             // Save contact data to database
-            await saveContactData(name, email, company, employees);
+            saveContactData(name, email, company, employees);
             
             contactInfo = { name, email, company, employees };
             contactName = name;
@@ -1470,7 +1470,7 @@
               const questionText = firstQuestion.text[currentLanguage];
               const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
               addMessage('bot', numberedQuestion);
-            }, 1000);
+            }, 300);
           } catch (error) {
             console.error('Error submitting contact form:', error);
             // Re-enable button on error
