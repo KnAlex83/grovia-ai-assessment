@@ -1178,12 +1178,14 @@
         }
       }
 
-      // Send complete assessment data to n8n webhook
+            // Send complete assessment data to n8n webhook
       async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
         try {
-          console.log('Sending webhook to n8n for session:', sessionId);
+          console.log('Preparing webhook for session:', sessionId);
           
-          // Replace with your actual n8n webhook URL
+          // Wait a moment to ensure all database writes are committed
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          
           const webhookUrl = "https://grovia.app.n8n.cloud/webhook/ai-assessment-complete";
           
           const response = await fetch('/.netlify/functions/server', {
@@ -1197,8 +1199,24 @@
           
           if (response.ok) {
             const completeData = await response.json();
-            console.log('Assessment data retrieved successfully');
+            console.log('Assessment data retrieved:', completeData);
             
+            // Validate that essential data is present
+            const hasEmail = completeData.contact && completeData.contact.email;
+            const hasResponses = completeData.assessment && completeData.assessment.responses && Object.keys(completeData.assessment.responses).length > 0;
+            const hasConsent = completeData.consent && completeData.consent.data_processing !== undefined;
+            
+            if (!hasEmail || !hasResponses || !hasConsent) {
+              console.error('Incomplete session data detected:', {
+                hasEmail,
+                hasResponses,
+                hasConsent,
+                data: completeData
+              });
+              return;
+            }
+            
+            console.log('Data validation passed, sending to n8n...');
             const webhookResponse = await fetch(webhookUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -1206,15 +1224,17 @@
             });
             
             if (webhookResponse.ok) {
-              console.log('Complete assessment data sent to n8n successfully');
+              console.log('✅ Webhook sent successfully to n8n');
             } else {
-              console.error('N8N webhook failed with status:', webhookResponse.status);
+              const errorText = await webhookResponse.text();
+              console.error('❌ N8N webhook failed:', webhookResponse.status, errorText);
             }
           } else {
-            console.error('Failed to retrieve assessment data:', response.status);
+            const errorText = await response.text();
+            console.error('Failed to retrieve assessment data:', response.status, errorText);
           }
         } catch (error) {
-          console.error('Failed to send complete assessment data to n8n:', error);
+          console.error('Webhook error:', error);
         }
       }
 
