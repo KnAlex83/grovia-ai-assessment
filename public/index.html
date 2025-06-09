@@ -1416,7 +1416,10 @@
         });
 
         // Contact form
-                document.getElementById('contact-submit').addEventListener('click', async function() {
+                         document.getElementById('contact-submit').addEventListener('click', async function() {
+          // Prevent multiple submissions
+          if (this.disabled) return;
+          
           const name = document.getElementById('contact-name').value;
           const email = document.getElementById('contact-email').value;
           const company = document.getElementById('contact-company').value;
@@ -1427,21 +1430,33 @@
             return;
           }
           
-          // Save contact data to database
-          await saveContactData(name, email, company, employees);
+          // Disable button to prevent duplicates
+          this.disabled = true;
+          this.textContent = 'Processing...';
           
-          contactInfo = { name, email, company, employees };
-          
-          const t = translations[currentLanguage];
-          addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
-          
-          setTimeout(() => {
-            showStep('questions');
-            const firstQuestion = assessmentQuestions[0];
-            const questionText = firstQuestion.text[currentLanguage];
-            const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
-            addMessage('bot', numberedQuestion);
-          }, 1000);
+          try {
+            // Save contact data to database
+            await saveContactData(name, email, company, employees);
+            
+            contactInfo = { name, email, company, employees };
+            contactName = name;
+            
+            const t = translations[currentLanguage];
+            addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
+            
+            setTimeout(() => {
+              showStep('questions');
+              const firstQuestion = assessmentQuestions[0];
+              const questionText = firstQuestion.text[currentLanguage];
+              const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
+              addMessage('bot', numberedQuestion);
+            }, 1000);
+          } catch (error) {
+            console.error('Error submitting contact form:', error);
+            // Re-enable button on error
+            this.disabled = false;
+            this.textContent = t.startAssessment;
+          }
         });
         // Question form
         const questionInput = document.getElementById('question-input');
