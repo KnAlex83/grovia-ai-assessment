@@ -1181,6 +1181,27 @@
               companyName: companyName,
               employeeNumber: employeeNumber
             })
+                  async function createSession() {
+        try {
+          const response = await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/session',
+              sessionId: sessionId,
+              language: currentLanguage
+            })
+          });
+          
+          if (response.ok) {
+            console.log('Session created in database');
+          } else {
+            console.error('Failed to create session in database');
+          }
+        } catch (error) {
+          console.error('Error creating session:', error);
+        }
+      }
           });
         } catch (error) {
           console.error('Failed to save contact data:', error);
@@ -1387,17 +1408,17 @@
 
       // Event Listeners
       document.addEventListener('DOMContentLoaded', function() {
+        console.log('Page loaded, initializing system...');
+        initializeSystem();
         updateLanguage();
         updateTheme();
         updateProgress();
+        showStep('consent');
         
-        // Initialize welcome messages
-        const t = translations[currentLanguage];
-        setTimeout(() => addMessage('bot', t.welcomeMsg1), 500);
-        setTimeout(() => addMessage('bot', t.welcomeMsg2), 1500);
-        
-        // Create session
-        createSession();
+        // Initialize with German language by default
+        if (!currentLanguage) {
+          currentLanguage = 'de';
+        }
 
         // Language toggle
         document.getElementById('lang-de').addEventListener('click', function() {
@@ -1506,15 +1527,7 @@
             handleQuestionSubmit();
           }
         });
-              // Initialize system when page loads
-      document.addEventListener('DOMContentLoaded', function() {
-        console.log('Page loaded, initializing system...');
-        initializeSystem();
-        updateLanguage();
-        updateTheme();
-        showStep('consent');
-      });
-
+      
         questionSubmitBtn.addEventListener('click', handleQuestionSubmit);
 
         async function handleQuestionSubmit() {
