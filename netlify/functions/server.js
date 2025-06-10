@@ -719,9 +719,16 @@ app.post('/api/assessment/analyze', async (req, res) => {
       return res.status(500).json({ message: 'Database not configured' });
     }
 
-    const { sessionId, questionId, questionText, userResponse, language } = req.body;
+      const { sessionId, questionId, userResponse, language } = req.body;
+
+      // Look up question text from server-side array
+      const question = assessmentQuestions.find(q => q.id === questionId);
+      if (!question) {
+        return res.status(400).json({ message: 'Invalid question ID' });
+      }
+      const questionText = question.text[language] || question.text.de;
     
-    if (!sessionId || !questionId || !questionText || !userResponse || !language) {
+    if (!sessionId || !questionId || !userResponse || !language) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
