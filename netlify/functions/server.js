@@ -9,14 +9,6 @@ neonConfig.webSocketConstructor = ws;
 const app = express();
 app.use(express.json());
 
-// Add routing middleware for database operations
-app.use((req, res, next) => {
-  if (req.body && req.body.endpoint) {
-    req.url = req.body.endpoint;
-    delete req.body.endpoint;
-  }
-  next();
-});
 // Database connection with error handling
 let pool;
 try {
@@ -439,9 +431,9 @@ app.post('/api/assessment/consent', async (req, res) => {
 });
 
 // Save contact information - NEW ENDPOINT
-app.post('/api/assessment/contact', async (req, res) => {
+app.post('/api/assessment/consent', async (req, res) => {
   try {
-    const { sessionId, contactName, email, companyName, employeeNumber, language = 'de' } = req.body;
+    const { sessionId, consentDataProcessing, consentContactPermission, language = 'de' } = req.body;
     
     if (!pool) {
       return res.status(500).json({ message: 'Database not configured' });
@@ -449,30 +441,21 @@ app.post('/api/assessment/contact', async (req, res) => {
 
     await pool.query(`
       UPDATE assessment_sessions 
-      SET contact_name = $1,
-          email = $2,
-          company_name = $3,
-          employee_number = $4,
-          current_step = 2,
+      SET consent_data_processing = $1,
+          consent_contact_permission = $2,
           updated_at = NOW()
-      WHERE session_id = $5
-    `, [contactName, email, companyName, employeeNumber, sessionId]);
+      WHERE session_id = $3
+    `, [consentDataProcessing, consentContactPermission, sessionId]);
 
     const t = translations[language];
-    const firstQuestion = assessmentQuestions[0];
     
     res.json({
       success: true,
-      messages: [
-        { type: 'bot', content: `Vielen Dank, ${contactName}! ${t.assessmentStart}` },
-        { type: 'bot', content: `(${t.questionPrefix} 1) ${firstQuestion.text[language]}` }
-      ],
-      nextQuestion: firstQuestion,
-      nextStep: 'questions'
+      message: { type: 'bot', content: t.consentThanks }
     });
   } catch (error) {
-    console.error('Error saving contact:', error);
-    res.status(500).json({ error: 'Failed to save contact' });
+    console.error('Error saving consent:', error);
+    res.status(500).json({ error: 'Failed to save consent' });
   }
 });
 
@@ -534,31 +517,6 @@ app.get('/api/assessment/session/:sessionId', async (req, res) => {
   } catch (error) {
     console.error('Error getting session:', error);
     res.status(500).json({ message: 'Failed to get session' });
-  }
-});
-
-// Save consent data - NEW ENDPOINT
-app.post('/api/assessment/consent', async (req, res) => {
-  try {
-    if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
-    }
-
-    const { sessionId, consentDataProcessing, consentContactPermission } = req.body;
-    
-    if (!sessionId || typeof consentDataProcessing !== 'boolean') {
-      return res.status(400).json({ message: 'Missing required consent data' });
-    }
-
-    await pool.query(
-      'UPDATE assessment_sessions SET consent_data_processing = $1, consent_contact_permission = $2 WHERE session_id = $3',
-      [consentDataProcessing, consentContactPermission || false, sessionId]
-    );
-    
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Error saving consent:', error);
-    res.status(500).json({ message: 'Failed to save consent' });
   }
 });
 
