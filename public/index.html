@@ -903,7 +903,7 @@
       // Server API request helper (replaces all client-side business logic)
       async function serverRequest(endpoint, data = {}) {
         try {
-          const response = await fetch(`/api/assessment${endpoint}`, {
+          const response = await fetch(`/.netlify/functions/server/api/assessment${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId, language: currentLanguage, ...data })
