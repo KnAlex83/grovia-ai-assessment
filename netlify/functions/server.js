@@ -574,21 +574,8 @@ app.post('/api/assessment/consent', async (req, res) => {
     res.status(500).json({ error: 'Failed to save consent' });
   }
 });
-
-    try {
-      const client = await connectionPool.connect();
-      
-      // Simple upsert without referencing updated_at column
-      await client.query(`
-        INSERT INTO assessment_sessions (
-          session_id, language, consent_data_processing, 
-          consent_contact_permission, current_step, created_at
-        )
-        VALUES ($1, $2, $3, $4, 1, NOW())
-        ON CONFLICT (session_id) DO UPDATE SET
-          consent_data_processing = $3,
-          consent_contact_permission = $4,
-          current_step = 1
+    
+   current_step = 1
       `, [sessionId, language, consentDataProcessing, consentContactPermission]);
 
       client.release();
