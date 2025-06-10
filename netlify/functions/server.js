@@ -592,7 +592,7 @@ app.post('/api/assessment/contact', async (req, res) => {
           email = $2,
           company_name = $3,
           employee_number = $4,
-          current_step = 2,
+          current_step = 2
       WHERE session_id = $5
     `, [contactName, email, companyName, employeeNumber, sessionId]);
 
