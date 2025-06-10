@@ -1151,28 +1151,30 @@
               language: currentLanguage
             });
 
-            if (result.success) {
-              // Show AI analysis
-              if (result.analysis) {
-                setTimeout(() => {
-                  addMessage('bot', result.analysis);
-                }, 500);
-              }
+            if (result.analysis) {
+  // Show AI analysis explanation
+  if (result.analysis.explanation) {
+    setTimeout(() => {
+      addMessage('bot', result.analysis.explanation);
+    }, 500);
+  }
 
-              // Store response
-              responses[result.questionId || (currentQuestionIndex + 1).toString()] = {
-                userResponse,
-                ...result.analysisData
-              };
+  // Store response
+  responses[(currentQuestionIndex + 1).toString()] = {
+    userResponse,
+    explanation: result.analysis.explanation,
+    score: result.analysis.score,
+    timestamp: new Date().toISOString()
+  };
 
-              // Handle follow-up or next question
-              if (result.followUpQuestion && !questionsWithFollowUp.has(result.questionId)) {
-                setTimeout(() => {
-                  addMessage('bot', result.followUpQuestion);
-                  waitingForFollowUp = true;
-                  questionsWithFollowUp.add(result.questionId);
-                }, 1500);
-              } else {
+  // Handle follow-up question
+  if (result.analysis.needsFollowUp && result.analysis.followUpQuestion && !questionsWithFollowUp.has((currentQuestionIndex + 1).toString())) {
+    setTimeout(() => {
+      addMessage('bot', result.analysis.followUpQuestion);
+      waitingForFollowUp = true;
+      questionsWithFollowUp.add((currentQuestionIndex + 1).toString());
+    }, 1500);
+  } else {
                 waitingForFollowUp = false;
                 
                 if (result.isComplete) {
