@@ -575,29 +575,6 @@ app.post('/api/assessment/consent', async (req, res) => {
   }
 });
 
-    // Check if session exists
-    const existingSession = await pool.query(
-      'SELECT * FROM assessment_sessions WHERE session_id = $1',
-      [sessionId]
-    );
-    
-    if (existingSession.rows.length > 0) {
-      return res.json(existingSession.rows[0]);
-    }
-    
-    // Create new session
-    const result = await pool.query(
-      'INSERT INTO assessment_sessions (session_id, language, current_step, responses, consent_data_processing, consent_contact_permission, is_completed) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [sessionId, language, 1, JSON.stringify({}), false, false, false]
-    );
-    
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error('Error creating session:', error);
-    res.status(500).json({ message: 'Failed to create session' });
-  }
-});
-
 // Get assessment session
 app.get('/api/assessment/session/:sessionId', async (req, res) => {
   try {
