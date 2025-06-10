@@ -9,6 +9,15 @@ neonConfig.webSocketConstructor = ws;
 const app = express();
 app.use(express.json());
 
+// Add routing middleware for Netlify Functions
+app.use((req, res, next) => {
+  const originalUrl = req.originalUrl || req.url;
+  if (originalUrl.startsWith('/.netlify/functions/server')) {
+    req.url = originalUrl.replace('/.netlify/functions/server', '');
+  }
+  next();
+});
+
 // Database connection with error handling
 let pool;
 try {
@@ -425,35 +434,6 @@ app.post('/api/assessment/consent', async (req, res) => {
       message: { type: 'bot', content: t.consentThanks }
     });
        } catch (error) {
-    console.error('Error saving consent:', error);
-    res.status(500).json({ error: 'Failed to save consent' });
-  }
-});
-
-// Save contact information - NEW ENDPOINT
-app.post('/api/assessment/consent', async (req, res) => {
-  try {
-    const { sessionId, consentDataProcessing, consentContactPermission, language = 'de' } = req.body;
-    
-    if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
-    }
-
-    await pool.query(`
-      UPDATE assessment_sessions 
-      SET consent_data_processing = $1,
-          consent_contact_permission = $2,
-          updated_at = NOW()
-      WHERE session_id = $3
-    `, [consentDataProcessing, consentContactPermission, sessionId]);
-
-    const t = translations[language];
-    
-    res.json({
-      success: true,
-      message: { type: 'bot', content: t.consentThanks }
-    });
-  } catch (error) {
     console.error('Error saving consent:', error);
     res.status(500).json({ error: 'Failed to save consent' });
   }
