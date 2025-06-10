@@ -47,8 +47,13 @@ async function initializeDatabase() {
     return null;
   }
 }
-
-initializeDatabase();
+// Initialize database connection for each request
+async function getPool() {
+  if (!pool) {
+    pool = await initializeDatabase();
+  }
+  return pool;
+}
 
 // AI Service configuration
 const CONFIG = {
@@ -321,8 +326,13 @@ app.post('/api/assessment/initialize', async (req, res) => {
   try {
     const { sessionId, language = 'de' } = req.body;
     
-    // Create session if it doesn't exist
-        if (pool) {
+    // Ensure database connection
+    const dbPool = await getPool();
+    
+    if (dbPool) {
+      try {
+        // Ensure table exists with all required columns
+        await dbPool.query(`
       try {
         // Ensure table exists with all required columns
         await pool.query(`
