@@ -386,6 +386,67 @@ app.post('/api/assessment/initialize', async (req, res) => {
   }
 });
 
+// Initialize assessment session - SECURE ENDPOINT
+app.post('/api/assessment/initialize', async (req, res) => {
+  try {
+    const { sessionId, language = 'de' } = req.body;
+    
+    const dbPool = await getPool();
+    if (!dbPool) {
+      return res.status(500).json({ error: 'Database not configured' });
+    }
+
+    // Create table and session
+    await dbPool.query(`
+      CREATE TABLE IF NOT EXISTS assessment_sessions (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) UNIQUE NOT NULL,
+        language VARCHAR(10) DEFAULT 'de',
+        created_at TIMESTAMP DEFAULT NOW(),
+        current_step INTEGER DEFAULT 0,
+        consent_data_processing BOOLEAN DEFAULT FALSE,
+        consent_contact_permission BOOLEAN DEFAULT FALSE,
+        contact_name VARCHAR(255),
+        email VARCHAR(255),
+        company_name VARCHAR(255),
+        employee_number VARCHAR(50),
+        responses JSONB DEFAULT '{}'::jsonb,
+        readiness_score INTEGER,
+        is_completed BOOLEAN DEFAULT FALSE
+      )
+    `);
+    
+    await dbPool.query(`
+      INSERT INTO assessment_sessions (session_id, language)
+      VALUES ($1, $2) ON CONFLICT (session_id) DO NOTHING
+    `, [sessionId, language]);
+
+    const translations = {
+      de: {
+        welcomeMsg1: 'Hallo! Willkommen zum AI Readiness Assessment.',
+        welcomeMsg2: 'Das Assessment dauert etwa 5-10 Minuten. Am Ende erhalten Sie einen detaillierten Report per E-Mail.'
+      },
+      en: {
+        welcomeMsg1: 'Hello! Welcome to the AI Readiness Assessment.',
+        welcomeMsg2: 'The assessment takes about 5-10 minutes. You will receive a detailed report via email at the end.'
+      }
+    };
+
+    const t = translations[language] || translations.de;
+    
+    res.json({
+      success: true,
+      sessionId: sessionId,
+      messages: [
+        { type: 'bot', content: t.welcomeMsg1 },
+        { type: 'bot', content: t.welcomeMsg2 }
+      ]
+    });
+  } catch (error) {
+    console.error('Error initializing session:', error);
+    res.status(500).json({ error: 'Failed to initialize session' });
+  }
+});
 // Handle question submission and analysis - SECURE ENDPOINT
 app.post('/api/assessment/submit', async (req, res) => {
   try {
