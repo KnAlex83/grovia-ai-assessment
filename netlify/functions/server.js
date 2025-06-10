@@ -533,10 +533,6 @@ app.post('/api/assessment/submit', async (req, res) => {
           isComplete: true,
           sessionUpdated: true
         });
-          analysis: analysis.explanation,
-          score: analysis.score,
-          isComplete: true
-        });
       }
     }
   } catch (error) {
