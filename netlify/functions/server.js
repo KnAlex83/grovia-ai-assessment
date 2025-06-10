@@ -433,7 +433,7 @@ app.post('/api/assessment/consent', async (req, res) => {
       success: true,
       message: { type: 'bot', content: t.consentThanks }
     });
-       } catch (error) {
+  } catch (error) {
     console.error('Error saving consent:', error);
     res.status(500).json({ error: 'Failed to save consent' });
   }
