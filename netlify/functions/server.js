@@ -40,6 +40,106 @@ const CONFIG = {
   CONSULTATION_SWEET_SPOT_MAX: parseInt(process.env.CONSULTATION_MAX || '75')
 };
 
+
+// Assessment questions data
+const assessmentQuestions = [
+  {
+    id: '1',
+    text: {
+      de: 'Was ist das Hauptziel Ihres Unternehmens bei der Einführung von KI?',
+      en: 'What is your company\'s main goal when introducing AI?'
+    }
+  },
+  {
+    id: '2',
+    text: {
+      de: 'Beschreiben Sie Ihre bisherigen Erfahrungen mit digitalen Technologien und Automatisierung in Ihrem Unternehmen.',
+      en: 'Describe your previous experiences with digital technologies and automation in your company.'
+    }
+  },
+  {
+    id: '3',
+    text: {
+      de: 'Wie bewerten Sie Ihre aktuelle IT-Infrastruktur und Datenqualität für KI-Anwendungen?',
+      en: 'How do you assess your current IT infrastructure and data quality for AI applications?'
+    }
+  },
+  {
+    id: '4',
+    text: {
+      de: 'Welche konkreten Geschäftsprobleme oder Ineffizienzen möchten Sie mit KI lösen?',
+      en: 'What specific business problems or inefficiencies would you like to solve with AI?'
+    }
+  },
+  {
+    id: '5',
+    text: {
+      de: 'Wie gehen Sie mit Datenschutz und Compliance um?',
+      en: 'How do you handle data protection and compliance?'
+    }
+  },
+  {
+    id: '6',
+    text: {
+      de: 'Wie schätzen Sie die KI-Bereitschaft und Lernfähigkeit Ihres Teams ein?',
+      en: 'How do you assess your team\'s AI readiness and learning capability?'
+    }
+  },
+  {
+    id: '7',
+    text: {
+      de: 'Welche Unterstützung erhalten Sie von der Geschäftsführung für digitale Innovationen und welches Budget steht für KI-Projekte zur Verfügung?',
+      en: 'What support do you receive from management for digital innovations and what budget is available for AI projects?'
+    }
+  },
+  {
+    id: '8',
+    text: {
+      de: 'Was sind Ihre größten Bedenken oder Hindernisse bei der KI-Einführung?',
+      en: 'What are your biggest concerns or obstacles in implementing AI?'
+    }
+  },
+  {
+    id: '9',
+    text: {
+      de: 'Welche Erfolgskriterien würden Sie für eine KI-Initiative definieren?',
+      en: 'What success criteria would you define for an AI initiative?'
+    }
+  },
+  {
+    id: '10',
+    text: {
+      de: 'In welchem Zeitrahmen und mit welchen Ressourcen planen Sie die KI-Einführung?',
+      en: 'In what timeframe and with what resources do you plan to implement AI?'
+    }
+  }
+];
+
+// Translations
+const translations = {
+  de: {
+    welcomeMsg1: 'Hallo! Willkommen zum GROVIA AI Readiness Assessment. Ich bin Ihr persönlicher KI-Berater und helfe Ihnen dabei, die KI-Bereitschaft Ihres Unternehmens zu bewerten.',
+    welcomeMsg2: 'Das Assessment dauert nur 5-10 Minuten und basiert auf modernster KI-Technologie. Am Ende erhalten Sie einen detaillierten, personalisierten Report per E-Mail.',
+    consentThanks: 'Vielen Dank für Ihr Vertrauen! Bevor wir mit dem Assessment beginnen, benötigen wir einige Kontaktdaten für die Übermittlung Ihres persönlichen Reports.',
+    assessmentStart: 'Perfekt! Lassen Sie uns nun mit dem Assessment beginnen. Ich werde Ihnen 10 intelligente Fragen stellen, die Ihre digitale Reife erfassen.',
+    questionPrefix: 'Frage',
+    followUpPrefix: 'Nachfrage',
+    completionText: 'Vielen Dank für Ihre Teilnahme! Sie erhalten in Kürze einen detaillierten Bericht mit personalisierten Empfehlungen per E-Mail.',
+    scoreLabel: 'AI Readiness Score',
+    errorMsg: 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.'
+  },
+  en: {
+    welcomeMsg1: 'Hello! Welcome to the GROVIA AI Readiness Assessment. I am your personal AI consultant and will help you evaluate your company\'s AI readiness.',
+    welcomeMsg2: 'The assessment takes only 5-10 minutes and is based on state-of-the-art AI technology. At the end, you will receive a detailed, personalized report via email.',
+    consentThanks: 'Thank you for your trust! Before we begin the assessment, we need some contact information for transmitting your personalized report.',
+    assessmentStart: 'Perfect! Let\'s now begin the assessment. I will ask you 10 intelligent questions that capture your digital maturity.',
+    questionPrefix: 'Question',
+    followUpPrefix: 'Follow-up Question',
+    completionText: 'Thank you for your participation! You will receive a detailed report with personalized recommendations via email shortly.',
+    scoreLabel: 'AI Readiness Score',
+    errorMsg: 'Sorry, there was an error. Please try again.'
+  }
+};
 // AI Analysis function with improved error handling
 async function analyzeResponse(questionId, questionText, userResponse, language) {
   const isFollowUp = questionId.includes('_followup');
@@ -193,11 +293,150 @@ function calculateReadinessScore(responses) {
   return Math.min(CONFIG.MAX_REALISTIC_SCORE, Math.round(percentage));
 }
 
-// Create or get assessment session
-app.post('/api/assessment/session', async (req, res) => {
+
+// Initialize assessment session - SECURE ENDPOINT
+app.post('/api/assessment/initialize', async (req, res) => {
   try {
+    const { sessionId, language = 'de' } = req.body;
+    
+    // Create session if it doesn't exist
+    if (pool) {
+      try {
+        await pool.query(`
+          INSERT INTO assessment_sessions (session_id, language, created_at, current_step)
+          VALUES ($1, $2, NOW(), 0)
+          ON CONFLICT (session_id) DO NOTHING
+        `, [sessionId, language]);
+      } catch (dbError) {
+        console.log('Session might already exist:', dbError.message);
+      }
+    }
+
+    const t = translations[language];
+    
+    res.json({
+      success: true,
+      sessionId: sessionId,
+      messages: [
+        { type: 'bot', content: t.welcomeMsg1 },
+        { type: 'bot', content: t.welcomeMsg2 }
+      ]
+    });
+  } catch (error) {
+    console.error('Error initializing session:', error);
+    res.status(500).json({ error: 'Failed to initialize session' });
+  }
+});
+
+// Handle question submission and analysis - SECURE ENDPOINT
+app.post('/api/assessment/submit', async (req, res) => {
+  try {
+    const { sessionId, questionId, response, currentQuestionIndex, language, isFollowUp } = req.body;
+    
+    if (!pool) {
+      return res.status(500).json({ error: 'Database not configured' });
+    }
+
+    const question = assessmentQuestions[currentQuestionIndex];
+    const questionText = question.text[language];
+    
+    // Analyze response with AI
+    const analysis = await analyzeResponse(questionId, questionText, response, language);
+    
+    // Store response in database
+    await pool.query(`
+      UPDATE assessment_sessions 
+      SET responses = COALESCE(responses, '{}'::jsonb) || $1::jsonb,
+          current_step = $2,
+          updated_at = NOW()
+      WHERE session_id = $3
+    `, [
+      JSON.stringify({[questionId]: {
+        question: questionText,
+        answer: response,
+        analysis: analysis.analysis,
+        score: analysis.score
+      }}),
+      currentQuestionIndex + 1,
+      sessionId
+    ]);
+
+    const t = translations[language];
+    const messages = [];
+
+    // Check if follow-up is needed
+    if (analysis.needsFollowUp && !isFollowUp) {
+      messages.push({
+        type: 'bot',
+        content: `(${t.followUpPrefix} ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`
+      });
+      
+      res.json({
+        success: true,
+        analysis: analysis.explanation,
+        score: analysis.score,
+        followUpQuestion: analysis.followUpQuestion,
+        messages
+      });
+    } else {
+      // Move to next question or complete
+      const nextIndex = currentQuestionIndex + 1;
+      if (nextIndex < assessmentQuestions.length) {
+        const nextQuestion = assessmentQuestions[nextIndex];
+        messages.push({
+          type: 'bot',
+          content: `(${t.questionPrefix} ${nextIndex + 1}) ${nextQuestion.text[language]}`
+        });
+        
+        res.json({
+          success: true,
+          analysis: analysis.explanation,
+          score: analysis.score,
+          messages,
+          nextQuestion: nextQuestion.text[language]
+        });
+      } else {
+        res.json({
+          success: true,
+          analysis: analysis.explanation,
+          score: analysis.score,
+          isComplete: true
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error submitting response:', error);
+    res.status(500).json({ error: 'Failed to submit response' });
+  }
+});
+// Create or get assessment session
+app.post('/api/assessment/consent', async (req, res) => {
+  try {
+    const { sessionId, consentDataProcessing, consentContactPermission, language = 'de' } = req.body;
+    
     if (!pool) {
       return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    await pool.query(`
+      UPDATE assessment_sessions 
+      SET consent_data_processing = $1,
+          consent_contact_permission = $2,
+          updated_at = NOW()
+      WHERE session_id = $3
+    `, [consentDataProcessing, consentContactPermission, sessionId]);
+
+    const t = translations[language];
+    
+    res.json({
+      success: true,
+      message: { type: 'bot', content: t.consentThanks }
+    });
+  } catch (error) {
+    console.error('Error saving consent:', error);
+    res.status(500).json({ error: 'Failed to save consent' });
+  }
+});
     }
 
     const { sessionId, language = 'de' } = req.body;
@@ -282,8 +521,40 @@ app.post('/api/assessment/consent', async (req, res) => {
 // Save contact information - NEW ENDPOINT
 app.post('/api/assessment/contact', async (req, res) => {
   try {
+    const { sessionId, contactName, email, companyName, employeeNumber, language = 'de' } = req.body;
+    
     if (!pool) {
       return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    await pool.query(`
+      UPDATE assessment_sessions 
+      SET contact_name = $1,
+          email = $2,
+          company_name = $3,
+          employee_number = $4,
+          current_step = 2,
+          updated_at = NOW()
+      WHERE session_id = $5
+    `, [contactName, email, companyName, employeeNumber, sessionId]);
+
+    const t = translations[language];
+    const firstQuestion = assessmentQuestions[0];
+    
+    res.json({
+      success: true,
+      messages: [
+        { type: 'bot', content: `Vielen Dank, ${contactName}! ${t.assessmentStart}` },
+        { type: 'bot', content: `(${t.questionPrefix} 1) ${firstQuestion.text[language]}` }
+      ],
+      nextQuestion: firstQuestion,
+      nextStep: 'questions'
+    });
+  } catch (error) {
+    console.error('Error saving contact:', error);
+    res.status(500).json({ error: 'Failed to save contact' });
+  }
+});
     }
 
     const { sessionId, contactName, email, companyName, employeeNumber } = req.body;
