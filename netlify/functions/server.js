@@ -574,44 +574,7 @@ app.post('/api/assessment/consent', async (req, res) => {
     res.status(500).json({ error: 'Failed to save consent' });
   }
 });
-    
-   current_step = 1
-      `, [sessionId, language, consentDataProcessing, consentContactPermission]);
 
-      client.release();
-      
-      const t = translations[language] || translations['de'];
-      
-      res.json({
-        success: true,
-        message: { type: 'bot', content: t.consentThanks || 'Vielen Dank für Ihre Einverständniserklärung!' }
-      });
-      
-    } finally {
-      await connectionPool.end();
-    }
-    
-  } catch (error) {
-    console.error('Consent endpoint error:', error);
-    res.status(500).json({ 
-      error: 'Failed to save consent',
-      details: error.message 
-    });
-  }
-});
-// Create or get assessment session
-app.post('/api/assessment/session', async (req, res) => {
-  try {
-    if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
-    }
-
-    const { sessionId, language = 'de' } = req.body;
-    
-    if (!sessionId) {
-      return res.status(400).json({ message: 'Session ID required' });
-    }
-    
     // Check if session exists
     const existingSession = await pool.query(
       'SELECT * FROM assessment_sessions WHERE session_id = $1',
