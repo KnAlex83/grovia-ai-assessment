@@ -301,11 +301,39 @@ app.post('/api/assessment/initialize', async (req, res) => {
     const { sessionId, language = 'de' } = req.body;
     
     // Create session if it doesn't exist
-    if (pool) {
+        if (pool) {
       try {
+        // Ensure table exists with all required columns
         await pool.query(`
-          INSERT INTO assessment_sessions (session_id, language, created_at, current_step)
-          VALUES ($1, $2, NOW(), 0)
+          CREATE TABLE IF NOT EXISTS assessment_sessions (
+            id SERIAL PRIMARY KEY,
+            session_id VARCHAR(255) UNIQUE NOT NULL,
+            language VARCHAR(10) DEFAULT 'de',
+            created_at TIMESTAMP DEFAULT NOW(),
+            updated_at TIMESTAMP DEFAULT NOW(),
+            current_step INTEGER DEFAULT 0,
+            consent_data_processing BOOLEAN DEFAULT FALSE,
+            consent_contact_permission BOOLEAN DEFAULT FALSE,
+            contact_name VARCHAR(255),
+            email VARCHAR(255),
+            company_name VARCHAR(255),
+            employee_number VARCHAR(50),
+            responses JSONB DEFAULT '{}'::jsonb,
+            readiness_score INTEGER,
+            is_completed BOOLEAN DEFAULT FALSE,
+            completed_at TIMESTAMP
+          )
+        `);
+        
+        // Create session if it doesn't exist
+        await pool.query(`
+          INSERT INTO assessment_sessions (
+            session_id, language, created_at, current_step, 
+            consent_data_processing, consent_contact_permission, 
+            contact_name, email, company_name, employee_number,
+            responses, readiness_score, is_completed, updated_at
+          )
+          VALUES ($1, $2, NOW(), 0, false, false, null, null, null, null, '{}'::jsonb, null, false, NOW())
           ON CONFLICT (session_id) DO NOTHING
         `, [sessionId, language]);
       } catch (dbError) {
