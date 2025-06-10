@@ -423,10 +423,14 @@ app.post('/api/assessment/submit', async (req, res) => {
       
       res.json({
         success: true,
-        analysis: analysis.explanation,
-        score: analysis.score,
-        followUpQuestion: analysis.followUpQuestion,
-        messages
+        analysis: {
+          explanation: analysis.explanation,
+          score: analysis.score,
+          needsFollowUp: true,
+          followUpQuestion: `(Nachfrage ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`
+        },
+        waitingForFollowUp: true,
+        sessionUpdated: true
       });
     } else {
       // Move to next question or complete
@@ -440,14 +444,26 @@ app.post('/api/assessment/submit', async (req, res) => {
         
         res.json({
           success: true,
-          analysis: analysis.explanation,
-          score: analysis.score,
-          messages,
-          nextQuestion: nextQuestion.text[language]
+          analysis: {
+            explanation: analysis.explanation,
+            score: analysis.score,
+            needsFollowUp: false
+          },
+          nextQuestion: `(Frage ${nextIndex + 1}) ${nextQuestion.text[language]}`,
+          questionId: nextQuestion.id,
+          sessionUpdated: true
         });
       } else {
         res.json({
           success: true,
+          analysis: {
+            explanation: analysis.explanation,
+            score: analysis.score,
+            needsFollowUp: false
+          },
+          isComplete: true,
+          sessionUpdated: true
+        });
           analysis: analysis.explanation,
           score: analysis.score,
           isComplete: true
