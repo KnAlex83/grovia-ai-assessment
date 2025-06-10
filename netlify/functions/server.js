@@ -593,7 +593,6 @@ app.post('/api/assessment/contact', async (req, res) => {
           company_name = $3,
           employee_number = $4,
           current_step = 2,
-          updated_at = NOW()
       WHERE session_id = $5
     `, [contactName, email, companyName, employeeNumber, sessionId]);
 
