@@ -48,12 +48,15 @@ async function initializeDatabase() {
   }
 }
 // Initialize database connection for each request
+// Ensure database connection for each request
 async function getPool() {
   if (!pool) {
     pool = await initializeDatabase();
   }
   return pool;
 }
+
+// AI Service configuration
 
 // AI Service configuration
 const CONFIG = {
@@ -494,16 +497,31 @@ app.post('/api/assessment/consent', async (req, res) => {
       return res.status(400).json({ error: 'Session ID required' });
     }
 
-    if (!process.env.DATABASE_URL) {
+    const dbPool = await getPool();
+    if (!dbPool) {
       return res.status(500).json({ error: 'Database not configured' });
     }
 
-    const { Pool } = require('@neondatabase/serverless');
-    const connectionPool = new Pool({ 
-      connectionString: process.env.DATABASE_URL,
-      max: 1,
-      ssl: { rejectUnauthorized: false }
+    await dbPool.query(`
+      UPDATE assessment_sessions SET
+        consent_data_processing = $1,
+        consent_contact_permission = $2,
+        current_step = 1
+      WHERE session_id = $3
+    `, [consentDataProcessing, consentContactPermission, sessionId]);
+
+    const t = translations[language] || translations['de'];
+    
+    res.json({
+      success: true,
+      message: { type: 'bot', content: t.consentThanks }
     });
+    
+  } catch (error) {
+    console.error('Consent endpoint error:', error);
+    res.status(500).json({ error: 'Failed to save consent' });
+  }
+});
 
     try {
       const client = await connectionPool.connect();
