@@ -762,10 +762,31 @@ app.post('/api/assessment/analyze', async (req, res) => {
       [JSON.stringify(currentResponses), sessionId]
     );
 
-    res.json({
+        // Determine next action based on question flow
+    const totalQuestions = assessmentQuestions.length;
+    const currentIndex = parseInt(questionId) - 1;
+
+    let responseData = {
       analysis: aiAnalysis,
       sessionUpdated: true
-    });
+    };
+
+    // Handle follow-up logic
+    if (aiAnalysis.needsFollowUp && !questionId.includes('_followup')) {
+      responseData.waitingForFollowUp = true;
+    } else {
+      // Move to next question or complete assessment
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < totalQuestions) {
+        const nextQuestion = assessmentQuestions[nextIndex];
+        responseData.nextQuestion = nextQuestion.text[language];
+        responseData.questionId = nextQuestion.id;
+      } else {
+        responseData.isComplete = true;
+      }
+    }
+
+    res.json(responseData);
   } catch (error) {
     console.error('Error analyzing response:', error);
     res.status(500).json({ message: 'Failed to analyze response' });
