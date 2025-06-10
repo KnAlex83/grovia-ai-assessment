@@ -599,23 +599,65 @@ app.post('/api/assessment/contact', async (req, res) => {
     res.status(500).json({ error: 'Failed to save contact' });
   }
 });
+
+// Create or get assessment session
+app.post('/api/assessment/session', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
     }
 
-    const { sessionId, contactName, email, companyName, employeeNumber } = req.body;
+    const { sessionId, language = 'de' } = req.body;
     
-    if (!sessionId || !contactName || !email || !companyName) {
-      return res.status(400).json({ message: 'Missing required contact information' });
+    if (!sessionId) {
+      return res.status(400).json({ message: 'Session ID required' });
     }
-
-    await pool.query(
-      'UPDATE assessment_sessions SET contact_name = $1, email = $2, company_name = $3, employee_number = $4 WHERE session_id = $5',
-      [contactName, email, companyName, employeeNumber, sessionId]
+    
+    // Check if session exists
+    const existingSession = await pool.query(
+      'SELECT * FROM assessment_sessions WHERE session_id = $1',
+      [sessionId]
     );
     
-    res.json({ success: true });
+    if (existingSession.rows.length > 0) {
+      return res.json(existingSession.rows[0]);
+    }
+    
+    // Create new session
+    const result = await pool.query(
+      'INSERT INTO assessment_sessions (session_id, language, current_step, responses, consent_data_processing, consent_contact_permission, is_completed) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [sessionId, language, 1, JSON.stringify({}), false, false, false]
+    );
+    
+    res.json(result.rows[0]);
   } catch (error) {
-    console.error('Error saving contact info:', error);
-    res.status(500).json({ message: 'Failed to save contact information' });
+    console.error('Error creating session:', error);
+    res.status(500).json({ message: 'Failed to create session' });
+  }
+});
+
+// Get assessment session
+app.get('/api/assessment/session/:sessionId', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    const { sessionId } = req.params;
+    
+    const result = await pool.query(
+      'SELECT * FROM assessment_sessions WHERE session_id = $1',
+      [sessionId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error getting session:', error);
+    res.status(500).json({ message: 'Failed to get session' });
   }
 });
 
