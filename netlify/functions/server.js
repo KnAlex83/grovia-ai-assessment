@@ -464,61 +464,52 @@ app.post('/api/assessment/consent', async (req, res) => {
   try {
     const { sessionId, consentDataProcessing, consentContactPermission, language = 'de' } = req.body;
     
-    if (!pool) {
-      await initializeDatabase();
-      if (!pool) {
-        return res.status(503).json({ error: 'Database service unavailable' });
-      }
+    if (!sessionId) {
+      return res.status(400).json({ error: 'Session ID required' });
     }
 
-    const client = await pool.connect();
-    
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS assessment_sessions (
-        id SERIAL PRIMARY KEY,
-        session_id VARCHAR(255) UNIQUE NOT NULL,
-        language VARCHAR(10) DEFAULT 'de',
-        created_at TIMESTAMP DEFAULT NOW(),
-        updated_at TIMESTAMP DEFAULT NOW(),
-        current_step INTEGER DEFAULT 0,
-        consent_data_processing BOOLEAN DEFAULT FALSE,
-        consent_contact_permission BOOLEAN DEFAULT FALSE,
-        contact_name VARCHAR(255),
-        email VARCHAR(255),
-        company_name VARCHAR(255),
-        employee_number VARCHAR(50),
-        responses JSONB DEFAULT '{}'::jsonb,
-        readiness_score INTEGER,
-        is_completed BOOLEAN DEFAULT FALSE,
-        completed_at TIMESTAMP
-      )
-    `);
+    if (!process.env.DATABASE_URL) {
+      return res.status(500).json({ error: 'Database not configured' });
+    }
 
-    await client.query(`
-      INSERT INTO assessment_sessions (
-        session_id, language, created_at, current_step, 
-        consent_data_processing, consent_contact_permission, 
-        updated_at
-      )
-      VALUES ($1, $2, NOW(), 1, $3, $4, NOW())
-      ON CONFLICT (session_id) DO UPDATE SET
-        consent_data_processing = $3,
-        consent_contact_permission = $4,
-        current_step = 1,
-        updated_at = NOW()
-    `, [sessionId, language, consentDataProcessing, consentContactPermission]);
-
-    client.release();
-
-    const t = translations[language];
-    
-    res.json({
-      success: true,
-      message: { type: 'bot', content: t.consentThanks }
+    const { Pool } = require('@neondatabase/serverless');
+    const connectionPool = new Pool({ 
+      connectionString: process.env.DATABASE_URL,
+      max: 1,
+      ssl: { rejectUnauthorized: false }
     });
+
+    try {
+      const client = await connectionPool.connect();
+      
+      // Simple upsert without referencing updated_at column
+      await client.query(`
+        INSERT INTO assessment_sessions (
+          session_id, language, consent_data_processing, 
+          consent_contact_permission, current_step, created_at
+        )
+        VALUES ($1, $2, $3, $4, 1, NOW())
+        ON CONFLICT (session_id) DO UPDATE SET
+          consent_data_processing = $3,
+          consent_contact_permission = $4,
+          current_step = 1
+      `, [sessionId, language, consentDataProcessing, consentContactPermission]);
+
+      client.release();
+      
+      const t = translations[language] || translations['de'];
+      
+      res.json({
+        success: true,
+        message: { type: 'bot', content: t.consentThanks || 'Vielen Dank für Ihre Einverständniserklärung!' }
+      });
+      
+    } finally {
+      await connectionPool.end();
+    }
     
   } catch (error) {
-    console.error('Error in consent endpoint:', error);
+    console.error('Consent endpoint error:', error);
     res.status(500).json({ 
       error: 'Failed to save consent',
       details: error.message 
