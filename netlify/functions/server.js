@@ -447,13 +447,20 @@ app.post('/api/assessment/consent', async (req, res) => {
       return res.status(500).json({ message: 'Database not configured' });
     }
 
+    // Ensure session exists first using UPSERT
     await pool.query(`
-      UPDATE assessment_sessions 
-      SET consent_data_processing = $1,
-          consent_contact_permission = $2,
-          updated_at = NOW()
-      WHERE session_id = $3
-    `, [consentDataProcessing, consentContactPermission, sessionId]);
+      INSERT INTO assessment_sessions (
+        session_id, language, created_at, current_step, 
+        consent_data_processing, consent_contact_permission, 
+        contact_name, email, company_name, employee_number,
+        responses, readiness_score, is_completed, updated_at
+      )
+      VALUES ($1, $2, NOW(), 0, $3, $4, null, null, null, null, '{}'::jsonb, null, false, NOW())
+      ON CONFLICT (session_id) DO UPDATE SET
+        consent_data_processing = $3,
+        consent_contact_permission = $4,
+        updated_at = NOW()
+    `, [sessionId, language, consentDataProcessing, consentContactPermission]);
 
     const t = translations[language];
     
