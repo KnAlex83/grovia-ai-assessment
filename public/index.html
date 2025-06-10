@@ -956,7 +956,10 @@
         
         if (currentStep === 'consent') progress = 0;
         else if (currentStep === 'contact') progress = 1;
-        else if (currentStep === 'questions') progress = 2 + currentQuestionIndex;
+        else if (currentStep === 'questions') {
+          // Don't advance progress for follow-up questions
+          progress = waitingForFollowUp ? 2 + currentQuestionIndex : 2 + currentQuestionIndex + 1;
+        }
         else if (currentStep === 'completed') progress = totalSteps;
         
         const percentage = Math.min(100, (progress / totalSteps) * 100);
@@ -1170,7 +1173,7 @@
   // Handle follow-up question
   if (result.analysis.needsFollowUp && result.analysis.followUpQuestion && !questionsWithFollowUp.has((currentQuestionIndex + 1).toString())) {
     setTimeout(() => {
-      addMessage('bot', result.analysis.followUpQuestion);
+      addMessage('bot', `(Nachfrage ${currentQuestionIndex + 1}) ${result.analysis.followUpQuestion}`);
       waitingForFollowUp = true;
       questionsWithFollowUp.add((currentQuestionIndex + 1).toString());
     }, 1500);
