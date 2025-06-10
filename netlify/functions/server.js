@@ -47,7 +47,7 @@ async function initializeDatabase() {
     return null;
   }
 }
-// Initialize database connection for each request
+// Ensure database connection for each request
 // Ensure database connection for each request
 async function getPool() {
   if (!pool) {
@@ -322,8 +322,6 @@ function calculateReadinessScore(responses) {
   const percentage = (totalScore / maxPossibleScore) * 100;
   return Math.min(CONFIG.MAX_REALISTIC_SCORE, Math.round(percentage));
 }
-
-
 // Initialize assessment session - SECURE ENDPOINT
 app.post('/api/assessment/initialize', async (req, res) => {
   try {
@@ -336,9 +334,6 @@ app.post('/api/assessment/initialize', async (req, res) => {
       try {
         // Ensure table exists with all required columns
         await dbPool.query(`
-      try {
-        // Ensure table exists with all required columns
-        await pool.query(`
           CREATE TABLE IF NOT EXISTS assessment_sessions (
             id SERIAL PRIMARY KEY,
             session_id VARCHAR(255) UNIQUE NOT NULL,
@@ -360,14 +355,14 @@ app.post('/api/assessment/initialize', async (req, res) => {
         `);
         
         // Create session if it doesn't exist
-        await pool.query(`
+        await dbPool.query(`
           INSERT INTO assessment_sessions (
             session_id, language, created_at, current_step, 
             consent_data_processing, consent_contact_permission, 
             contact_name, email, company_name, employee_number,
-            responses, readiness_score, is_completed, updated_at
+            responses, readiness_score, is_completed
           )
-          VALUES ($1, $2, NOW(), 0, false, false, null, null, null, null, '{}'::jsonb, null, false, NOW())
+          VALUES ($1, $2, NOW(), 0, false, false, null, null, null, null, '{}'::jsonb, null, false)
           ON CONFLICT (session_id) DO NOTHING
         `, [sessionId, language]);
       } catch (dbError) {
@@ -388,6 +383,8 @@ app.post('/api/assessment/initialize', async (req, res) => {
   } catch (error) {
     console.error('Error initializing session:', error);
     res.status(500).json({ error: 'Failed to initialize session' });
+  }
+});
   }
 });
 
