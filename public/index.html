@@ -1145,11 +1145,11 @@
           questionSubmitBtn.textContent = 'Wird analysiert...';
           
           try {
-            const result = await serverRequest('/submit', {
+            const result = await serverRequest('/analyze', {
               questionId: (currentQuestionIndex + 1).toString(),
-              response: userResponse,
-              currentQuestionIndex: currentQuestionIndex,
-              isFollowUp: waitingForFollowUp
+              questionText: assessmentQuestions[currentQuestionIndex].text[currentLanguage],
+              userResponse: userResponse,
+              language: currentLanguage
             });
 
             if (result.success) {
