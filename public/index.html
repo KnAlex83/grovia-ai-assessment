@@ -1147,7 +1147,6 @@
           try {
             const result = await serverRequest('/analyze', {
               questionId: (currentQuestionIndex + 1).toString(),
-              questionText: assessmentQuestions[currentQuestionIndex].text[currentLanguage],
               userResponse: userResponse,
               language: currentLanguage
             });
