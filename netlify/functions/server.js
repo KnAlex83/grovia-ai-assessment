@@ -385,8 +385,6 @@ app.post('/api/assessment/initialize', async (req, res) => {
     res.status(500).json({ error: 'Failed to initialize session' });
   }
 });
-  }
-});
 
 // Handle question submission and analysis - SECURE ENDPOINT
 app.post('/api/assessment/submit', async (req, res) => {
