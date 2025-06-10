@@ -432,11 +432,55 @@ app.post('/api/assessment/consent', async (req, res) => {
       success: true,
       message: { type: 'bot', content: t.consentThanks }
     });
-  } catch (error) {
+       } catch (error) {
     console.error('Error saving consent:', error);
     res.status(500).json({ error: 'Failed to save consent' });
   }
 });
+
+// Save contact information - NEW ENDPOINT
+app.post('/api/assessment/contact', async (req, res) => {
+  try {
+    const { sessionId, contactName, email, companyName, employeeNumber, language = 'de' } = req.body;
+    
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    await pool.query(`
+      UPDATE assessment_sessions 
+      SET contact_name = $1,
+          email = $2,
+          company_name = $3,
+          employee_number = $4,
+          current_step = 2,
+          updated_at = NOW()
+      WHERE session_id = $5
+    `, [contactName, email, companyName, employeeNumber, sessionId]);
+
+    const t = translations[language];
+    const firstQuestion = assessmentQuestions[0];
+    
+    res.json({
+      success: true,
+      messages: [
+        { type: 'bot', content: `Vielen Dank, ${contactName}! ${t.assessmentStart}` },
+        { type: 'bot', content: `(${t.questionPrefix} 1) ${firstQuestion.text[language]}` }
+      ],
+      nextQuestion: firstQuestion,
+      nextStep: 'questions'
+    });
+  } catch (error) {
+    console.error('Error saving contact:', error);
+    res.status(500).json({ error: 'Failed to save contact' });
+  }
+});
+
+// Create or get assessment session
+app.post('/api/assessment/session', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
     }
 
     const { sessionId, language = 'de' } = req.body;
