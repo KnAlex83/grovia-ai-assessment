@@ -1046,11 +1046,20 @@
 
         // Consent form
         const dataProcessingCheckbox = document.getElementById('data-processing');
+        const contactPermissionCheckbox = document.getElementById('contact-permission');
         const consentSubmitBtn = document.getElementById('consent-submit');
-        
-        dataProcessingCheckbox.addEventListener('change', function() {
-          consentSubmitBtn.disabled = !this.checked;
-        });
+
+      function updateConsentButton() {
+        const dataProcessing = dataProcessingCheckbox.checked;
+        const contactPermission = contactPermissionCheckbox.checked;
+        consentSubmitBtn.disabled = !(dataProcessing && contactPermission);
+        }
+
+        dataProcessingCheckbox.addEventListener('change', updateConsentButton);
+        contactPermissionCheckbox.addEventListener('change', updateConsentButton);
+
+      // Initialize button state
+        updateConsentButton();
         
         consentSubmitBtn.addEventListener('click', async function() {
           const dataProcessing = document.getElementById('data-processing').checked;
