@@ -19,15 +19,36 @@ app.use((req, res, next) => {
 });
 
 // Database connection with error handling
+// Enhanced Neon database connection for serverless
 let pool;
-try {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL environment variable is not set');
+
+async function initializeDatabase() {
+  try {
+    if (!process.env.DATABASE_URL) {
+      console.error('DATABASE_URL environment variable is not set');
+      return null;
+    }
+    
+    pool = new Pool({ 
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 1,
+      idleTimeoutMillis: 0,
+      connectionTimeoutMillis: 0,
+    });
+    
+    const client = await pool.connect();
+    await client.query('SELECT NOW()');
+    client.release();
+    console.log('Database connected successfully');
+    return pool;
+  } catch (error) {
+    console.error('Database connection error:', error);
+    return null;
   }
-  pool = new Pool({ connectionString: process.env.DATABASE_URL });
-} catch (error) {
-  console.error('Database connection error:', error);
 }
+
+initializeDatabase();
 
 // AI Service configuration
 const CONFIG = {
@@ -444,23 +465,50 @@ app.post('/api/assessment/consent', async (req, res) => {
     const { sessionId, consentDataProcessing, consentContactPermission, language = 'de' } = req.body;
     
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      await initializeDatabase();
+      if (!pool) {
+        return res.status(503).json({ error: 'Database service unavailable' });
+      }
     }
 
-    // Ensure session exists first using UPSERT
-    await pool.query(`
+    const client = await pool.connect();
+    
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS assessment_sessions (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) UNIQUE NOT NULL,
+        language VARCHAR(10) DEFAULT 'de',
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        current_step INTEGER DEFAULT 0,
+        consent_data_processing BOOLEAN DEFAULT FALSE,
+        consent_contact_permission BOOLEAN DEFAULT FALSE,
+        contact_name VARCHAR(255),
+        email VARCHAR(255),
+        company_name VARCHAR(255),
+        employee_number VARCHAR(50),
+        responses JSONB DEFAULT '{}'::jsonb,
+        readiness_score INTEGER,
+        is_completed BOOLEAN DEFAULT FALSE,
+        completed_at TIMESTAMP
+      )
+    `);
+
+    await client.query(`
       INSERT INTO assessment_sessions (
         session_id, language, created_at, current_step, 
         consent_data_processing, consent_contact_permission, 
-        contact_name, email, company_name, employee_number,
-        responses, readiness_score, is_completed, updated_at
+        updated_at
       )
-      VALUES ($1, $2, NOW(), 0, $3, $4, null, null, null, null, '{}'::jsonb, null, false, NOW())
+      VALUES ($1, $2, NOW(), 1, $3, $4, NOW())
       ON CONFLICT (session_id) DO UPDATE SET
         consent_data_processing = $3,
         consent_contact_permission = $4,
+        current_step = 1,
         updated_at = NOW()
     `, [sessionId, language, consentDataProcessing, consentContactPermission]);
+
+    client.release();
 
     const t = translations[language];
     
@@ -468,12 +516,15 @@ app.post('/api/assessment/consent', async (req, res) => {
       success: true,
       message: { type: 'bot', content: t.consentThanks }
     });
+    
   } catch (error) {
-    console.error('Error saving consent:', error);
-    res.status(500).json({ error: 'Failed to save consent' });
+    console.error('Error in consent endpoint:', error);
+    res.status(500).json({ 
+      error: 'Failed to save consent',
+      details: error.message 
+    });
   }
 });
-
 // Create or get assessment session
 app.post('/api/assessment/session', async (req, res) => {
   try {
