@@ -787,7 +787,7 @@ app.post('/api/assessment/analyze', async (req, res) => {
 
         // Determine next action based on question flow
     const totalQuestions = assessmentQuestions.length;
-    const currentIndex = assessmentQuestions.findIndex(q => q.id === questionId);
+    const currentIndex = parseInt(questionId) - 1;
 
     let responseData = {
       analysis: aiAnalysis,
@@ -802,7 +802,7 @@ app.post('/api/assessment/analyze', async (req, res) => {
       const nextIndex = currentIndex + 1;
       if (nextIndex < totalQuestions) {
         const nextQuestion = assessmentQuestions[nextIndex];
-        responseData.nextQuestion = `(Frage ${nextIndex + 1}) ${nextQuestion.text[language]}`;
+        responseData.nextQuestion = nextQuestion.text[language];
         responseData.questionId = nextQuestion.id;
       } else {
         responseData.isComplete = true;
