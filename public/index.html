@@ -1192,6 +1192,7 @@
                   }
                 } else if (result.nextQuestion) {
                   currentQuestionIndex++;
+                  updateProgress(); 
                   setTimeout(() => {
                     addMessage('bot', result.nextQuestion);
                   }, 2000);
