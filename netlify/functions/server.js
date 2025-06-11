@@ -8,7 +8,16 @@ neonConfig.webSocketConstructor = ws;
 
 const app = express();
 app.use(express.json());
-
+// Fix for Netlify routing
+app.use((req, res, next) => {
+  if (req.url.startsWith('/.netlify/functions/server')) {
+    req.url = req.url.replace('/.netlify/functions/server', '');
+  }
+  if (!req.url.startsWith('/')) {
+    req.url = '/' + req.url;
+  }
+  next();
+});
 // Add routing middleware for database operations
 app.use((req, res, next) => {
   if (req.body && req.body.endpoint) {
