@@ -1043,7 +1043,7 @@
       // Global state
       let currentLanguage = 'de';
       let currentTheme = 'light';
-      let sessionId = generateSessionId();
+      let sessionId = null;
       let currentStep = 'consent';
       let currentQuestionIndex = 0;
       let waitingForFollowUp = false;
@@ -1051,8 +1051,27 @@
       let responses = {};
       let contactInfo = {};
 
-      function generateSessionId() {
-        return Math.random().toString(36).substring(2) + Date.now().toString(36);
+      // Get secure session ID from server
+      async function initializeSecureSession() {
+        try {
+          const response = await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/session',
+              language: currentLanguage
+            })
+          });
+          const data = await response.json();
+          if (data.success) {
+            sessionId = data.sessionId;
+          } else {
+            sessionId = 'fallback_' + Date.now();
+          }
+        } catch (error) {
+          console.error('Session initialization failed:', error);
+          sessionId = 'fallback_' + Date.now();
+        }
       }
 
       function updateLanguage() {
