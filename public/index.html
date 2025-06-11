@@ -1,45 +1,68 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GROVIA AI Readiness Assessment | KI-Bereitschaft bewerten</title>
-    <meta name="description" content="Bewerten Sie die KI-Bereitschaft Ihres Unternehmens mit unserem professionellen Assessment. DSGVO-konform und kostenlos.">
-    
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="GROVIA AI Readiness Assessment">
-    <meta property="og:description" content="Bewerten Sie die KI-Bereitschaft Ihres Unternehmens mit unserem professionellen Assessment.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://ai-assessment.grovia-digital.com">
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>AI Readiness Assessment - Grovia Digital</title>
+    <meta name="description" content="Evaluate your company's AI readiness with our comprehensive assessment tool. Get personalized recommendations and a detailed report." />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <style>
+      /* Complete fix for form scrolling and theme toggle */
       :root {
-        --primary-color: #2563eb;
-        --primary-hover: #1d4ed8;
-        --secondary-color: #64748b;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --error-color: #ef4444;
-        --background: #ffffff;
-        --surface: #f8fafc;
-        --border: #e2e8f0;
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --text-muted: #94a3b8;
-        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        --radius: 0.5rem;
-        --radius-lg: 0.75rem;
+        /* Grovia Digital Professional Color Palette */
+        --background: 0 0% 100%;
+        --foreground: 210 15% 20%;
+        --muted: 210 20% 97%;
+        --muted-foreground: 210 10% 50%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 210 15% 20%;
+        --card: 0 0% 100%;
+        --card-foreground: 210 15% 20%;
+        --border: 210 20% 88%;
+        --input: 210 20% 94%;
+        --primary: 210 100% 45%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 210 15% 95%;
+        --secondary-foreground: 210 15% 20%;
+        --accent: 210 100% 96%;
+        --accent-foreground: 210 100% 35%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+        --ring: 210 100% 45%;
+        --radius: 0.75rem;
+        --success: 142 70% 40%;
+        --text-primary: 210 15% 20%;
+        --text-secondary: 210 10% 50%;
+        --background-gradient: 210 30% 98%;
+        
+        --content-max-width: 1200px;
+        --section-padding: 4rem;
+        --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       }
 
       .dark {
-        --background: #0f172a;
-        --surface: #1e293b;
-        --border: #334155;
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
+        --background: 220 20% 6%;
+        --foreground: 210 20% 95%;
+        --muted: 220 15% 10%;
+        --muted-foreground: 210 15% 65%;
+        --popover: 220 20% 8%;
+        --popover-foreground: 210 20% 95%;
+        --card: 220 18% 8%;
+        --card-foreground: 210 20% 95%;
+        --border: 220 15% 15%;
+        --input: 220 15% 12%;
+        --primary: 210 100% 60%;
+        --primary-foreground: 210 10% 10%;
+        --secondary: 220 15% 12%;
+        --secondary-foreground: 210 20% 95%;
+        --accent: 220 15% 15%;
+        --accent-foreground: 210 100% 70%;
+        --destructive: 0 62% 55%;
+        --destructive-foreground: 0 0% 100%;
+        --ring: 210 100% 60%;
+        --text-primary: 210 20% 95%;
+        --text-secondary: 210 15% 65%;
+        --background-gradient: 220 18% 8%;
       }
 
       * {
@@ -49,58 +72,84 @@
       }
 
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: var(--background);
-        color: var(--text-primary);
-        line-height: 1.6;
-        transition: all 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        font-feature-settings: "rlig" 1, "calt" 1;
+        background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--background-gradient)) 100%);
+        color: hsl(var(--foreground));
+        line-height: 1.5;
+        min-height: 100vh;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-x: hidden;
       }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1rem;
+      .main-container {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
       }
 
-      /* Header */
+      /* Header with improved responsive design */
       .header {
-        background: var(--background);
-        border-bottom: 1px solid var(--border);
-        padding: 1rem 0;
-        position: sticky;
+        position: fixed;
         top: 0;
-        z-index: 100;
-        backdrop-filter: blur(10px);
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: hsla(var(--background), 0.85);
+        backdrop-filter: blur(12px) saturate(180%);
+        border-bottom: 1px solid hsl(var(--border));
+        padding: 0.75rem 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .header-content {
+        max-width: var(--content-max-width);
+        margin: 0 auto;
+        padding: 0 1.5rem;
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
       }
 
       .logo {
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
         text-decoration: none;
+        color: hsl(var(--primary));
+        font-weight: 700;
+        font-size: 1.25rem;
+        transition: all 0.2s ease;
+      }
+
+      .logo:hover {
+        color: hsl(var(--primary));
+        transform: translateY(-1px);
       }
 
       .logo-icon {
-        width: 2rem;
-        height: 2rem;
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+        width: 2.5rem;
+        height: 2.5rem;
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
         border-radius: var(--radius);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
+        color: hsl(var(--primary-foreground));
+        font-size: 1.25rem;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      .header-actions {
+      .logo:hover .logo-icon {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-controls {
         display: flex;
         align-items: center;
         gap: 1rem;
@@ -108,208 +157,279 @@
 
       .language-toggle {
         display: flex;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
+        background: hsl(var(--muted));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 0.25rem;
+        transition: all 0.2s ease;
+      }
+
+      .language-toggle:hover {
+        border-color: hsl(var(--primary));
       }
 
       .language-toggle button {
         padding: 0.5rem 1rem;
         border: none;
         background: transparent;
-        color: var(--text-secondary);
+        color: hsl(var(--muted-foreground));
         cursor: pointer;
-        transition: all 0.2s;
-        font-size: 0.875rem;
+        border-radius: calc(var(--radius) * 0.6);
         font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+      }
+
+      .language-toggle button:hover {
+        color: hsl(var(--foreground));
+        background: hsl(var(--background));
       }
 
       .language-toggle button.active {
-        background: var(--primary-color);
-        color: white;
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px -2px hsla(var(--primary), 0.4);
       }
 
       .theme-toggle {
-        padding: 0.5rem;
-        border: 1px solid var(--border);
-        background: var(--surface);
-        color: var(--text-primary);
+        padding: 0.75rem;
+        border: 1px solid hsl(var(--border));
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
         border-radius: var(--radius);
         cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .theme-toggle:hover {
-        background: var(--border);
-      }
-
-      /* Main Content */
-      .main {
-        padding: 3rem 0;
-        min-height: calc(100vh - 200px);
-      }
-
-      .hero {
-        text-align: center;
-        margin-bottom: 4rem;
-      }
-
-      .hero h1 {
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 1rem;
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .hero p {
-        font-size: 1.25rem;
-        color: var(--text-secondary);
-        max-width: 600px;
-        margin: 0 auto 2rem;
-      }
-
-      .cta-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 1rem 2rem;
-        background: var(--primary-color);
-        color: white;
-        text-decoration: none;
-        border-radius: var(--radius-lg);
-        font-weight: 600;
-        font-size: 1.125rem;
-        box-shadow: var(--shadow-lg);
-        transition: all 0.3s;
-      }
-
-      .cta-button:hover {
-        background: var(--primary-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-      }
-
-      /* Features */
-      .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-bottom: 4rem;
-      }
-
-      .feature-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 2rem;
-        text-align: center;
-        transition: all 0.3s;
-      }
-
-      .feature-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
-      }
-
-      .feature-icon {
-        width: 4rem;
-        height: 4rem;
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-        border-radius: 50%;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 1rem;
-        color: white;
       }
 
-      .icon-large {
-        width: 2rem;
-        height: 2rem;
-        fill: none;
-        stroke: currentColor;
-        stroke-width: 2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
+      .theme-toggle:hover {
+        background: hsl(var(--muted));
+        border-color: hsl(var(--primary));
+        transform: translateY(-1px);
       }
 
-      .feature-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        color: var(--text-primary);
+      /* Main content with proper spacing */
+      .main {
+        flex: 1;
+        padding-top: 5rem;
+        padding-bottom: 2rem;
       }
 
-      .feature-description {
-        color: var(--text-secondary);
-        line-height: 1.6;
+      .content-wrapper {
+        max-width: var(--content-max-width);
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
       }
 
-      /* Chat Interface */
-      .chat-container {
+      /* Hero section with enhanced typography */
+      .hero-section {
+        text-align: center;
+        padding: var(--section-padding) 0;
+        background: linear-gradient(135deg, hsla(var(--primary), 0.05) 0%, hsla(var(--accent), 0.1) 100%);
+        border-radius: calc(var(--radius) * 2);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, 
+          hsla(var(--primary), 0.1) 0%, 
+          hsla(var(--accent-foreground), 0.05) 50%, 
+          hsla(var(--primary), 0.1) 100%);
+        z-index: -1;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
         max-width: 800px;
         margin: 0 auto;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-lg);
+        padding: 0 2rem;
       }
 
-      .chat-header {
-        background: var(--primary-color);
-        color: white;
-        padding: 1.5rem;
-        text-align: center;
+      .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
       }
 
-      .chat-title {
-        font-size: 1.5rem;
+      .hero-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+        color: hsl(var(--muted-foreground));
+        margin-bottom: 2.5rem;
+        font-weight: 400;
+        line-height: 1.6;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
+        color: hsl(var(--primary-foreground));
+        text-decoration: none;
+        border-radius: var(--radius);
         font-weight: 600;
-        margin-bottom: 0.25rem;
+        font-size: 1.125rem;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        cursor: pointer;
       }
 
-      .chat-subtitle {
+      .hero-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      }
+
+      .hero-cta:active {
+        transform: translateY(0);
+      }
+
+      /* Assessment interface with improved UX */
+      .assessment-container {
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) * 1.5);
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .assessment-header {
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
+        color: hsl(var(--primary-foreground));
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .assessment-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        transform: translateX(-100%);
+        transition: transform 0.6s;
+      }
+
+      .assessment-header:hover::before {
+        transform: translateX(100%);
+      }
+
+      .assessment-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .assessment-subtitle {
         opacity: 0.9;
-        font-size: 0.875rem;
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .progress-container {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        margin-top: 1.5rem;
       }
 
       .progress-bar {
-        height: 4px;
-        background: rgba(255, 255, 255, 0.2);
-        overflow: hidden;
-      }
-
-      .progress-fill {
         height: 100%;
-        background: white;
+        background: linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,1));
         width: 0%;
-        transition: width 0.5s ease;
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 0 3px 3px 0;
       }
 
-      .chat-content {
+      /* Chat interface with enhanced styling */
+      .chat-container {
         height: 500px;
         overflow-y: auto;
-        padding: 1.5rem;
-        background: var(--background);
+        padding: 2rem;
+        background: linear-gradient(to bottom, hsl(var(--background)), hsl(var(--muted)));
+        scroll-behavior: smooth;
+      }
+
+      .chat-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .chat-container::-webkit-scrollbar-track {
+        background: hsl(var(--muted));
+      }
+
+      .chat-container::-webkit-scrollbar-thumb {
+        background: hsl(var(--border));
+        border-radius: 3px;
+      }
+
+      .chat-container::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--muted-foreground));
       }
 
       .chat-messages {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.5rem;
       }
 
       .message {
         display: flex;
-        max-width: 80%;
+        align-items: flex-start;
+        gap: 0.75rem;
+        max-width: 85%;
+        animation: messageSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes messageSlide {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .message.user {
+        flex-direction: row-reverse;
         align-self: flex-end;
         margin-left: auto;
       }
@@ -318,44 +438,53 @@
         align-self: flex-start;
       }
 
-      .message-bubble {
-        padding: 0.75rem 1rem;
-        border-radius: var(--radius-lg);
+      .message-content {
+        padding: 1rem 1.25rem;
+        border-radius: calc(var(--radius) * 1.2);
+        font-size: 0.95rem;
+        line-height: 1.6;
         word-wrap: break-word;
-        line-height: 1.5;
+        position: relative;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
       }
 
-      .message.user .message-bubble {
-        background: var(--primary-color);
-        color: white;
-        border-bottom-right-radius: 0.25rem;
+      .message.user .message-content {
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
+        color: hsl(var(--primary-foreground));
+        border-bottom-right-radius: 0.5rem;
       }
 
-      .message.bot .message-bubble {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        color: var(--text-primary);
-        border-bottom-left-radius: 0.25rem;
+      .message.bot .message-content {
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        color: hsl(var(--card-foreground));
+        border-bottom-left-radius: 0.5rem;
       }
 
-      /* Forms */
+      .message-content:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Enhanced form styling */
       .form-container {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
         padding: 2rem;
-        margin-bottom: 2rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
+        background: hsl(var(--card));
+        border-top: 1px solid hsl(var(--border));
       }
 
       .form-title {
         font-size: 1.5rem;
         font-weight: 600;
-        margin-bottom: 1.5rem;
         text-align: center;
-        color: var(--text-primary);
+        margin-bottom: 2rem;
+        color: hsl(var(--foreground));
+      }
+
+      .form-content {
+        max-width: 500px;
+        margin: 0 auto;
       }
 
       .form-group {
@@ -366,452 +495,702 @@
         display: block;
         margin-bottom: 0.5rem;
         font-weight: 500;
-        color: var(--text-primary);
+        color: hsl(var(--foreground));
+        font-size: 0.95rem;
       }
 
-      .form-input, .form-select, .form-textarea {
+      .form-input, .form-select {
         width: 100%;
-        padding: 0.75rem;
-        border: 1px solid var(--border);
+        padding: 0.875rem 1rem;
+        border: 2px solid hsl(var(--border));
         border-radius: var(--radius);
-        background: var(--background);
-        color: var(--text-primary);
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
         font-size: 1rem;
-        transition: border-color 0.2s;
-      }
-
-      .form-input:focus, .form-select:focus, .form-textarea:focus {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
       }
 
-      .form-textarea {
-        resize: vertical;
-        min-height: 100px;
+      .form-input:focus, .form-select:focus {
+        border-color: hsl(var(--primary));
+        box-shadow: 0 0 0 3px hsla(var(--primary), 0.1);
+        transform: translateY(-1px);
       }
 
-      .checkbox-group {
+      .form-input:hover, .form-select:hover {
+        border-color: hsl(var(--muted-foreground));
+      }
+
+      .checkbox-container {
         display: flex;
         align-items: flex-start;
         gap: 0.75rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: hsl(var(--muted));
+        border-radius: var(--radius);
+        transition: all 0.2s ease;
+      }
+
+      .checkbox-container:hover {
+        background: hsl(var(--accent));
       }
 
       .checkbox {
         margin-top: 0.25rem;
+        transform: scale(1.1);
       }
 
       .checkbox-label {
-        font-size: 0.875rem;
+        font-size: 0.9rem;
         line-height: 1.5;
         cursor: pointer;
+        color: hsl(var(--foreground));
       }
 
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
+      .form-button {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
+        color: hsl(var(--primary-foreground));
         border: none;
         border-radius: var(--radius);
-        font-weight: 500;
         font-size: 1rem;
+        font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s;
-        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
       }
 
-      .btn-primary {
-        background: var(--primary-color);
-        color: white;
+      .form-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15);
       }
 
-      .btn-primary:hover:not(:disabled) {
-        background: var(--primary-hover);
+      .form-button:active:not(:disabled) {
+        transform: translateY(0);
       }
 
-      .btn-primary:disabled {
-        opacity: 0.5;
+      .form-button:disabled {
+        opacity: 0.6;
         cursor: not-allowed;
+        transform: none;
       }
 
-      .btn-secondary {
-        background: var(--surface);
-        color: var(--text-primary);
-        border: 1px solid var(--border);
-      }
-
-      .btn-secondary:hover {
-        background: var(--border);
-      }
-
-      .loading-dots {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-      }
-
-      .loading-dots::after {
+      .form-button::before {
         content: '';
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background: currentColor;
-        animation: loading 1.4s infinite ease-in-out;
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.6s;
       }
 
-      @keyframes loading {
-        0%, 80%, 100% { opacity: 0; }
-        40% { opacity: 1; }
+      .form-button:hover::before {
+        left: 100%;
       }
 
-      /* Hidden state */
-      .hidden {
-        display: none !important;
+      /* Text input form for questions */
+      .text-input-form {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
       }
 
-      /* Footer */
-      .footer {
-        background: var(--surface);
-        border-top: 1px solid var(--border);
-        padding: 2rem 0;
+      .text-input-form .form-input {
+        flex: 1;
+        min-height: 50px;
+        resize: vertical;
+      }
+
+      .text-input-form .form-button {
+        width: auto;
+        padding: 0.875rem 1.5rem;
+        white-space: nowrap;
+      }
+
+      /* Question form container */
+      .question-form-container {
+        padding: 1.5rem 2rem;
+        background: hsl(var(--card));
+        border-top: 1px solid hsl(var(--border));
+      }
+
+      /* Features grid with enhanced cards */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .feature-card {
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) * 1.5);
+        padding: 2.5rem 2rem;
         text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, hsla(var(--primary), 0.05), hsla(var(--accent), 0.05));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        border-color: hsl(var(--primary));
+      }
+
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+
+      .feature-icon {
+        width: 4rem;
+        height: 4rem;
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: hsl(var(--primary-foreground));
+        box-shadow: var(--card-shadow);
+        position: relative;
+        z-index: 1;
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover .feature-icon {
+        transform: scale(1.1);
+      }
+
+      .icon-large {
+        width: 1.75rem;
+        height: 1.75rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: hsl(var(--foreground));
+        position: relative;
+        z-index: 1;
+      }
+
+      .feature-description {
+        color: hsl(var(--muted-foreground));
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Footer styling */
+      .footer {
+        background: hsl(var(--muted));
+        border-top: 1px solid hsl(var(--border));
+        padding: 3rem 0 2rem;
         margin-top: 4rem;
       }
 
       .footer-content {
-        max-width: 1200px;
+        max-width: var(--content-max-width);
         margin: 0 auto;
-        padding: 0 1rem;
+        padding: 0 1.5rem;
+        text-align: center;
       }
 
       .footer-links {
         display: flex;
         justify-content: center;
         gap: 2rem;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
         flex-wrap: wrap;
       }
 
       .footer-link {
-        color: var(--text-secondary);
+        color: hsl(var(--muted-foreground));
         text-decoration: none;
-        font-size: 0.875rem;
-        transition: color 0.2s;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
       }
 
       .footer-link:hover {
-        color: var(--primary-color);
+        color: hsl(var(--primary));
+        background: hsl(var(--background));
       }
 
       .footer-copyright {
-        color: var(--text-muted);
-        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.85rem;
+        opacity: 0.8;
       }
 
-      /* Responsive */
+      /* Utility classes */
+      .hidden {
+        display: none !important;
+      }
+
+      .loading {
+        position: relative;
+        color: transparent;
+      }
+
+      .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid transparent;
+        border-top: 2px solid currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+
+      /* Responsive design improvements */
       @media (max-width: 768px) {
-        .container {
+        .header-content {
           padding: 0 1rem;
         }
 
-        .hero h1 {
-          font-size: 2rem;
+        .logo {
+          font-size: 1.1rem;
         }
 
-        .hero p {
+        .logo-icon {
+          width: 2rem;
+          height: 2rem;
           font-size: 1rem;
         }
 
-        .chat-container {
-          margin: 0 1rem;
+        .content-wrapper {
+          padding: 0 1rem;
+          gap: 2rem;
         }
 
-        .chat-content {
+        .hero-section {
+          padding: 2rem 0;
+          margin-bottom: 1.5rem;
+        }
+
+        .hero-content {
+          padding: 0 1rem;
+        }
+
+        .assessment-container {
+          margin: 0 -1rem;
+          border-radius: 0;
+          border-left: none;
+          border-right: none;
+        }
+
+        .assessment-header {
+          padding: 1.5rem;
+        }
+
+        .assessment-title {
+          font-size: 1.5rem;
+        }
+
+        .chat-container {
           height: 400px;
+          padding: 1.5rem;
         }
 
         .message {
           max-width: 90%;
         }
 
-        .features {
-          grid-template-columns: 1fr;
+        .form-container, .question-form-container {
+          padding: 1.5rem;
         }
 
-        .header-content {
+        .text-input-form {
           flex-direction: column;
-          gap: 1rem;
+          align-items: stretch;
+        }
+
+        .text-input-form .form-button {
+          width: 100%;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .feature-card {
+          padding: 2rem 1.5rem;
         }
 
         .footer-links {
           flex-direction: column;
           gap: 1rem;
         }
+
+        .header-controls {
+          gap: 0.5rem;
+        }
+
+        .language-toggle button {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.8rem;
+        }
+
+        .theme-toggle {
+          padding: 0.6rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero-title {
+          font-size: 2rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1rem;
+        }
+
+        .hero-cta {
+          padding: 0.875rem 1.5rem;
+          font-size: 1rem;
+        }
+
+        .assessment-header {
+          padding: 1rem;
+        }
+
+        .assessment-title {
+          font-size: 1.25rem;
+        }
+
+        .chat-container {
+          height: 350px;
+          padding: 1rem;
+        }
+
+        .form-container, .question-form-container {
+          padding: 1rem;
+        }
+      }
+
+      /* Dark mode enhancements */
+      .dark .assessment-container {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+      }
+
+      .dark .feature-card {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+      }
+
+      .dark .feature-card:hover {
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+      }
+
+      /* High contrast mode support */
+      @media (prefers-contrast: high) {
+        :root {
+          --border: 210 20% 70%;
+          --muted: 210 20% 90%;
+        }
+
+        .dark {
+          --border: 220 15% 30%;
+          --muted: 220 15% 20%;
+        }
+      }
+
+      /* Reduced motion support */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
       }
     </style>
   </head>
   <body>
-    <!-- Header -->
-    <header class="header">
-      <div class="container">
+    <div class="main-container">
+      <!-- Header -->
+      <header class="header">
         <div class="header-content">
           <a href="#" class="logo">
             <div class="logo-icon">🤖</div>
             <span id="logo-text">GROVIA AI Assessment</span>
           </a>
-          <div class="header-actions">
+          <div class="header-controls">
             <div class="language-toggle">
               <button id="lang-de" class="active">DE</button>
               <button id="lang-en">EN</button>
             </div>
-            <button class="theme-toggle" id="theme-toggle">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="5"/>
                 <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
               </svg>
             </button>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <!-- Main Content -->
-    <main class="main">
-      <div class="container">
-        
-        <!-- Landing Page -->
-        <div id="landing-page">
-          <section class="hero">
-            <h1 id="main-title">GROVIA AI Readiness Assessment</h1>
-            <p id="main-subtitle">Bewerten Sie die KI-Bereitschaft Ihres Unternehmens in wenigen Minuten mit unserem intelligenten Assessment-Tool</p>
-            <a href="#" class="cta-button" id="start-button">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6"/>
-              </svg>
-              <span id="start-text">Assessment starten</span>
-            </a>
+      <!-- Main Content -->
+      <main class="main">
+        <div class="content-wrapper">
+          
+          <!-- Hero Section -->
+          <section class="hero-section" id="hero-section">
+            <div class="hero-content">
+              <h1 class="hero-title" id="hero-title">AI Readiness Assessment</h1>
+              <p class="hero-subtitle" id="hero-subtitle">
+                Entdecken Sie das KI-Potenzial Ihres Unternehmens mit unserem intelligenten Assessment-Tool
+              </p>
+              <button class="hero-cta" id="start-assessment">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                <span id="cta-text">Assessment starten</span>
+              </button>
+            </div>
           </section>
 
-          <section class="features">
-            <div class="feature-card">
-              <div class="feature-icon">
-                <svg class="icon-large" viewBox="0 0 24 24">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+          <!-- Assessment Interface -->
+          <div class="assessment-container hidden" id="assessment-interface">
+            <div class="assessment-header">
+              <h2 class="assessment-title" id="assessment-title">KI-Readiness Assessment</h2>
+              <p class="assessment-subtitle" id="assessment-subtitle">Ihr digitaler Berater für KI-Strategien</p>
+              <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
               </div>
-              <h4 class="feature-title" id="feature1-title">Umfassende Bewertung</h4>
-              <p class="feature-description" id="feature1-desc">Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens</p>
             </div>
-            <div class="feature-card">
-              <div class="feature-icon">
-                <svg class="icon-large" viewBox="0 0 24 24">
-                  <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
-              </div>
-              <h4 class="feature-title" id="feature2-title">DSGVO-konform</h4>
-              <p class="feature-description" id="feature2-desc">Ihre Daten werden sicher und datenschutzkonform verarbeitet</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon">
-                <svg class="icon-large" viewBox="0 0 24 24">
-                  <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                </svg>
-              </div>
-              <h4 class="feature-title" id="feature3-title">Handlungsempfehlungen</h4>
-              <p class="feature-description" id="feature3-desc">Konkrete nächste Schritte für Ihre KI-Strategie</p>
-            </div>
-          </section>
-        </div>
 
-        <!-- Chat Interface -->
-        <div id="chat-interface" class="hidden">
-          <div class="chat-container">
-            <div class="chat-header">
-              <h2 class="chat-title" id="chat-title">GROVIA KI-Readiness Assessment</h2>
-              <p class="chat-subtitle" id="chat-subtitle">Ihr digitaler Berater</p>
-              <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill"></div>
-              </div>
-            </div>
-            <div class="chat-content">
+            <div class="chat-container" id="chat-container">
               <div class="chat-messages" id="chat-messages">
-                <!-- Messages will be added here dynamically -->
+                <!-- Messages will be dynamically inserted here -->
               </div>
             </div>
-          </div>
 
-          <!-- Consent Form -->
-          <div id="consent-form" class="form-container hidden">
-            <h3 class="form-title" id="consent-title">Einverständniserklärung</h3>
-            <form id="consent-form-element">
-              <div class="checkbox-group">
-                <input type="checkbox" id="consent-data" class="checkbox" required>
-                <label for="consent-data" class="checkbox-label" id="data-processing-label">
-                  Ich stimme der Verarbeitung meiner Daten für das Assessment zu.
-                </label>
+            <!-- Consent Form -->
+            <div id="consent-form" class="form-container hidden">
+              <h3 class="form-title" id="consent-title">Einverständniserklärung</h3>
+              <div class="form-content">
+                <div class="checkbox-container">
+                  <input type="checkbox" id="consent-data" class="checkbox" required>
+                  <label for="consent-data" class="checkbox-label" id="data-consent-label">
+                    Ich stimme der Verarbeitung meiner Daten für das Assessment zu. Die Daten werden ausschließlich zur Durchführung der Bewertung verwendet und DSGVO-konform behandelt.
+                  </label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="checkbox" id="consent-contact" class="checkbox">
+                  <label for="consent-contact" class="checkbox-label" id="contact-consent-label">
+                    Ich erlaube die Kontaktaufnahme durch GROVIA Digital für weitere Informationen zu KI-Lösungen und Beratungsangeboten.
+                  </label>
+                </div>
+                <button class="form-button" id="consent-continue">
+                  <span id="continue-text">Weiter zum Assessment</span>
+                </button>
               </div>
-              <div class="checkbox-group">
-                <input type="checkbox" id="consent-contact" class="checkbox">
-                <label for="consent-contact" class="checkbox-label" id="contact-permission-label">
-                  Ich erlaube die Kontaktaufnahme für weitere Informationen.
-                </label>
-              </div>
-              <button type="submit" class="btn btn-primary" id="consent-continue">
-                <span id="continue-btn">Weiter</span>
-              </button>
-            </form>
-          </div>
-
-          <!-- Contact Form -->
-          <div id="contact-form" class="form-container hidden">
-            <h3 class="form-title" id="contact-title">Kontaktinformationen</h3>
-            <form id="contact-form-element">
-              <div class="form-group">
-                <label for="contact-name" class="form-label" id="name-label">Name *</label>
-                <input type="text" id="contact-name" class="form-input" required>
-              </div>
-              <div class="form-group">
-                <label for="contact-email" class="form-label" id="email-label">E-Mail *</label>
-                <input type="email" id="contact-email" class="form-input" required>
-              </div>
-              <div class="form-group">
-                <label for="contact-company" class="form-label" id="company-label">Unternehmen *</label>
-                <input type="text" id="contact-company" class="form-input" required>
-              </div>
-              <div class="form-group">
-                <label for="contact-employees" class="form-label" id="employees-label">Mitarbeiteranzahl</label>
-                <select id="contact-employees" class="form-select">
-                  <option value="" id="select-placeholder">Bitte wählen</option>
-                  <option value="1-10">1-10</option>
-                  <option value="11-50">11-50</option>
-                  <option value="51-200">51-200</option>
-                  <option value="201-500">201-500</option>
-                  <option value="500+">500+</option>
-                </select>
-              </div>
-              <button type="submit" class="btn btn-primary" id="contact-submit">
-                <span id="start-assessment">Assessment starten</span>
-              </button>
-            </form>
-          </div>
-
-          <!-- Question Form -->
-          <div id="question-form" class="form-container hidden">
-            <div class="form-group">
-              <textarea id="question-input" class="form-textarea" rows="3" placeholder="Ihre Antwort..."></textarea>
             </div>
-            <button type="button" class="btn btn-primary" id="question-submit" disabled>
-              <span id="send-btn">Senden</span>
-            </button>
-          </div>
 
-          <!-- Completion Form -->
-          <div id="completion-form" class="form-container hidden">
-            <h3 class="form-title" id="completion-title">Assessment abgeschlossen</h3>
-            <div style="text-align: center; padding: 2rem;">
-              <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
-              <h4 id="score-label">Ihr KI-Readiness Score:</h4>
-              <div style="font-size: 2.5rem; font-weight: bold; color: var(--primary-color); margin: 1rem 0;">
-                <span id="final-score">--</span>
+            <!-- Contact Form -->
+            <div id="contact-form" class="form-container hidden">
+              <h3 class="form-title" id="contact-title">Kontaktinformationen</h3>
+              <div class="form-content">
+                <div class="form-group">
+                  <label for="contact-name" class="form-label" id="name-label">Name *</label>
+                  <input type="text" id="contact-name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label for="contact-email" class="form-label" id="email-label">E-Mail-Adresse *</label>
+                  <input type="email" id="contact-email" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label for="contact-company" class="form-label" id="company-label">Unternehmen *</label>
+                  <input type="text" id="contact-company" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label for="employee-count" class="form-label" id="employees-label">Mitarbeiteranzahl</label>
+                  <select id="employee-count" class="form-select">
+                    <option value="">Bitte wählen</option>
+                    <option value="1-10">1-10</option>
+                    <option value="11-50">11-50</option>
+                    <option value="51-200">51-200</option>
+                    <option value="201-500">201-500</option>
+                    <option value="500+">500+</option>
+                  </select>
+                </div>
+                <!-- FIXED: Submit button always visible -->
+                <button class="form-button" id="contact-submit">Assessment starten</button>
               </div>
-              <p id="completion-text">Vielen Dank für Ihre Teilnahme! Sie erhalten in Kürze eine detaillierte Auswertung.</p>
+            </div>
+            
+            <!-- Question Form -->
+            <div id="question-form" class="question-form-container hidden">
+              <div class="text-input-form">
+                <input type="text" id="question-input" class="form-input" placeholder="Ihre Antwort...">
+                <button class="form-button" id="question-submit" disabled>Senden</button>
+              </div>
+            </div>
+            
+            <!-- Completion Message -->
+            <div id="completion-form" class="form-container hidden">
+              <h3 class="form-title" id="completion-title">Assessment abgeschlossen!</h3>
+              <div style="text-align: center; margin: 2rem 0;">
+                <div style="font-size: 3rem; font-weight: bold; color: hsl(var(--primary)); margin-bottom: 0.5rem;" id="final-score">--</div>
+                <div style="font-size: 1.125rem; color: hsl(var(--muted-foreground));" id="score-label">AI Readiness Score</div>
+              </div>
+              <p style="text-align: center; color: hsl(var(--muted-foreground));" id="completion-text">
+                Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.
+              </p>
             </div>
           </div>
         </div>
-      </div>
-    </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-content">
-        <div class="footer-links">
-          <a href="https://grovia-digital.com/datenschutz/" class="footer-link" id="privacy-link" target="_blank" rel="noopener">Datenschutz</a>
-          <a href="https://grovia-digital.com/impressum/" class="footer-link" id="imprint-link" target="_blank" rel="noopener">Impressum</a>
-          <a href="https://grovia-digital.com/terms-conditions/" class="footer-link" id="terms-link" target="_blank" rel="noopener">AGB</a>
+        <!-- Feature Cards -->
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg class="icon-large" viewBox="0 0 24 24">
+                <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v1a1 1 0 0 1-1 1h-2v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H4a1 1 0 0 1-1-1v-1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2m6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+              </svg>
+            </div>
+            <h4 class="feature-title" id="feature1-title">Detaillierte Analyse</h4>
+            <p class="feature-description" id="feature1-desc">Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg class="icon-large" viewBox="0 0 24 24">
+                <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </div>
+            <h4 class="feature-title" id="feature2-title">DSGVO-konform</h4>
+            <p class="feature-description" id="feature2-desc">Ihre Daten werden sicher und datenschutzkonform verarbeitet</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg class="icon-large" viewBox="0 0 24 24">
+                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+              </svg>
+            </div>
+            <h4 class="feature-title" id="feature3-title">Handlungsempfehlungen</h4>
+            <p class="feature-description" id="feature3-desc">Konkrete nächste Schritte für Ihre KI-Strategie</p>
+          </div>
         </div>
-        <p class="footer-copyright" id="footer-text">© 2025 GROVIA AI Readiness Assessment. Alle Rechte vorbehalten.</p>
-      </div>
-    </footer>
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-content">
+          <div class="footer-links">
+            <a href="https://grovia-digital.com/datenschutz/" class="footer-link" id="privacy-link" target="_blank" rel="noopener">Datenschutz</a>
+            <a href="https://grovia-digital.com/impressum/" class="footer-link" id="imprint-link" target="_blank" rel="noopener">Impressum</a>
+            <a href="https://grovia-digital.com/terms-conditions/" class="footer-link" id="terms-link" target="_blank" rel="noopener">AGB</a>
+          </div>
+          <p class="footer-copyright" id="footer-text">© 2025 GROVIA AI Readiness Assessment. Alle Rechte vorbehalten.</p>
+        </div>
+      </footer>
+    </div>
 
     <script>
-      // SECURE: Questions now handled server-side for security
-      // Frontend only manages UI - all business logic moved to server
-
+      // SECURE: Assessment questions moved to server-side - frontend only handles UI
+      
       const translations = {
         de: {
-          mainTitle: 'GROVIA AI Readiness Assessment',
-          mainSubtitle: 'Bewerten Sie die KI-Bereitschaft Ihres Unternehmens in wenigen Minuten mit unserem intelligenten Assessment-Tool',
-          chatTitle: 'GROVIA KI-Readiness Assessment',
-          chatSubtitle: 'Ihr digitaler Berater',
-          consentTitle: 'Einverständniserklärung',
-          dataProcessingLabel: 'Ich stimme der Verarbeitung meiner Daten für das Assessment zu.',
-          contactPermissionLabel: 'Ich erlaube die Kontaktaufnahme für weitere Informationen.',
-          continueBtn: 'Weiter',
-          contactTitle: 'Kontaktinformationen',
-          nameLabel: 'Name *',
-          emailLabel: 'E-Mail *',
-          companyLabel: 'Unternehmen *',
-          employeesLabel: 'Mitarbeiteranzahl',
-          selectPlaceholder: 'Bitte wählen',
-          startAssessment: 'Assessment starten',
-          inputPlaceholder: 'Ihre Antwort...',
-          sendBtn: 'Senden',
-          completionTitle: 'Assessment abgeschlossen',
-          scoreLabel: 'Ihr KI-Readiness Score:',
-          completionText: 'Vielen Dank für Ihre Teilnahme! Sie erhalten in Kürze eine detaillierte Auswertung.',
-          startText: 'Assessment starten',
-          feature1Title: 'Umfassende Bewertung',
-          feature1Desc: 'Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens',
-          feature2Title: 'DSGVO-konform',
-          feature2Desc: 'Ihre Daten werden sicher und datenschutzkonform verarbeitet',
-          feature3Title: 'Handlungsempfehlungen',
-          feature3Desc: 'Konkrete nächste Schritte für Ihre KI-Strategie',
-          privacyLink: 'Datenschutz',
-          imprintLink: 'Impressum',
-          termsLink: 'AGB',
-          footerText: '© 2025 GROVIA AI Readiness Assessment. Alle Rechte vorbehalten.',
-          logoText: 'GROVIA AI Assessment',
+          'logo-text': 'GROVIA AI Assessment',
+          'hero-title': 'AI Readiness Assessment',
+          'hero-subtitle': 'Entdecken Sie das KI-Potenzial Ihres Unternehmens mit unserem intelligenten Assessment-Tool',
+          'cta-text': 'Assessment starten',
+          'assessment-title': 'KI-Readiness Assessment',
+          'assessment-subtitle': 'Ihr digitaler Berater für KI-Strategien',
+          'consent-title': 'Einverständniserklärung',
+          'data-consent-label': 'Ich stimme der Verarbeitung meiner Daten für das Assessment zu. Die Daten werden ausschließlich zur Durchführung der Bewertung verwendet und DSGVO-konform behandelt.',
+          'contact-consent-label': 'Ich erlaube die Kontaktaufnahme durch GROVIA Digital für weitere Informationen zu KI-Lösungen und Beratungsangeboten.',
+          'continue-text': 'Weiter zum Assessment',
+          'contact-title': 'Kontaktinformationen',
+          'name-label': 'Name *',
+          'email-label': 'E-Mail-Adresse *',
+          'company-label': 'Unternehmen *',
+          'employees-label': 'Mitarbeiteranzahl',
+          'completion-title': 'Assessment abgeschlossen!',
+          'score-label': 'AI Readiness Score',
+          'completion-text': 'Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.',
+          'feature1-title': 'Detaillierte Analyse',
+          'feature1-desc': 'Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens',
+          'feature2-title': 'DSGVO-konform',
+          'feature2-desc': 'Ihre Daten werden sicher und datenschutzkonform verarbeitet',
+          'feature3-title': 'Handlungsempfehlungen',
+          'feature3-desc': 'Konkrete nächste Schritte für Ihre KI-Strategie',
+          'privacy-link': 'Datenschutz',
+          'imprint-link': 'Impressum',
+          'terms-link': 'AGB',
+          'footer-text': '© 2025 GROVIA AI Readiness Assessment. Alle Rechte vorbehalten.',
           welcomeMsg1: 'Willkommen zum KI-Readiness Assessment!',
           welcomeMsg2: 'Ich werde Ihnen einige Fragen stellen, um Ihre KI-Bereitschaft zu bewerten.',
           assessmentStart: 'Lassen Sie uns mit dem Assessment beginnen!',
           errorMsg: 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.'
         },
         en: {
-          mainTitle: 'GROVIA AI Readiness Assessment',
-          mainSubtitle: 'Evaluate your company\'s AI readiness in minutes with our intelligent assessment tool',
-          chatTitle: 'GROVIA AI Readiness Assessment',
-          chatSubtitle: 'Your Digital Consultant',
-          consentTitle: 'Consent Declaration',
-          dataProcessingLabel: 'I agree to the processing of my data for the assessment.',
-          contactPermissionLabel: 'I allow contact for further information.',
-          continueBtn: 'Continue',
-          contactTitle: 'Contact Information',
-          nameLabel: 'Name *',
-          emailLabel: 'Email *',
-          companyLabel: 'Company *',
-          employeesLabel: 'Number of Employees',
-          selectPlaceholder: 'Please select',
-          startAssessment: 'Start Assessment',
-          inputPlaceholder: 'Your answer...',
-          sendBtn: 'Send',
-          completionTitle: 'Assessment Completed',
-          scoreLabel: 'Your AI Readiness Score:',
-          completionText: 'Thank you for participating! You will receive a detailed evaluation shortly.',
-          startText: 'Start Assessment',
-          feature1Title: 'Comprehensive Evaluation',
-          feature1Desc: 'Comprehensive evaluation of all AI-relevant areas of your company',
-          feature2Title: 'GDPR Compliant',
-          feature2Desc: 'Your data is processed securely and in compliance with data protection',
-          feature3Title: 'Action Recommendations',
-          feature3Desc: 'Concrete next steps for your AI strategy',
-          privacyLink: 'Privacy',
-          imprintLink: 'Imprint',
-          termsLink: 'Terms',
-          footerText: '© 2025 GROVIA AI Readiness Assessment. All rights reserved.',
-          logoText: 'GROVIA AI Assessment',
+          'logo-text': 'GROVIA AI Assessment',
+          'hero-title': 'AI Readiness Assessment',
+          'hero-subtitle': 'Discover your company\'s AI potential with our intelligent assessment tool',
+          'cta-text': 'Start Assessment',
+          'assessment-title': 'AI Readiness Assessment',
+          'assessment-subtitle': 'Your Digital Consultant for AI Strategies',
+          'consent-title': 'Consent Declaration',
+          'data-consent-label': 'I agree to the processing of my data for the assessment. The data will be used exclusively for conducting the evaluation and handled in compliance with GDPR.',
+          'contact-consent-label': 'I allow GROVIA Digital to contact me for further information about AI solutions and consulting services.',
+          'continue-text': 'Continue to Assessment',
+          'contact-title': 'Contact Information',
+          'name-label': 'Name *',
+          'email-label': 'Email Address *',
+          'company-label': 'Company *',
+          'employees-label': 'Number of Employees',
+          'completion-title': 'Assessment Completed!',
+          'score-label': 'AI Readiness Score',
+          'completion-text': 'Thank you! You will receive a detailed report via email shortly.',
+          'feature1-title': 'Detailed Analysis',
+          'feature1-desc': 'Comprehensive evaluation of all AI-relevant areas of your company',
+          'feature2-title': 'GDPR Compliant',
+          'feature2-desc': 'Your data is processed securely and in compliance with data protection',
+          'feature3-title': 'Action Recommendations',
+          'feature3-desc': 'Concrete next steps for your AI strategy',
+          'privacy-link': 'Privacy',
+          'imprint-link': 'Imprint',
+          'terms-link': 'Terms',
+          'footer-text': '© 2025 GROVIA AI Readiness Assessment. All rights reserved.',
           welcomeMsg1: 'Welcome to the AI Readiness Assessment!',
           welcomeMsg2: 'I will ask you some questions to evaluate your AI readiness.',
           assessmentStart: 'Let\'s begin with the assessment!',
@@ -837,15 +1216,11 @@
       function updateLanguage() {
         const t = translations[currentLanguage];
         
-        // Update all text elements
+        // Update all translatable elements
         Object.keys(t).forEach(key => {
-          const element = document.getElementById(key.replace(/([A-Z])/g, '-$1').toLowerCase());
+          const element = document.getElementById(key);
           if (element) {
-            if (element.tagName === 'INPUT' && element.type === 'text') {
-              element.placeholder = t[key];
-            } else {
-              element.textContent = t[key];
-            }
+            element.textContent = t[key];
           }
         });
 
@@ -869,7 +1244,7 @@
         }
         
         const progress = (currentStepNumber / totalSteps) * 100;
-        document.getElementById('progress-fill').style.width = progress + '%';
+        document.getElementById('progress-bar').style.width = progress + '%';
       }
 
       function updateTheme() {
@@ -885,18 +1260,21 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
         
-        const bubbleDiv = document.createElement('div');
-        bubbleDiv.className = 'message-bubble';
-        bubbleDiv.textContent = content;
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        messageContent.textContent = content;
         
-        messageDiv.appendChild(bubbleDiv);
+        messageDiv.appendChild(messageContent);
         chatMessages.appendChild(messageDiv);
+        
+        // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
         
         // Save to database
         saveChatMessage(type, content);
       }
-            // Save consent data to database
+
+      // Save consent data to database
       async function saveConsentData(consentDataProcessing, consentContactPermission) {
         try {
           await fetch('/.netlify/functions/server', {
@@ -954,20 +1332,17 @@
       }
 
       function showStep(step) {
-        // Hide all forms and pages
-        document.getElementById('landing-page').classList.add('hidden');
-        document.getElementById('chat-interface').classList.add('hidden');
+        // Hide hero section
+        document.getElementById('hero-section').classList.add('hidden');
+        
+        // Show assessment interface
+        document.getElementById('assessment-interface').classList.remove('hidden');
+        
+        // Hide all forms
         document.getElementById('consent-form').classList.add('hidden');
         document.getElementById('contact-form').classList.add('hidden');
         document.getElementById('question-form').classList.add('hidden');
         document.getElementById('completion-form').classList.add('hidden');
-        
-        // Show chat interface for all steps except landing
-        if (step !== 'landing') {
-          document.getElementById('chat-interface').classList.remove('hidden');
-        } else {
-          document.getElementById('landing-page').classList.remove('hidden');
-        }
         
         // Show requested form
         if (step === 'consent') {
@@ -986,10 +1361,14 @@
 
       async function createSession() {
         try {
-          const response = await fetch('/api/assessment/session', {
+          const response = await fetch('/.netlify/functions/server', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, language: currentLanguage })
+            body: JSON.stringify({
+              endpoint: '/api/assessment/session',
+              sessionId: sessionId,
+              language: currentLanguage
+            })
           });
           
           if (!response.ok) throw new Error('Failed to create session');
@@ -1029,14 +1408,15 @@
         }
       }
 
-              async function completeAssessment() {
+      async function completeAssessment() {
         try {
           const response = await fetch('/.netlify/functions/server', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               endpoint: '/api/assessment/complete',
-              sessionId
+              sessionId: sessionId,
+              language: currentLanguage
             })
           });
           
@@ -1046,9 +1426,9 @@
             showStep('completed');
             
             const t = translations[currentLanguage];
-            addMessage('bot', `${t.completionText} ${t.scoreLabel}: ${data.readinessScore}%`);
+            addMessage('bot', `${t.completion} Score: ${data.readinessScore}%`);
             
-            // Send complete assessment data to n8n
+            // Send complete assessment data to n8n webhook
             console.log('Triggering n8n webhook...');
             await sendCompleteAssessmentToN8n(sessionId, data.readinessScore);
           }
@@ -1094,10 +1474,33 @@
         }
       }
 
-      function proceedToNextQuestion() {
-        waitingForFollowUp = false;
-        // Questions now handled server-side - no frontend logic needed
-        updateProgress();
+      // Send complete assessment data to n8n webhook
+      async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
+        try {
+          const webhookData = {
+            sessionId: sessionId,
+            readinessScore: readinessScore,
+            contactInfo: contactInfo,
+            timestamp: new Date().toISOString(),
+            language: currentLanguage
+          };
+
+          const response = await fetch('https://ai-grovia.app.n8n.cloud/webhook/ai-assessment-complete', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(webhookData)
+          });
+
+          if (response.ok) {
+            console.log('n8n webhook triggered successfully');
+          } else {
+            console.error('Failed to trigger n8n webhook:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Error sending data to n8n:', error);
+        }
       }
 
       // Event Listeners
@@ -1131,16 +1534,13 @@
           updateTheme();
         });
 
-        // Start button
-        document.getElementById('start-button').addEventListener('click', function(e) {
-          e.preventDefault();
+        // Start assessment button
+        document.getElementById('start-assessment').addEventListener('click', function() {
           showStep('consent');
         });
 
         // Consent form
-        document.getElementById('consent-form-element').addEventListener('submit', async function(e) {
-          e.preventDefault();
-          
+        document.getElementById('consent-continue').addEventListener('click', async function() {
           const consentData = document.getElementById('consent-data').checked;
           const consentContact = document.getElementById('consent-contact').checked;
           
@@ -1154,13 +1554,11 @@
         });
 
         // Contact form
-        document.getElementById('contact-form-element').addEventListener('submit', async function(e) {
-          e.preventDefault();
-          
+        document.getElementById('contact-submit').addEventListener('click', async function() {
           const name = document.getElementById('contact-name').value.trim();
           const email = document.getElementById('contact-email').value.trim();
           const company = document.getElementById('contact-company').value.trim();
-          const employees = document.getElementById('contact-employees').value;
+          const employees = document.getElementById('employee-count').value;
           
           if (!name || !email || !company) {
             alert('Bitte füllen Sie alle Pflichtfelder aus.');
@@ -1168,8 +1566,8 @@
           }
 
           // Disable button during submission
-          this.querySelector('button').disabled = true;
-          this.querySelector('button').textContent = 'Wird gestartet...';
+          this.disabled = true;
+          this.textContent = 'Wird gestartet...';
           
           try {
             await saveContactData(name, email, company, employees);
@@ -1187,9 +1585,10 @@
             console.error('Error submitting contact form:', error);
             // Re-enable button on error
             this.disabled = false;
-            this.textContent = t.startAssessment;
+            this.textContent = 'Assessment starten';
           }
         });
+
         // Question form
         const questionInput = document.getElementById('question-input');
         const questionSubmitBtn = document.getElementById('question-submit');
@@ -1211,7 +1610,8 @@
           if (!userResponse) return;
           
           questionSubmitBtn.disabled = true;
-          questionSubmitBtn.innerHTML = '<span class="loading-dots">Analyzing</span>';
+          questionSubmitBtn.classList.add('loading');
+          questionSubmitBtn.textContent = 'Analysiere...';
           
           addMessage('user', userResponse);
           questionInput.value = '';
@@ -1252,9 +1652,10 @@
             }
           }
           
-          const t = translations[currentLanguage];
+          // Re-enable button
           questionSubmitBtn.disabled = false;
-          questionSubmitBtn.textContent = t.sendBtn;
+          questionSubmitBtn.classList.remove('loading');
+          questionSubmitBtn.textContent = 'Senden';
         }
       });
     </script>
