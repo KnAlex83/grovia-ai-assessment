@@ -964,6 +964,20 @@
   
         const percentage = Math.min(100, (progress / (totalSteps + 2)) * 100);
         document.getElementById('progress-fill').style.width = percentage + '%';
+                
+        // Update progress text
+        const progressText = document.getElementById('progress-text');
+        if (progressText) {
+          if (currentStep === 'consent') {
+            progressText.textContent = 'Assessment wird geladen...';
+          } else if (currentStep === 'contact') {
+            progressText.textContent = 'Kontaktdaten eingeben';
+          } else if (currentStep === 'questions') {
+            progressText.textContent = `Frage ${currentQuestionIndex + 1} von 10`;
+          } else if (currentStep === 'completed') {
+            progressText.textContent = 'Assessment abgeschlossen';
+          }
+        }
       }
 
       function updateLanguage() {
