@@ -2,6 +2,7 @@ const express = require('express');
 const serverless = require('serverless-http');
 const { Pool, neonConfig } = require('@neondatabase/serverless');
 const ws = require('ws');
+neonConfig.webSocketConstructor = ws;
 
 // Configure Neon for serverless
 neonConfig.webSocketConstructor = ws;
