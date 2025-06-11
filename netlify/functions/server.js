@@ -797,6 +797,7 @@ app.post('/api/assessment/analyze', async (req, res) => {
     // Handle follow-up logic
     if (aiAnalysis.needsFollowUp && !questionId.includes('_followup')) {
       responseData.waitingForFollowUp = true;
+      responseData.analysis.followUpQuestion = aiAnalysis.followUpQuestion;
     } else {
       // Move to next question or complete assessment
       const nextIndex = currentIndex + 1;
