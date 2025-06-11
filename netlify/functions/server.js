@@ -775,7 +775,18 @@ app.post('/api/assessment/analyze', async (req, res) => {
     const session = sessionResult.rows[0];
 
     // Analyze response with AI
-    const aiAnalysis = await analyzeResponse(questionId, questionText, userResponse, language);
+    let aiAnalysis;
+    try {
+      aiAnalysis = await analyzeResponse(questionId, questionText, userResponse, language);
+    } catch (error) {
+      console.error('AI Analysis failed:', error);
+      aiAnalysis = {
+        needsFollowUp: false,
+        explanation: language === 'de' ? 'Vielen Dank für Ihre Antwort.' : 'Thank you for your answer.',
+        analysis: 'Response processed',
+        score: 3
+  };
+}
     
     // Update session with new response
     const currentResponses = session.responses || {};
