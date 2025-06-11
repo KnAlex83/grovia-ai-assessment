@@ -14,6 +14,44 @@ neonConfig.webSocketConstructor = ws;
 
 const app = express();
 app.use(express.json());
+// Input validation and sanitization middleware
+function validateAndSanitizeInput(input, maxLength = 500) {
+  if (typeof input !== 'string') return '';
+  
+  // Remove potentially dangerous characters
+  const sanitized = input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/javascript:/gi, '') // Remove javascript: protocols
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers
+    .trim();
+  
+  // Limit length
+  return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized;
+}
+
+// Apply input validation to all requests
+app.use((req, res, next) => {
+  if (req.body) {
+    // Validate text inputs
+    if (req.body.userResponse) {
+      req.body.userResponse = validateAndSanitizeInput(req.body.userResponse, 500);
+    }
+    if (req.body.contactName) {
+      req.body.contactName = validateAndSanitizeInput(req.body.contactName, 100);
+    }
+    if (req.body.email) {
+      req.body.email = validateAndSanitizeInput(req.body.email, 100);
+    }
+    if (req.body.companyName) {
+      req.body.companyName = validateAndSanitizeInput(req.body.companyName, 100);
+    }
+    if (req.body.content) {
+      req.body.content = validateAndSanitizeInput(req.body.content, 500);
+    }
+  }
+  next();
+});
 // RATE LIMITING - Prevents API abuse
 const rateLimitStore = new Map();
 
