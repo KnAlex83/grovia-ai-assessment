@@ -818,7 +818,7 @@
           </div>
           
           <!-- Question Form -->
-          <div id="question-form" class="question-form-container hidden">
+          <div id="questions-form" class="question-form-container hidden">
             <div class="text-input-form">
               <input type="text" id="question-input" class="form-input" placeholder="Ihre Antwort...">
               <button class="form-button" id="question-submit" disabled>Senden</button>
@@ -1109,7 +1109,7 @@
               }
               
               setTimeout(() => {
-                showStep('question');
+                showStep('questions');
               }, result.messages ? result.messages.length * 300 + 300 : 300);
             }
           } catch (error) {
