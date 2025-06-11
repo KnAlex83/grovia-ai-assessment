@@ -9,54 +9,24 @@ neonConfig.webSocketConstructor = ws;
 const app = express();
 app.use(express.json());
 
-// Add routing middleware for Netlify Functions
+// Add routing middleware for database operations
 app.use((req, res, next) => {
-  const originalUrl = req.originalUrl || req.url;
-  if (originalUrl.startsWith('/.netlify/functions/server')) {
-    req.url = originalUrl.replace('/.netlify/functions/server', '');
+  if (req.body && req.body.endpoint) {
+    req.url = req.body.endpoint;
+    delete req.body.endpoint;
   }
   next();
 });
-
 // Database connection with error handling
-// Enhanced Neon database connection for serverless
 let pool;
-
-async function initializeDatabase() {
-  try {
-    if (!process.env.DATABASE_URL) {
-      console.error('DATABASE_URL environment variable is not set');
-      return null;
-    }
-    
-    pool = new Pool({ 
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
-      max: 1,
-      idleTimeoutMillis: 0,
-      connectionTimeoutMillis: 0,
-    });
-    
-    const client = await pool.connect();
-    await client.query('SELECT NOW()');
-    client.release();
-    console.log('Database connected successfully');
-    return pool;
-  } catch (error) {
-    console.error('Database connection error:', error);
-    return null;
+try {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
   }
+  pool = new Pool({ connectionString: process.env.DATABASE_URL });
+} catch (error) {
+  console.error('Database connection error:', error);
 }
-// Ensure database connection for each request
-// Ensure database connection for each request
-async function getPool() {
-  if (!pool) {
-    pool = await initializeDatabase();
-  }
-  return pool;
-}
-
-// AI Service configuration
 
 // AI Service configuration
 const CONFIG = {
@@ -70,106 +40,6 @@ const CONFIG = {
   CONSULTATION_SWEET_SPOT_MAX: parseInt(process.env.CONSULTATION_MAX || '75')
 };
 
-
-// Assessment questions data
-const assessmentQuestions = [
-  {
-    id: '1',
-    text: {
-      de: 'Was ist das Hauptziel Ihres Unternehmens bei der Einführung von KI?',
-      en: 'What is your company\'s main goal when introducing AI?'
-    }
-  },
-  {
-    id: '2',
-    text: {
-      de: 'Beschreiben Sie Ihre bisherigen Erfahrungen mit digitalen Technologien und Automatisierung in Ihrem Unternehmen.',
-      en: 'Describe your previous experiences with digital technologies and automation in your company.'
-    }
-  },
-  {
-    id: '3',
-    text: {
-      de: 'Wie bewerten Sie Ihre aktuelle IT-Infrastruktur und Datenqualität für KI-Anwendungen?',
-      en: 'How do you assess your current IT infrastructure and data quality for AI applications?'
-    }
-  },
-  {
-    id: '4',
-    text: {
-      de: 'Welche konkreten Geschäftsprobleme oder Ineffizienzen möchten Sie mit KI lösen?',
-      en: 'What specific business problems or inefficiencies would you like to solve with AI?'
-    }
-  },
-  {
-    id: '5',
-    text: {
-      de: 'Wie gehen Sie mit Datenschutz und Compliance um?',
-      en: 'How do you handle data protection and compliance?'
-    }
-  },
-  {
-    id: '6',
-    text: {
-      de: 'Wie schätzen Sie die KI-Bereitschaft und Lernfähigkeit Ihres Teams ein?',
-      en: 'How do you assess your team\'s AI readiness and learning capability?'
-    }
-  },
-  {
-    id: '7',
-    text: {
-      de: 'Welche Unterstützung erhalten Sie von der Geschäftsführung für digitale Innovationen und welches Budget steht für KI-Projekte zur Verfügung?',
-      en: 'What support do you receive from management for digital innovations and what budget is available for AI projects?'
-    }
-  },
-  {
-    id: '8',
-    text: {
-      de: 'Was sind Ihre größten Bedenken oder Hindernisse bei der KI-Einführung?',
-      en: 'What are your biggest concerns or obstacles in implementing AI?'
-    }
-  },
-  {
-    id: '9',
-    text: {
-      de: 'Welche Erfolgskriterien würden Sie für eine KI-Initiative definieren?',
-      en: 'What success criteria would you define for an AI initiative?'
-    }
-  },
-  {
-    id: '10',
-    text: {
-      de: 'In welchem Zeitrahmen und mit welchen Ressourcen planen Sie die KI-Einführung?',
-      en: 'In what timeframe and with what resources do you plan to implement AI?'
-    }
-  }
-];
-
-// Translations
-const translations = {
-  de: {
-    welcomeMsg1: 'Hallo! Willkommen zum GROVIA AI Readiness Assessment. Ich bin Ihr persönlicher KI-Berater und helfe Ihnen dabei, die KI-Bereitschaft Ihres Unternehmens zu bewerten.',
-    welcomeMsg2: 'Das Assessment dauert nur 5-10 Minuten und basiert auf modernster KI-Technologie. Am Ende erhalten Sie einen detaillierten, personalisierten Report per E-Mail.',
-    consentThanks: 'Vielen Dank für Ihr Vertrauen! Bevor wir mit dem Assessment beginnen, benötigen wir einige Kontaktdaten für die Übermittlung Ihres persönlichen Reports.',
-    assessmentStart: 'Perfekt! Lassen Sie uns nun mit dem Assessment beginnen. Ich werde Ihnen 10 intelligente Fragen stellen, die Ihre digitale Reife erfassen.',
-    questionPrefix: 'Frage',
-    followUpPrefix: 'Nachfrage',
-    completionText: 'Vielen Dank für Ihre Teilnahme! Sie erhalten in Kürze einen detaillierten Bericht mit personalisierten Empfehlungen per E-Mail.',
-    scoreLabel: 'AI Readiness Score',
-    errorMsg: 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.'
-  },
-  en: {
-    welcomeMsg1: 'Hello! Welcome to the GROVIA AI Readiness Assessment. I am your personal AI consultant and will help you evaluate your company\'s AI readiness.',
-    welcomeMsg2: 'The assessment takes only 5-10 minutes and is based on state-of-the-art AI technology. At the end, you will receive a detailed, personalized report via email.',
-    consentThanks: 'Thank you for your trust! Before we begin the assessment, we need some contact information for transmitting your personalized report.',
-    assessmentStart: 'Perfect! Let\'s now begin the assessment. I will ask you 10 intelligent questions that capture your digital maturity.',
-    questionPrefix: 'Question',
-    followUpPrefix: 'Follow-up Question',
-    completionText: 'Thank you for your participation! You will receive a detailed report with personalized recommendations via email shortly.',
-    scoreLabel: 'AI Readiness Score',
-    errorMsg: 'Sorry, there was an error. Please try again.'
-  }
-};
 // AI Analysis function with improved error handling
 async function analyzeResponse(questionId, questionText, userResponse, language) {
   const isFollowUp = questionId.includes('_followup');
@@ -221,18 +91,8 @@ Keep explanations under 80 words and overwhelmingly positive. Focus on building 
     };
   }
 
-    try {
-    const controller = new AbortController();
-    let timeoutId;
-    
-    const timeoutPromise = new Promise((_, reject) => {
-      timeoutId = setTimeout(() => {
-        controller.abort();
-        reject(new Error('Request timeout'));
-      }, 45000);
-    });
-    
-    const fetchPromise = fetch('https://openrouter.ai/api/v1/chat/completions', {
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -244,14 +104,9 @@ Keep explanations under 80 words and overwhelmingly positive. Focus on building 
         model: CONFIG.AI_MODEL,
         messages: [{ role: 'user', content: prompt }],
         temperature: CONFIG.AI_TEMPERATURE,
-        max_tokens: CONFIG.AI_MAX_TOKENS,
-        stream: false
-      }),
-      signal: controller.signal
+        max_tokens: CONFIG.AI_MAX_TOKENS
+      })
     });
-    
-    const response = await Promise.race([fetchPromise, timeoutPromise]);
-    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`AI API error: ${response.status}`);
@@ -290,20 +145,15 @@ Keep explanations under 80 words and overwhelmingly positive. Focus on building 
         score: 3
       };
     }
-    } catch (error) {
+  } catch (error) {
     console.error('AI analysis error:', error);
-    
-    if (error.name === 'AbortError' || error.message.includes('scope')) {
-      console.log('Request aborted or scope error, providing fallback response');
-    }
-    
     return {
       needsFollowUp: false,
       explanation: language === 'de' 
-        ? 'Ihre Bereitschaft, sich intensiv mit KI-Möglichkeiten auseinanderzusetzen, zeigt eine sehr strategische Herangehensweise. Das ist eine ausgezeichnete Basis für erfolgreiche KI-Integration.'
-        : 'Your willingness to engage deeply with AI possibilities shows a very strategic approach. This is an excellent foundation for successful AI integration.',
-      analysis: 'Positive engagement with strategic thinking',
-      score: 4
+        ? 'Danke für Ihre Antwort. Lassen Sie uns zur nächsten Frage übergehen.'
+        : 'Thank you for your response. Let\'s move to the next question.',
+      analysis: 'Response received',
+      score: 3
     };
   }
 }
@@ -342,320 +192,6 @@ function calculateReadinessScore(responses) {
   const percentage = (totalScore / maxPossibleScore) * 100;
   return Math.min(CONFIG.MAX_REALISTIC_SCORE, Math.round(percentage));
 }
-// Initialize assessment session - SECURE ENDPOINT
-app.post('/api/assessment/initialize', async (req, res) => {
-  try {
-    const { sessionId, language = 'de' } = req.body;
-    
-    // Ensure database connection
-    const dbPool = await getPool();
-    
-    if (dbPool) {
-      try {
-        // Ensure table exists with all required columns
-        await dbPool.query(`
-          CREATE TABLE IF NOT EXISTS assessment_sessions (
-            id SERIAL PRIMARY KEY,
-            session_id VARCHAR(255) UNIQUE NOT NULL,
-            language VARCHAR(10) DEFAULT 'de',
-            created_at TIMESTAMP DEFAULT NOW(),
-            updated_at TIMESTAMP DEFAULT NOW(),
-            current_step INTEGER DEFAULT 0,
-            consent_data_processing BOOLEAN DEFAULT FALSE,
-            consent_contact_permission BOOLEAN DEFAULT FALSE,
-            contact_name VARCHAR(255),
-            email VARCHAR(255),
-            company_name VARCHAR(255),
-            employee_number VARCHAR(50),
-            responses JSONB DEFAULT '{}'::jsonb,
-            readiness_score INTEGER,
-            is_completed BOOLEAN DEFAULT FALSE,
-            completed_at TIMESTAMP
-          )
-        `);
-        
-        // Create session if it doesn't exist
-        await dbPool.query(`
-          INSERT INTO assessment_sessions (
-            session_id, language, created_at, current_step, 
-            consent_data_processing, consent_contact_permission, 
-            contact_name, email, company_name, employee_number,
-            responses, readiness_score, is_completed
-          )
-          VALUES ($1, $2, NOW(), 0, false, false, null, null, null, null, '{}'::jsonb, null, false)
-          ON CONFLICT (session_id) DO NOTHING
-        `, [sessionId, language]);
-      } catch (dbError) {
-        console.log('Session might already exist:', dbError.message);
-      }
-    }
-
-    const t = translations[language];
-    
-    res.json({
-      success: true,
-      sessionId: sessionId,
-      messages: [
-        { type: 'bot', content: t.welcomeMsg1 },
-        { type: 'bot', content: t.welcomeMsg2 }
-      ]
-    });
-  } catch (error) {
-    console.error('Error initializing session:', error);
-    res.status(500).json({ error: 'Failed to initialize session' });
-  }
-});
-
-// Initialize assessment session - SECURE ENDPOINT
-app.post('/api/assessment/initialize', async (req, res) => {
-  try {
-    const { sessionId, language = 'de' } = req.body;
-    
-    const dbPool = await getPool();
-    if (!dbPool) {
-      return res.status(500).json({ error: 'Database not configured' });
-    }
-
-    // Create table and session
-    await dbPool.query(`
-      CREATE TABLE IF NOT EXISTS assessment_sessions (
-        id SERIAL PRIMARY KEY,
-        session_id VARCHAR(255) UNIQUE NOT NULL,
-        language VARCHAR(10) DEFAULT 'de',
-        created_at TIMESTAMP DEFAULT NOW(),
-        current_step INTEGER DEFAULT 0,
-        consent_data_processing BOOLEAN DEFAULT FALSE,
-        consent_contact_permission BOOLEAN DEFAULT FALSE,
-        contact_name VARCHAR(255),
-        email VARCHAR(255),
-        company_name VARCHAR(255),
-        employee_number VARCHAR(50),
-        responses JSONB DEFAULT '{}'::jsonb,
-        readiness_score INTEGER,
-        is_completed BOOLEAN DEFAULT FALSE
-      )
-    `);
-    
-    await dbPool.query(`
-      INSERT INTO assessment_sessions (session_id, language)
-      VALUES ($1, $2) ON CONFLICT (session_id) DO NOTHING
-    `, [sessionId, language]);
-
-    const translations = {
-      de: {
-        welcomeMsg1: 'Hallo! Willkommen zum AI Readiness Assessment.',
-        welcomeMsg2: 'Das Assessment dauert etwa 5-10 Minuten. Am Ende erhalten Sie einen detaillierten Report per E-Mail.'
-      },
-      en: {
-        welcomeMsg1: 'Hello! Welcome to the AI Readiness Assessment.',
-        welcomeMsg2: 'The assessment takes about 5-10 minutes. You will receive a detailed report via email at the end.'
-      }
-    };
-
-    const t = translations[language] || translations.de;
-    
-    res.json({
-      success: true,
-      sessionId: sessionId,
-      messages: [
-        { type: 'bot', content: t.welcomeMsg1 },
-        { type: 'bot', content: t.welcomeMsg2 }
-      ]
-    });
-  } catch (error) {
-    console.error('Error initializing session:', error);
-    res.status(500).json({ error: 'Failed to initialize session' });
-  }
-});
-// Handle question submission and analysis - SECURE ENDPOINT
-app.post('/api/assessment/submit', async (req, res) => {
-  try {
-    const { sessionId, questionId, response, currentQuestionIndex, language, isFollowUp } = req.body;
-    
-    if (!pool) {
-      return res.status(500).json({ error: 'Database not configured' });
-    }
-
-    const question = assessmentQuestions[currentQuestionIndex];
-    const questionText = question.text[language];
-    
-    // Analyze response with AI
-    const analysis = await analyzeResponse(questionId, questionText, response, language);
-    
-    // Store response in database
-    await pool.query(`
-      UPDATE assessment_sessions 
-      SET responses = COALESCE(responses, '{}'::jsonb) || $1::jsonb,
-          current_step = $2,
-          updated_at = NOW()
-      WHERE session_id = $3
-    `, [
-      JSON.stringify({[questionId]: {
-        question: questionText,
-        answer: response,
-        analysis: analysis.analysis,
-        score: analysis.score
-      }}),
-      currentQuestionIndex + 1,
-      sessionId
-    ]);
-
-    const t = translations[language];
-    const messages = [];
-
-    // Check if follow-up is needed
-    if (analysis.needsFollowUp && !isFollowUp) {
-      messages.push({
-        type: 'bot',
-        content: `(${t.followUpPrefix} ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`
-      });
-      
-      res.json({
-        success: true,
-        analysis: {
-          explanation: analysis.explanation,
-          score: analysis.score,
-          needsFollowUp: true,
-          followUpQuestion: `(Nachfrage ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`
-        },
-        waitingForFollowUp: true,
-        sessionUpdated: true
-      });
-    } else {
-      // Move to next question or complete
-      const nextIndex = currentQuestionIndex + 1;
-      if (nextIndex < assessmentQuestions.length) {
-        const nextQuestion = assessmentQuestions[nextIndex];
-        messages.push({
-          type: 'bot',
-          content: `(${t.questionPrefix} ${nextIndex + 1}) ${nextQuestion.text[language]}`
-        });
-        
-        res.json({
-          success: true,
-          analysis: {
-            explanation: analysis.explanation,
-            score: analysis.score,
-            needsFollowUp: false
-          },
-          nextQuestion: `(Frage ${nextIndex + 1}) ${nextQuestion.text[language]}`,
-          questionId: nextQuestion.id,
-          sessionUpdated: true
-        });
-      } else {
-        res.json({
-          success: true,
-          analysis: {
-            explanation: analysis.explanation,
-            score: analysis.score,
-            needsFollowUp: false
-          },
-          isComplete: true,
-          sessionUpdated: true
-        });
-      }
-    }
-  } catch (error) {
-    console.error('Error submitting response:', error);
-    res.status(500).json({ error: 'Failed to submit response' });
-  }
-});
-// Create or get assessment session
-app.post('/api/assessment/consent', async (req, res) => {
-  try {
-    const { sessionId, consentDataProcessing, consentContactPermission, language = 'de' } = req.body;
-    
-    if (!sessionId) {
-      return res.status(400).json({ error: 'Session ID required' });
-    }
-
-    const dbPool = await getPool();
-    if (!dbPool) {
-      return res.status(500).json({ error: 'Database not configured' });
-    }
-
-    await dbPool.query(`
-      UPDATE assessment_sessions SET
-        consent_data_processing = $1,
-        consent_contact_permission = $2,
-        current_step = 1
-      WHERE session_id = $3
-    `, [consentDataProcessing, consentContactPermission, sessionId]);
-
-    const t = translations[language] || translations['de'];
-    
-    res.json({
-      success: true,
-      message: { type: 'bot', content: t.consentThanks }
-    });
-    
-  } catch (error) {
-    console.error('Consent endpoint error:', error);
-    res.status(500).json({ error: 'Failed to save consent' });
-  }
-});
-
-// Get assessment session
-app.get('/api/assessment/session/:sessionId', async (req, res) => {
-  try {
-    if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
-    }
-
-    const { sessionId } = req.params;
-    
-    const result = await pool.query(
-      'SELECT * FROM assessment_sessions WHERE session_id = $1',
-      [sessionId]
-    );
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Session not found' });
-    }
-    
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error('Error getting session:', error);
-    res.status(500).json({ message: 'Failed to get session' });
-  }
-});
-
-// Save contact information - NEW ENDPOINT
-app.post('/api/assessment/contact', async (req, res) => {
-  try {
-    const { sessionId, contactName, email, companyName, employeeNumber, language = 'de' } = req.body;
-    
-    if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
-    }
-
-    await pool.query(`
-      UPDATE assessment_sessions 
-      SET contact_name = $1,
-          email = $2,
-          company_name = $3,
-          employee_number = $4,
-          current_step = 2
-      WHERE session_id = $5
-    `, [contactName, email, companyName, employeeNumber, sessionId]);
-
-    const t = translations[language];
-    const firstQuestion = assessmentQuestions[0];
-    
-    res.json({
-      success: true,
-      messages: [
-        { type: 'bot', content: `Vielen Dank, ${contactName}! ${t.assessmentStart}` },
-        { type: 'bot', content: `(${t.questionPrefix} 1) ${firstQuestion.text[language]}` }
-      ],
-      nextQuestion: firstQuestion,
-      nextStep: 'questions'
-    });
-  } catch (error) {
-    console.error('Error saving contact:', error);
-    res.status(500).json({ error: 'Failed to save contact' });
-  }
-});
 
 // Create or get assessment session
 app.post('/api/assessment/session', async (req, res) => {
@@ -718,6 +254,56 @@ app.get('/api/assessment/session/:sessionId', async (req, res) => {
   }
 });
 
+// Save consent data - NEW ENDPOINT
+app.post('/api/assessment/consent', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    const { sessionId, consentDataProcessing, consentContactPermission } = req.body;
+    
+    if (!sessionId || typeof consentDataProcessing !== 'boolean') {
+      return res.status(400).json({ message: 'Missing required consent data' });
+    }
+
+    await pool.query(
+      'UPDATE assessment_sessions SET consent_data_processing = $1, consent_contact_permission = $2 WHERE session_id = $3',
+      [consentDataProcessing, consentContactPermission || false, sessionId]
+    );
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving consent:', error);
+    res.status(500).json({ message: 'Failed to save consent' });
+  }
+});
+
+// Save contact information - NEW ENDPOINT
+app.post('/api/assessment/contact', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ message: 'Database not configured' });
+    }
+
+    const { sessionId, contactName, email, companyName, employeeNumber } = req.body;
+    
+    if (!sessionId || !contactName || !email || !companyName) {
+      return res.status(400).json({ message: 'Missing required contact information' });
+    }
+
+    await pool.query(
+      'UPDATE assessment_sessions SET contact_name = $1, email = $2, company_name = $3, employee_number = $4 WHERE session_id = $5',
+      [contactName, email, companyName, employeeNumber, sessionId]
+    );
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving contact info:', error);
+    res.status(500).json({ message: 'Failed to save contact information' });
+  }
+});
+
 // Save chat message for conversation logging
 app.post('/api/assessment/chat-message', async (req, res) => {
   try {
@@ -762,16 +348,9 @@ app.post('/api/assessment/analyze', async (req, res) => {
       return res.status(500).json({ message: 'Database not configured' });
     }
 
-      const { sessionId, questionId, userResponse, language } = req.body;
-
-      // Look up question text from server-side array
-      const question = assessmentQuestions.find(q => q.id === questionId);
-      if (!question) {
-        return res.status(400).json({ message: 'Invalid question ID' });
-      }
-      const questionText = question.text[language] || question.text.de;
+    const { sessionId, questionId, questionText, userResponse, language } = req.body;
     
-    if (!sessionId || !questionId || !userResponse || !language) {
+    if (!sessionId || !questionId || !questionText || !userResponse || !language) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -788,18 +367,7 @@ app.post('/api/assessment/analyze', async (req, res) => {
     const session = sessionResult.rows[0];
 
     // Analyze response with AI
-    let aiAnalysis;
-    try {
-      aiAnalysis = await analyzeResponse(questionId, questionText, userResponse, language);
-    } catch (error) {
-      console.error('AI Analysis failed:', error);
-      aiAnalysis = {
-        needsFollowUp: false,
-        explanation: language === 'de' ? 'Vielen Dank für Ihre Antwort.' : 'Thank you for your answer.',
-        analysis: 'Response processed',
-        score: 3
-  };
-}
+    const aiAnalysis = await analyzeResponse(questionId, questionText, userResponse, language);
     
     // Update session with new response
     const currentResponses = session.responses || {};
@@ -816,31 +384,10 @@ app.post('/api/assessment/analyze', async (req, res) => {
       [JSON.stringify(currentResponses), sessionId]
     );
 
-        // Determine next action based on question flow
-    const totalQuestions = assessmentQuestions.length;
-    const currentIndex = parseInt(questionId) - 1;
-
-    let responseData = {
+    res.json({
       analysis: aiAnalysis,
       sessionUpdated: true
-    };
-
-    // Handle follow-up logic
-    if (aiAnalysis.needsFollowUp && !questionId.includes('_followup')) {
-      responseData.waitingForFollowUp = true;
-    } else {
-      // Move to next question or complete assessment
-      const nextIndex = currentIndex + 1;
-      if (nextIndex < totalQuestions) {
-        const nextQuestion = assessmentQuestions[nextIndex];
-        responseData.nextQuestion = nextQuestion.text[language];
-        responseData.questionId = nextQuestion.id;
-      } else {
-        responseData.isComplete = true;
-      }
-    }
-
-    res.json(responseData);
+    });
   } catch (error) {
     console.error('Error analyzing response:', error);
     res.status(500).json({ message: 'Failed to analyze response' });
