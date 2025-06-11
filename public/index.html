@@ -1406,8 +1406,8 @@
         setTimeout(() => addMessage('bot', t.welcomeMsg1), 500);
         setTimeout(() => addMessage('bot', t.welcomeMsg2), 1500);
         
-        // Create session
-        createSession();
+        // Initialize secure session
+        initializeSecureSession();
 
         // Language toggle
         document.getElementById('lang-de').addEventListener('click', function() {
