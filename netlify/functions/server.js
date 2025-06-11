@@ -667,4 +667,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal server error' });
 });
 
-module.exports.handler = serverless(app);
+exports.handler = serverless(app);
