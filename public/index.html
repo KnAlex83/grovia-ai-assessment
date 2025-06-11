@@ -942,7 +942,7 @@
       }
 
       function showStep(step) {
-        ['consent-form', 'contact-form', 'question-form', 'completion-form'].forEach(id => {
+        ['consent-form', 'contact-form', 'questions-form', 'completion-form'].forEach(id => {
           document.getElementById(id).classList.add('hidden');
         });
         document.getElementById(`${step}-form`).classList.remove('hidden');
