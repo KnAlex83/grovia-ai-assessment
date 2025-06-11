@@ -8,6 +8,49 @@ neonConfig.webSocketConstructor = ws;
 
 const app = express();
 app.use(express.json());
+// RATE LIMITING - Prevents API abuse
+const rateLimitStore = new Map();
+
+function checkRateLimit(ip, maxRequests = 3, windowMinutes = 60) {
+  const now = Date.now();
+  const windowMs = windowMinutes * 60 * 1000;
+  
+  if (!rateLimitStore.has(ip)) {
+    rateLimitStore.set(ip, { count: 1, resetTime: now + windowMs });
+    return { allowed: true, remaining: maxRequests - 1 };
+  }
+  
+  const record = rateLimitStore.get(ip);
+  
+  if (now > record.resetTime) {
+    rateLimitStore.set(ip, { count: 1, resetTime: now + windowMs });
+    return { allowed: true, remaining: maxRequests - 1 };
+  }
+  
+  if (record.count >= maxRequests) {
+    return { allowed: false, remaining: 0, resetIn: Math.ceil((record.resetTime - now) / 60000) };
+  }
+  
+  record.count++;
+  return { allowed: true, remaining: maxRequests - record.count };
+}
+
+// Apply rate limiting to all assessment endpoints
+app.use('/api/assessment', (req, res, next) => {
+  const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || '127.0.0.1';
+  const rateLimit = checkRateLimit(clientIP, 10, 60); // 10 requests per hour
+  
+  if (!rateLimit.allowed) {
+    return res.status(429).json({
+      success: false,
+      error: 'Too many requests. Please try again later.',
+      retryAfter: rateLimit.resetIn
+    });
+  }
+  
+  res.setHeader('X-RateLimit-Remaining', rateLimit.remaining);
+  next();
+});
 // Fix for Netlify routing
 app.use((req, res, next) => {
   if (req.url.startsWith('/.netlify/functions/server')) {
