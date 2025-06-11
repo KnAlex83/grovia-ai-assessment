@@ -951,18 +951,18 @@
       }
 
       function updateProgress() {
-        const totalSteps = 12;
+        const totalSteps = 10; // 10 questions total
         let progress = 0;
-        
+  
         if (currentStep === 'consent') progress = 0;
         else if (currentStep === 'contact') progress = 1;
         else if (currentStep === 'questions') {
-          // Don't advance progress for follow-up questions
-          progress = waitingForFollowUp ? 2 + currentQuestionIndex : 2 + currentQuestionIndex + 1;
+          // Progress based on actual question number, not follow-ups
+          progress = 2 + currentQuestionIndex;
         }
-        else if (currentStep === 'completed') progress = totalSteps;
-        
-        const percentage = Math.min(100, (progress / totalSteps) * 100);
+        else if (currentStep === 'completed') progress = totalSteps + 2;
+  
+        const percentage = Math.min(100, (progress / (totalSteps + 2)) * 100);
         document.getElementById('progress-fill').style.width = percentage + '%';
       }
 
