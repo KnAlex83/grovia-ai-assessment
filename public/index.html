@@ -103,134 +103,99 @@
         align-items: center;
       }
 
-      .header-logo {
+      .logo-container {
         display: flex;
         align-items: center;
         gap: 0.75rem;
       }
 
-      .logo-icon {
-        width: 2.5rem;
-        height: 2.5rem;
-        background: hsl(var(--primary));
-        border-radius: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .logo-svg {
+        width: 32px;
+        height: 32px;
+        transition: transform 0.2s ease;
       }
 
-      .logo-text h1 {
+      .logo-svg:hover {
+        transform: scale(1.05);
+      }
+
+      .company-name {
         font-size: 1.25rem;
-        font-weight: 600;
-        color: hsl(var(--foreground));
-        margin: 0;
+        font-weight: 700;
+        color: hsl(var(--primary));
+        text-decoration: none;
+        transition: color 0.2s ease;
       }
 
-      .logo-text p {
-        font-size: 0.875rem;
-        color: hsl(var(--muted-foreground));
-        margin: 0;
+      .company-name:hover {
+        color: hsl(var(--primary));
+        opacity: 0.8;
       }
 
       .header-controls {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 1rem;
       }
 
       .language-toggle {
         display: flex;
-        align-items: center;
-        gap: 0.25rem;
+        background: hsl(var(--muted));
+        border-radius: 0.5rem;
+        padding: 0.25rem;
+        border: 1px solid hsl(var(--border));
       }
 
       .lang-btn {
         padding: 0.375rem 0.75rem;
+        border: none;
+        background: transparent;
+        color: hsl(var(--muted-foreground));
         font-size: 0.875rem;
-        border: 1px solid hsl(var(--border));
+        font-weight: 500;
         border-radius: 0.375rem;
-        background: hsl(var(--background));
-        color: hsl(var(--foreground));
         cursor: pointer;
         transition: all 0.2s ease;
-        font-weight: 500;
       }
 
       .lang-btn.active {
         background: hsl(var(--primary));
         color: hsl(var(--primary-foreground));
-        border-color: hsl(var(--primary));
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       }
 
       .lang-btn:hover:not(.active) {
-        background: hsl(var(--muted));
+        background: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
       }
 
-      /* FIXED: Perfect Theme Toggle matching preview mode */
       .theme-toggle {
-        position: relative;
-        width: 2.25rem;
-        height: 2.25rem;
+        padding: 0.5rem;
         border: 1px solid hsl(var(--border));
-        border-radius: 0.5rem;
         background: hsl(var(--background));
+        color: hsl(var(--foreground));
+        border-radius: 0.5rem;
         cursor: pointer;
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
-        overflow: hidden;
       }
 
       .theme-toggle:hover {
         background: hsl(var(--muted));
-        border-color: hsl(var(--primary) / 0.5);
-        transform: scale(1.05);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      .theme-icon {
-        width: 1.125rem;
-        height: 1.125rem;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: absolute;
-        fill: currentColor;
-        color: hsl(var(--foreground));
-      }
-
-      /* Sun icon (light mode) */
-      .sun-icon {
-        opacity: 1;
-        transform: rotate(0deg) scale(1);
-      }
-
-      /* Moon icon (dark mode) */
-      .moon-icon {
-        opacity: 0;
-        transform: rotate(90deg) scale(0);
-      }
-
-      /* Dark mode transitions */
-      .dark .sun-icon {
-        opacity: 0;
-        transform: rotate(-90deg) scale(0);
-      }
-
-      .dark .moon-icon {
-        opacity: 1;
-        transform: rotate(0deg) scale(1);
       }
 
       /* Main Content */
       .main-content {
-        max-width: 1024px;
+        max-width: 800px;
         margin: 0 auto;
         padding: 2rem 1rem;
       }
 
-      /* Progress Bar */
+      /* Progress Container */
       .progress-container {
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
       }
 
       .progress-bar {
@@ -265,146 +230,201 @@
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        /* FIXED: Dynamic height based on content */
-        min-height: 500px;
-        max-height: 700px;
+        max-height: 70vh;
       }
 
       .chat-header {
-        padding: 1.5rem;
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        padding: 1rem;
         border-bottom: 1px solid hsl(var(--border));
-        background: hsl(var(--muted) / 0.3);
         flex-shrink: 0;
       }
 
       .chat-header-content {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.75rem;
       }
 
       .bot-icon {
         width: 2.5rem;
         height: 2.5rem;
-        background: hsl(var(--primary));
-        border-radius: calc(var(--radius) + 2px);
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        flex-shrink: 0;
       }
 
       .chat-title h3 {
         font-size: 1.125rem;
         font-weight: 600;
-        color: hsl(var(--foreground));
         margin: 0;
+        line-height: 1.2;
       }
 
       .chat-title p {
         font-size: 0.875rem;
-        color: hsl(var(--muted-foreground));
         margin: 0;
+        opacity: 0.9;
+        line-height: 1.2;
       }
 
-      /* FIXED: Messages area with proper scrolling */
       .chat-messages {
         flex: 1;
-        overflow-y: auto;
         padding: 1.5rem;
-        background: hsl(var(--background));
-        min-height: 200px;
-        max-height: 350px;
+        overflow-y: auto;
+        max-height: 50vh;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        scroll-behavior: smooth;
       }
 
       .message {
         display: flex;
-        margin-bottom: 1rem;
-        animation: fadeIn 0.3s ease-in;
+        align-items: flex-start;
+        gap: 0.75rem;
+        max-width: 100%;
+        animation: messageSlideIn 0.3s ease-out;
       }
 
-      .message.user {
-        justify-content: flex-end;
+      @keyframes messageSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .message.bot {
-        justify-content: flex-start;
+        flex-direction: row;
+      }
+
+      .message.user {
+        flex-direction: row-reverse;
+      }
+
+      .message-avatar {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .message.bot .message-avatar {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+      }
+
+      .message.user .message-avatar {
+        background: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
       }
 
       .message-bubble {
-        max-width: 70%;
+        background: hsl(var(--muted));
+        color: hsl(var(--foreground));
         padding: 0.75rem 1rem;
-        border-radius: 1.125rem;
-        font-size: 0.9375rem;
-        line-height: 1.4;
+        border-radius: 1rem;
+        max-width: calc(100% - 3rem);
         word-wrap: break-word;
+        position: relative;
+        line-height: 1.5;
+      }
+
+      .message.bot .message-bubble {
+        background: hsl(var(--muted));
+        border-bottom-left-radius: 0.375rem;
       }
 
       .message.user .message-bubble {
         background: hsl(var(--primary));
         color: hsl(var(--primary-foreground));
-        border-bottom-right-radius: 0.25rem;
+        border-bottom-right-radius: 0.375rem;
       }
 
-      .message.bot .message-bubble {
-        background: hsl(var(--muted));
-        color: hsl(var(--foreground));
-        border-bottom-left-radius: 0.25rem;
-      }
-
-      /* FIXED: Input Container with proper form layout */
-      .input-container {
-        padding: 1.5rem;
-        border-top: 1px solid hsl(var(--border));
-        background: hsl(var(--background));
-        flex-shrink: 0;
-        /* FIXED: Allow scrolling within forms */
-        max-height: 300px;
-        overflow-y: auto;
-      }
-
+      /* Forms */
       .form-container {
-        max-width: 600px;
-        margin: 0 auto;
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) + 2px);
+        box-shadow: var(--card-shadow);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-container.hidden {
+        display: none;
       }
 
       .form-title {
         font-size: 1.25rem;
         font-weight: 600;
         color: hsl(var(--foreground));
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         text-align: center;
+      }
+
+      .form-subtitle {
+        color: hsl(var(--muted-foreground));
+        text-align: center;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
       }
 
       .form-group {
         margin-bottom: 1rem;
       }
 
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+
       .form-label {
         display: block;
-        margin-bottom: 0.5rem;
         font-weight: 500;
         color: hsl(var(--foreground));
+        margin-bottom: 0.5rem;
         font-size: 0.875rem;
       }
 
       .form-input,
-      .form-select {
+      .form-select,
+      .form-textarea {
         width: 100%;
         padding: 0.75rem;
         border: 1px solid hsl(var(--border));
-        border-radius: calc(var(--radius) - 2px);
+        border-radius: 0.5rem;
         background: hsl(var(--background));
         color: hsl(var(--foreground));
         font-size: 0.875rem;
+        line-height: 1.5;
         transition: all 0.2s ease;
       }
 
       .form-input:focus,
-      .form-select:focus {
+      .form-select:focus,
+      .form-textarea:focus {
         outline: none;
-        border-color: hsl(var(--ring));
-        box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+        border-color: hsl(var(--primary));
+        box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+      }
+
+      .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+        font-family: inherit;
       }
 
       .checkbox-group {
@@ -414,332 +434,270 @@
         margin-bottom: 1rem;
       }
 
-      .checkbox-input {
-        width: 1rem;
-        height: 1rem;
+      .form-checkbox {
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid hsl(var(--border));
+        border-radius: 0.25rem;
+        background: hsl(var(--background));
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
         margin-top: 0.125rem;
-        accent-color: hsl(var(--primary));
+      }
+
+      .form-checkbox:checked {
+        background: hsl(var(--primary));
+        border-color: hsl(var(--primary));
       }
 
       .checkbox-label {
-        flex: 1;
-        font-size: 0.875rem;
         color: hsl(var(--foreground));
-        line-height: 1.4;
         cursor: pointer;
+        line-height: 1.5;
+        font-size: 0.875rem;
       }
 
-      /* FIXED: Form button always visible */
-      .form-button {
-        background: hsl(var(--primary));
-        color: hsl(var(--primary-foreground));
-        border: none;
-        padding: 0.875rem 1.5rem;
-        border-radius: calc(var(--radius) - 2px);
-        font-size: 1rem;
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
         font-weight: 600;
+        border-radius: 0.5rem;
+        border: none;
         cursor: pointer;
         transition: all 0.2s ease;
-        width: 100%;
-        margin-top: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        min-height: 2.75rem;
       }
 
-      .form-button:hover:not(:disabled) {
-        background: hsl(var(--primary) / 0.9);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-      }
-
-      .form-button:disabled {
-        background: hsl(var(--muted));
-        color: hsl(var(--muted-foreground));
+      .btn:disabled {
+        opacity: 0.5;
         cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
       }
 
-      /* FIXED: Question form with proper layout */
-      .question-form-container {
-        max-width: 600px;
-        margin: 0 auto;
+      .btn-primary {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
       }
 
-      .text-input-form {
+      .btn-primary:hover:not(:disabled) {
+        background: hsl(var(--primary) / 0.9);
+      }
+
+      .btn-secondary {
+        background: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
+        border: 1px solid hsl(var(--border));
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        background: hsl(var(--muted));
+      }
+
+      .btn-full {
+        width: 100%;
+      }
+
+      /* Input groups for question form */
+      .input-group {
         display: flex;
-        flex-direction: column;
-        gap: 1rem;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
       }
 
-      .text-input-form .form-input {
-        min-height: 2.5rem;
-        resize: vertical;
+      .input-group .form-textarea {
+        flex: 1;
       }
 
-      /* Feature Cards */
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
+      .input-group .btn {
+        flex-shrink: 0;
+        align-self: flex-end;
+      }
+
+      /* Results page */
+      .result-card {
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) + 2px);
+        box-shadow: var(--card-shadow);
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .score-display {
+        font-size: 3rem;
+        font-weight: 700;
+        color: hsl(var(--primary));
+        margin-bottom: 0.5rem;
+        line-height: 1;
+      }
+
+      .score-label {
+        color: hsl(var(--muted-foreground));
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .result-description {
+        color: hsl(var(--foreground));
+        line-height: 1.6;
         margin-bottom: 2rem;
       }
 
-      .feature-card {
-        background: hsl(var(--card));
-        border: 1px solid hsl(var(--border));
-        border-radius: var(--radius);
-        padding: 1.5rem;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .feature-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .feature-card:hover {
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        transform: translateY(-4px);
-        border-color: hsl(var(--primary) / 0.3);
-      }
-
-      .feature-card:hover::before {
-        opacity: 1;
-      }
-
-      .feature-icon {
-        width: 3rem;
-        height: 3rem;
-        border-radius: var(--radius);
+      .action-buttons {
         display: flex;
-        align-items: center;
+        gap: 1rem;
         justify-content: center;
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
-      }
-
-      .feature-card:nth-child(1) .feature-icon {
-        background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--primary) / 0.2));
-        color: hsl(var(--primary));
-      }
-
-      .feature-card:nth-child(2) .feature-icon {
-        background: linear-gradient(135deg, hsl(var(--success) / 0.1), hsl(var(--success) / 0.2));
-        color: hsl(var(--success));
-      }
-
-      .feature-card:nth-child(3) .feature-icon {
-        background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(147, 51, 234, 0.2));
-        color: rgb(147, 51, 234);
-      }
-
-      .feature-card:hover .feature-icon {
-        transform: scale(1.1) rotate(5deg);
-      }
-
-      .feature-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: hsl(var(--foreground));
-        margin-bottom: 0.5rem;
-        transition: color 0.3s ease;
-      }
-
-      .feature-card:hover .feature-title {
-        color: hsl(var(--primary));
-      }
-
-      .feature-description {
-        font-size: 0.875rem;
-        color: hsl(var(--muted-foreground));
-        line-height: 1.5;
-      }
-
-      .icon-large {
-        width: 1.5rem;
-        height: 1.5rem;
-        fill: currentColor;
-      }
-
-      /* Footer */
-      .footer {
-        background: hsl(var(--muted) / 0.5);
-        border-top: 1px solid hsl(var(--border));
-        padding: 2rem 0;
-        margin-top: 4rem;
-      }
-
-      .footer-content {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0 1rem;
-        text-align: center;
-      }
-
-      .footer-links {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-bottom: 1rem;
-      }
-
-      .footer-link {
-        color: hsl(var(--muted-foreground));
-        text-decoration: none;
-        font-size: 0.875rem;
-        transition: color 0.2s ease;
-      }
-
-      .footer-link:hover {
-        color: hsl(var(--foreground));
-      }
-
-      .footer-copyright {
-        font-size: 0.875rem;
-        color: hsl(var(--muted-foreground));
-      }
-
-      /* Utilities */
-      .hidden {
-        display: none !important;
-      }
-
-      .loading-dots {
-        display: inline-block;
-      }
-
-      .loading-dots::after {
-        content: '';
-        animation: dots 1.5s steps(5, end) infinite;
-      }
-
-      @keyframes dots {
-        0%, 20% { content: ''; }
-        40% { content: '.'; }
-        60% { content: '..'; }
-        80%, 100% { content: '...'; }
-      }
-
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-
-      @keyframes slideInLeft {
-        from { opacity: 0; transform: translateX(-20px); }
-        to { opacity: 1; transform: translateX(0); }
-      }
-
-      @keyframes slideInRight {
-        from { opacity: 0; transform: translateX(20px); }
-        to { opacity: 1; transform: translateX(0); }
-      }
-
-      .message.bot {
-        animation: slideInLeft 0.3s ease-out;
-      }
-
-      .message.user {
-        animation: slideInRight 0.3s ease-out;
+        flex-wrap: wrap;
       }
 
       /* Responsive Design */
-      @media (max-width: 1024px) {
-        .main-content {
-          padding: 1.5rem 1rem;
-        }
-
-        .features-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
       @media (max-width: 768px) {
         .header-content {
           flex-direction: column;
           gap: 1rem;
-          padding: 0.75rem 1rem;
+          padding: 1rem 0.5rem;
         }
 
         .main-content {
-          padding: 1rem;
+          padding: 1rem 0.5rem;
         }
 
         .chat-card {
-          min-height: 400px;
-          max-height: 600px;
+          max-height: 60vh;
         }
 
         .chat-messages {
-          max-height: 300px;
+          max-height: 40vh;
+          padding: 1rem;
         }
 
-        .text-input-form {
+        .input-group {
           flex-direction: column;
         }
 
-        .footer-links {
+        .action-buttons {
           flex-direction: column;
-          gap: 1rem;
+          align-items: stretch;
+        }
+
+        .header-controls {
+          flex-direction: column;
+          gap: 0.75rem;
         }
       }
 
       @media (max-width: 480px) {
-        .input-container {
+        .form-container {
           padding: 1rem;
         }
 
-        .form-container {
-          padding: 0;
+        .result-card {
+          padding: 1.5rem;
         }
 
-        .message-bubble {
-          max-width: 85%;
+        .score-display {
+          font-size: 2.5rem;
+        }
+      }
+
+      /* Loading states */
+      .loading {
+        opacity: 0.7;
+        pointer-events: none;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid transparent;
+        border-top: 2px solid currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-left: 0.5rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Accessibility improvements */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* Focus styles */
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid hsl(var(--primary));
+        outline-offset: 2px;
+      }
+
+      /* Animation for smooth transitions */
+      .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
       }
     </style>
   </head>
-  <body class="bg-gradient-main">
-    <!-- Header -->
-    <header class="header">
-      <div class="header-content">
-        <div class="header-logo">
-          <div class="logo-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+  <body>
+    <div class="bg-gradient-main">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <div class="logo-container">
+            <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" rx="20" fill="hsl(var(--primary))"/>
+              <circle cx="35" cy="35" r="8" fill="white"/>
+              <circle cx="65" cy="35" r="8" fill="white"/>
+              <path d="M25 65 Q50 85 75 65" stroke="white" stroke-width="6" stroke-linecap="round" fill="none"/>
+              <rect x="20" y="75" width="60" height="4" rx="2" fill="white"/>
             </svg>
+            <a href="#" class="company-name">GROVIA Digital</a>
           </div>
-          <div class="logo-text">
-            <h1 id="header-title">GROVIA Digital</h1>
-            <p id="header-subtitle">AI Readiness Assessment</p>
+          
+          <div class="header-controls">
+            <div class="language-toggle">
+              <button class="lang-btn active" id="lang-de">DE</button>
+              <button class="lang-btn" id="lang-en">EN</button>
+            </div>
+            
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"/>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+              </svg>
+            </button>
           </div>
         </div>
-        <div class="header-controls">
-          <div class="language-toggle">
-            <button class="lang-btn active" id="lang-de">DE</button>
-            <button class="lang-btn" id="lang-en">EN</button>
-          </div>
-          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-            <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="5"/>
-              <path d="m12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42m12.72-12.72l1.42-1.42"/>
-            </svg>
-            <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </header>
+      </header>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -766,127 +724,111 @@
             </div>
           </div>
         </div>
+        
         <div class="chat-messages" id="chat-messages">
-          <!-- Messages will be added here dynamically -->
-        </div>
-        <div class="input-container">
-          <!-- Consent Form -->
-          <div id="consent-form" class="form-container">
-            <h3 class="form-title" id="consent-title">Einverständniserklärung</h3>
-            <div class="checkbox-group">
-              <input type="checkbox" id="data-processing" class="checkbox-input" required>
-              <label for="data-processing" class="checkbox-label" id="data-processing-label">
-                Ich stimme der Verarbeitung meiner Daten für das Assessment zu.
-              </label>
-            </div>
-            <div class="checkbox-group">
-              <input type="checkbox" id="contact-permission" class="checkbox-input">
-              <label for="contact-permission" class="checkbox-label" id="contact-permission-label">
-                Ich erlaube die Kontaktaufnahme für weitere Informationen.
-              </label>
-            </div>
-            <button class="form-button" id="consent-submit" disabled>Weiter</button>
-          </div>
-
-          <!-- Contact Form -->
-          <div id="contact-form" class="form-container hidden">
-            <h3 class="form-title" id="contact-title">Kontaktinformationen</h3>
-            <div class="form-group">
-              <label for="contact-name" class="form-label" id="name-label">Name *</label>
-              <input type="text" id="contact-name" class="form-input" required>
-            </div>
-            <div class="form-group">
-              <label for="contact-email" class="form-label" id="email-label">E-Mail *</label>
-              <input type="email" id="contact-email" class="form-input" required>
-            </div>
-            <div class="form-group">
-              <label for="contact-company" class="form-label" id="company-label">Unternehmen *</label>
-              <input type="text" id="contact-company" class="form-input" required>
-            </div>
-            <div class="form-group">
-              <label for="employee-count" class="form-label" id="employees-label">Mitarbeiteranzahl</label>
-              <select id="employee-count" class="form-select">
-                <option value="">Bitte wählen</option>
-                <option value="1-10">1-10</option>
-                <option value="11-50">11-50</option>
-                <option value="51-200">51-200</option>
-                <option value="201-500">201-500</option>
-                <option value="500+">500+</option>
-              </select>
-            </div>
-            <button class="form-button" id="contact-submit">Assessment starten</button>
-          </div>
-          
-          <!-- Question Form -->
-          <div id="question-form" class="question-form-container hidden">
-            <div class="text-input-form">
-              <input type="text" id="question-input" class="form-input" placeholder="Ihre Antwort...">
-              <button class="form-button" id="question-submit" disabled>Senden</button>
-            </div>
-          </div>
-          
-          <!-- Completion Message -->
-          <div id="completion-form" class="form-container hidden">
-            <h3 class="form-title" id="completion-title">Assessment abgeschlossen!</h3>
-            <div style="text-align: center; margin: 2rem 0;">
-              <div style="font-size: 3rem; font-weight: bold; color: hsl(var(--primary)); margin-bottom: 0.5rem;" id="final-score">--</div>
-              <div style="font-size: 1.125rem; color: hsl(var(--muted-foreground));" id="score-label">AI Readiness Score</div>
-            </div>
-            <p style="text-align: center; color: hsl(var(--muted-foreground));" id="completion-text">
-              Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.
-            </p>
-          </div>
+          <!-- Messages will be dynamically added here -->
         </div>
       </div>
 
-      <!-- Feature Cards -->
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg class="icon-large" viewBox="0 0 24 24">
-              <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v1a1 1 0 0 1-1 1h-2v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H4a1 1 0 0 1-1-1v-1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2m6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
-            </svg>
-          </div>
-          <h4 class="feature-title" id="feature1-title">Detaillierte Analyse</h4>
-          <p class="feature-description" id="feature1-desc">Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens</p>
+      <!-- Consent Form -->
+      <div class="form-container" id="consent-form">
+        <h2 class="form-title" id="consent-title">Datenschutz & Einverständnis</h2>
+        <p class="form-subtitle" id="consent-subtitle">Bevor wir beginnen, benötigen wir Ihr Einverständnis für die Datenverarbeitung.</p>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="consent-data" class="form-checkbox" />
+          <label for="consent-data" class="checkbox-label" id="consent-data-label">
+            Ich stimme der Verarbeitung meiner Daten zum Zweck der KI-Readiness-Bewertung zu. Die Daten werden ausschließlich für die Erstellung des Bewertungsberichts verwendet und nicht an Dritte weitergegeben.
+          </label>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg class="icon-large" viewBox="0 0 24 24">
-              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-            </svg>
-          </div>
-          <h4 class="feature-title" id="feature2-title">DSGVO-konform</h4>
-          <p class="feature-description" id="feature2-desc">Ihre Daten werden sicher und datenschutzkonform verarbeitet</p>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="consent-contact" class="form-checkbox" />
+          <label for="consent-contact" class="checkbox-label" id="consent-contact-label">
+            Ich stimme zu, dass GROVIA Digital mich bezüglich der Bewertungsergebnisse und möglicher Beratungsleistungen kontaktieren darf.
+          </label>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg class="icon-large" viewBox="0 0 24 24">
-              <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-            </svg>
+        
+        <button class="btn btn-primary btn-full" id="consent-submit" disabled>
+          <span id="consent-submit-text">Zustimmen und fortfahren</span>
+        </button>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="form-container hidden" id="contact-form">
+        <h2 class="form-title" id="contact-title">Kontaktinformationen</h2>
+        <p class="form-subtitle" id="contact-subtitle">Bitte geben Sie Ihre Kontaktdaten ein, um den personalisierten Bericht zu erhalten.</p>
+        
+        <div class="form-group">
+          <label for="contact-name" class="form-label" id="contact-name-label">Name *</label>
+          <input type="text" id="contact-name" class="form-input" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="contact-email" class="form-label" id="contact-email-label">E-Mail *</label>
+          <input type="email" id="contact-email" class="form-input" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="contact-company" class="form-label" id="contact-company-label">Unternehmen *</label>
+          <input type="text" id="contact-company" class="form-input" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="contact-employees" class="form-label" id="contact-employees-label">Anzahl Mitarbeiter</label>
+          <select id="contact-employees" class="form-select">
+            <option value="">Bitte wählen...</option>
+            <option value="1-10">1-10</option>
+            <option value="11-50">11-50</option>
+            <option value="51-200">51-200</option>
+            <option value="201-1000">201-1000</option>
+            <option value="1000+">1000+</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary btn-full" id="contact-submit">
+          <span id="contact-submit-text">Assessment starten</span>
+        </button>
+      </div>
+
+      <!-- Question Form -->
+      <div class="form-container hidden" id="question-form">
+        <div class="input-group">
+          <textarea 
+            class="form-textarea" 
+            id="question-input" 
+            placeholder="Ihre Antwort eingeben..." 
+            rows="3"
+          ></textarea>
+          <button class="btn btn-primary" id="question-submit">
+            <span id="question-submit-text">Senden</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Completion Form -->
+      <div class="form-container hidden" id="completion-form">
+        <div class="result-card">
+          <div class="score-display" id="final-score">85%</div>
+          <div class="score-label" id="score-label">KI-Readiness Score</div>
+          <div class="result-description" id="result-description">
+            Herzlichen Glückwunsch! Ihr Unternehmen zeigt eine hohe Bereitschaft für KI-Technologien.
           </div>
-          <h4 class="feature-title" id="feature3-title">Handlungsempfehlungen</h4>
-          <p class="feature-description" id="feature3-desc">Konkrete nächste Schritte für Ihre KI-Strategie</p>
+          <div class="action-buttons">
+            <button class="btn btn-primary" id="download-report">
+              <span id="download-report-text">Detaillierten Bericht herunterladen</span>
+            </button>
+            <button class="btn btn-secondary" id="schedule-consultation">
+              <span id="schedule-consultation-text">Beratungsgespräch vereinbaren</span>
+            </button>
+          </div>
         </div>
       </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-content">
-        <div class="footer-links">
-          <a href="https://grovia-digital.com/datenschutz/" class="footer-link" id="privacy-link" target="_blank" rel="noopener">Datenschutz</a>
-          <a href="https://grovia-digital.com/impressum/" class="footer-link" id="imprint-link" target="_blank" rel="noopener">Impressum</a>
-          <a href="https://grovia-digital.com/terms-conditions/" class="footer-link" id="terms-link" target="_blank" rel="noopener">AGB</a>
-        </div>
-        <p class="footer-copyright" id="footer-text">© 2025 GROVIA AI Readiness Assessment. Alle Rechte vorbehalten.</p>
-      </div>
-    </footer>
+    </div>
 
     <script>
-      // SECURE VERSION: Identical frontend functionality but all business logic moved to server-side
-      // Assessment questions, translations, AI analysis, and webhook logic are now protected on the backend
-      
+      // Global variables
       let currentLanguage = 'de';
       let currentTheme = 'light';
       let sessionId = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -1037,113 +979,72 @@
         document.getElementById('theme-toggle').addEventListener('click', function() {
           currentTheme = currentTheme === 'light' ? 'dark' : 'light';
           updateTheme();
-          localStorage.setItem('grovia-theme', currentTheme);
         });
 
-        // Load saved theme
-        const savedTheme = localStorage.getItem('grovia-theme');
-        if (savedTheme) {
-          currentTheme = savedTheme;
-          updateTheme();
-        }
-
         // Consent form
-        const dataProcessingCheckbox = document.getElementById('data-processing');
-        const contactPermissionCheckbox = document.getElementById('contact-permission');
+        const consentDataCheckbox = document.getElementById('consent-data');
+        const consentContactCheckbox = document.getElementById('consent-contact');
         const consentSubmitBtn = document.getElementById('consent-submit');
 
-      function updateConsentButton() {
-        const dataProcessing = dataProcessingCheckbox.checked;
-        const contactPermission = contactPermissionCheckbox.checked;
-        consentSubmitBtn.disabled = !(dataProcessing && contactPermission);
+        function updateConsentButton() {
+          const dataConsent = consentDataCheckbox.checked;
+          const contactConsent = consentContactCheckbox.checked;
+          consentSubmitBtn.disabled = !dataConsent;
         }
 
-        dataProcessingCheckbox.addEventListener('change', updateConsentButton);
-        contactPermissionCheckbox.addEventListener('change', updateConsentButton);
+        consentDataCheckbox.addEventListener('change', updateConsentButton);
+        consentContactCheckbox.addEventListener('change', updateConsentButton);
 
-      // Initialize button state
-        updateConsentButton();
-        
         consentSubmitBtn.addEventListener('click', async function() {
-          const dataProcessing = document.getElementById('data-processing').checked;
-          const contactPermission = document.getElementById('contact-permission').checked;
+          const dataConsent = consentDataCheckbox.checked;
+          const contactConsent = consentContactCheckbox.checked;
           
-          const result = await saveConsentData(dataProcessing, contactPermission);
-          
-          if (result.success) {
-            if (result.message) {
-              addMessage('bot', result.message.content);
+          if (dataConsent) {
+            const result = await saveConsentData(dataConsent, contactConsent);
+            if (result.success) {
+              showStep('contact');
             }
-            setTimeout(() => showStep('contact'), 1000);
           }
         });
 
         // Contact form
-        document.getElementById('contact-submit').addEventListener('click', async function() {
-          if (this.disabled) return;
-          
-          const name = document.getElementById('contact-name').value;
-          const email = document.getElementById('contact-email').value;
-          const company = document.getElementById('contact-company').value;
-          const employees = document.getElementById('employee-count').value;
-          
-          if (!name || !email || !company) {
-            alert('Please fill in all required fields');
-            return;
-          }
-          
-          this.disabled = true;
-          this.textContent = 'Processing...';
-          
-          try {
-            const result = await saveContactData(name, email, company, employees);
+        const contactSubmitBtn = document.getElementById('contact-submit');
+        contactSubmitBtn.addEventListener('click', async function() {
+          const name = document.getElementById('contact-name').value.trim();
+          const email = document.getElementById('contact-email').value.trim();
+          const company = document.getElementById('contact-company').value.trim();
+          const employees = document.getElementById('contact-employees').value;
+
+          if (name && email && company) {
+            contactName = name;
+            contactInfo = { name, email, company, employees };
             
+            const result = await saveContactData(name, email, company, employees);
             if (result.success) {
-              contactInfo = { name, email, company, employees };
-              contactName = name;
+              showStep('questions');
               
-              if (result.messages) {
-                result.messages.forEach((msg, index) => {
-                  setTimeout(() => addMessage(msg.type, msg.content), index * 300);
-                });
+              // Start with first question
+              const startResult = await serverRequest('/start');
+              if (startResult.success && startResult.firstQuestion) {
+                addMessage('bot', startResult.firstQuestion);
               }
-              
-              setTimeout(() => {
-                showStep('question');
-              }, result.messages ? result.messages.length * 300 + 300 : 300);
             }
-          } catch (error) {
-            console.error('Error submitting contact form:', error);
-            this.disabled = false;
-            this.textContent = 'Assessment starten';
           }
         });
 
         // Question form
         const questionInput = document.getElementById('question-input');
         const questionSubmitBtn = document.getElementById('question-submit');
-        
-        questionInput.addEventListener('input', function() {
-          questionSubmitBtn.disabled = !this.value.trim();
-        });
-        
-        questionInput.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter' && !questionSubmitBtn.disabled) {
-            handleQuestionSubmit();
-          }
-        });
-        
-        questionSubmitBtn.addEventListener('click', handleQuestionSubmit);
 
         async function handleQuestionSubmit() {
           const userResponse = questionInput.value.trim();
           if (!userResponse) return;
-          
-          // Show user message
+
+          // Add user message to chat
           addMessage('user', userResponse);
-          
-          // Clear input and show loading
           questionInput.value = '';
+          
+          // Show loading state
           questionSubmitBtn.disabled = true;
           questionSubmitBtn.textContent = 'Wird analysiert...';
           
@@ -1192,6 +1093,7 @@
                   }
                 } else if (result.nextQuestion) {
                   currentQuestionIndex++;
+                  updateProgress();
                   setTimeout(() => {
                     addMessage('bot', result.nextQuestion);
                   }, 2000);
