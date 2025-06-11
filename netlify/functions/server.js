@@ -41,26 +41,6 @@ function checkRateLimit(ip, maxRequests = 3, windowMinutes = 60) {
   return { allowed: true, remaining: maxRequests - record.count };
 }
 
-// Apply rate limiting to all assessment endpoints
-app.use((req, res, next) => {
-  // Skip rate limiting for non-assessment requests
-  if (!req.url.includes('/api/assessment')) {
-    return next();
-  }
-  const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || '127.0.0.1';
-  const rateLimit = checkRateLimit(clientIP, 10, 60); // 10 requests per hour
-  
-  if (!rateLimit.allowed) {
-    return res.status(429).json({
-      success: false,
-      error: 'Too many requests. Please try again later.',
-      retryAfter: rateLimit.resetIn
-    });
-  }
-  
-  res.setHeader('X-RateLimit-Remaining', rateLimit.remaining);
-  next();
-});
 // Fix for Netlify routing
 app.use((req, res, next) => {
   if (req.url.startsWith('/.netlify/functions/server')) {
@@ -76,6 +56,25 @@ app.use((req, res, next) => {
   if (req.body && req.body.endpoint) {
     req.url = req.body.endpoint;
     delete req.body.endpoint;
+  }
+  next();
+});
+// Apply rate limiting AFTER URL transformation
+app.use((req, res, next) => {
+  // Only rate limit assessment endpoints
+  if (req.url && req.url.includes('/api/assessment')) {
+    const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || '127.0.0.1';
+    const rateLimit = checkRateLimit(clientIP, 3, 60); // 3 requests per hour
+    
+    if (!rateLimit.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: 'Too many requests. Please try again later.',
+        retryAfter: rateLimit.resetIn
+      });
+    }
+    
+    res.setHeader('X-RateLimit-Remaining', rateLimit.remaining);
   }
   next();
 });
