@@ -42,7 +42,11 @@ function checkRateLimit(ip, maxRequests = 3, windowMinutes = 60) {
 }
 
 // Apply rate limiting to all assessment endpoints
-app.use('/api/assessment', (req, res, next) => {
+app.use((req, res, next) => {
+  // Skip rate limiting for non-assessment requests
+  if (!req.url.includes('/api/assessment')) {
+    return next();
+  }
   const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || '127.0.0.1';
   const rateLimit = checkRateLimit(clientIP, 10, 60); // 10 requests per hour
   
@@ -311,7 +315,36 @@ app.get('/api/assessment/session/:sessionId', async (req, res) => {
     res.status(500).json({ message: 'Failed to get session' });
   }
 });
+// Generate new secure session ID
+app.post('/api/assessment/generate-session', async (req, res) => {
+  try {
+    const secureSessionId = generateSecureSessionId();
+    const { language = 'de' } = req.body;
+    
+    if (!pool) {
+      return res.json({
+        success: true,
+        sessionId: secureSessionId,
+        expiresIn: 24 * 60 * 60 * 1000
+      });
+    }
 
+    // Store new session in database
+    const result = await pool.query(
+      'INSERT INTO assessment_sessions (session_id, language, current_step, responses, consent_data_processing, consent_contact_permission, is_completed) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [secureSessionId, language, 1, JSON.stringify({}), false, false, false]
+    );
+    
+    res.json({
+      success: true,
+      sessionId: secureSessionId,
+      expiresIn: 24 * 60 * 60 * 1000
+    });
+  } catch (error) {
+    console.error('Session generation error:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
 // Save consent data - NEW ENDPOINT
 app.post('/api/assessment/consent', async (req, res) => {
   try {
