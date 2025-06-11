@@ -222,21 +222,28 @@ Keep explanations under 80 words and overwhelmingly positive. Focus on building 
   }
 
   try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.SITE_URL || 'https://ai-assessment.grovia-digital.com',
-        'X-Title': 'AI Readiness Assessment'
-      },
-      body: JSON.stringify({
-        model: CONFIG.AI_MODEL,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: CONFIG.AI_TEMPERATURE,
-        max_tokens: CONFIG.AI_MAX_TOKENS
-      })
-    });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+  
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': process.env.SITE_URL || 'https://ai-assessment.grovia-digital.com',
+      'X-Title': 'AI Readiness Assessment'
+    },
+    body: JSON.stringify({
+      model: CONFIG.AI_MODEL,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: CONFIG.AI_TEMPERATURE,
+      max_tokens: CONFIG.AI_MAX_TOKENS,
+      stream: false // Ensure no streaming
+    }),
+    signal: controller.signal
+  });
+  
+  clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`AI API error: ${response.status}`);
