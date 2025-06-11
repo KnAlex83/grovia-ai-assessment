@@ -99,143 +99,185 @@
         margin: 0 auto;
         padding: 1rem;
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
       }
 
-      .logo-container {
+      .header-logo {
         display: flex;
         align-items: center;
         gap: 0.75rem;
       }
 
-      .logo {
-        width: 2rem;
-        height: 2rem;
+      .logo-icon {
+        width: 2.5rem;
+        height: 2.5rem;
         background: hsl(var(--primary));
-        border-radius: calc(var(--radius) - 2px);
+        border-radius: 0.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: hsl(var(--primary-foreground));
-        font-weight: 700;
-        font-size: 1rem;
       }
 
-      .brand-text {
+      .logo-text h1 {
         font-size: 1.25rem;
-        font-weight: 700;
+        font-weight: 600;
         color: hsl(var(--foreground));
+        margin: 0;
+      }
+
+      .logo-text p {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+        margin: 0;
       }
 
       .header-controls {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.75rem;
       }
 
-      .language-toggle,
-      .theme-toggle {
-        background: hsl(var(--muted));
-        border: 1px solid hsl(var(--border));
-        color: hsl(var(--foreground));
-        padding: 0.5rem 0.75rem;
-        border-radius: calc(var(--radius) - 2px);
-        cursor: pointer;
+      .language-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .lang-btn {
+        padding: 0.375rem 0.75rem;
         font-size: 0.875rem;
-        font-weight: 500;
+        border: 1px solid hsl(var(--border));
+        border-radius: 0.375rem;
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
+        cursor: pointer;
         transition: all 0.2s ease;
+        font-weight: 500;
       }
 
-      .language-toggle:hover,
+      .lang-btn.active {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        border-color: hsl(var(--primary));
+      }
+
+      .lang-btn:hover:not(.active) {
+        background: hsl(var(--muted));
+      }
+
+      /* FIXED: Perfect Theme Toggle matching preview mode */
+      .theme-toggle {
+        position: relative;
+        width: 2.25rem;
+        height: 2.25rem;
+        border: 1px solid hsl(var(--border));
+        border-radius: 0.5rem;
+        background: hsl(var(--background));
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+
       .theme-toggle:hover {
-        background: hsl(var(--accent));
-        border-color: hsl(var(--ring));
+        background: hsl(var(--muted));
+        border-color: hsl(var(--primary) / 0.5);
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .theme-icon {
+        width: 1.125rem;
+        height: 1.125rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: absolute;
+        fill: currentColor;
+        color: hsl(var(--foreground));
+      }
+
+      /* Sun icon (light mode) */
+      .sun-icon {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      }
+
+      /* Moon icon (dark mode) */
+      .moon-icon {
+        opacity: 0;
+        transform: rotate(90deg) scale(0);
+      }
+
+      /* Dark mode transitions */
+      .dark .sun-icon {
+        opacity: 0;
+        transform: rotate(-90deg) scale(0);
+      }
+
+      .dark .moon-icon {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      }
+
+      /* Main Content */
+      .main-content {
+        max-width: 1024px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
       }
 
       /* Progress Bar */
       .progress-container {
-        background: hsl(var(--muted));
-        padding: 1.5rem;
-        border-bottom: 1px solid hsl(var(--border));
-      }
-
-      .progress-content {
-        max-width: 1280px;
-        margin: 0 auto;
-      }
-
-      .progress-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-
-      .progress-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: hsl(var(--foreground));
-      }
-
-      .progress-percentage {
-        font-size: 0.875rem;
-        color: hsl(var(--muted-foreground));
-        font-weight: 500;
+        margin-bottom: 1.5rem;
       }
 
       .progress-bar {
         width: 100%;
         height: 0.5rem;
-        background: hsl(var(--background));
-        border-radius: calc(var(--radius) + 4px);
+        background: hsl(var(--muted));
+        border-radius: 0.25rem;
         overflow: hidden;
-        box-shadow: inset 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        margin-bottom: 0.5rem;
       }
 
       .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary)) 50%, hsl(var(--accent-foreground)));
-        border-radius: calc(var(--radius) + 4px);
-        transition: width 0.5s ease;
-        width: 0%;
+        background: hsl(var(--primary));
+        border-radius: 0.25rem;
+        transition: width 0.3s ease;
       }
 
-      /* Main Container */
-      .main-container {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-        min-height: calc(100vh - 200px);
+      .progress-text {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+        text-align: center;
       }
 
-      /* Step visibility */
-      .step {
-        display: none;
-      }
-
-      .step.active {
-        display: block;
-      }
-
-      /* Chat Container */
-      .chat-container {
-        max-width: 768px;
-        margin: 0 auto;
+      /* FIXED: Chat Interface with proper scrolling */
+      .chat-card {
         background: hsl(var(--card));
         border: 1px solid hsl(var(--border));
-        border-radius: var(--radius);
+        border-radius: calc(var(--radius) + 2px);
         box-shadow: var(--card-shadow);
-        height: 600px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        /* FIXED: Dynamic height based on content */
+        min-height: 500px;
+        max-height: 700px;
       }
 
       .chat-header {
         padding: 1.5rem;
         border-bottom: 1px solid hsl(var(--border));
-        background: hsl(var(--muted) / 0.5);
+        background: hsl(var(--muted) / 0.3);
+        flex-shrink: 0;
+      }
+
+      .chat-header-content {
         display: flex;
         align-items: center;
         gap: 1rem;
@@ -387,166 +429,161 @@
         cursor: pointer;
       }
 
-      /* Question Input Area */
-      .question-input-area {
-        display: flex;
-        gap: 0.75rem;
-        align-items: flex-end;
-      }
-
-      .question-input {
-        flex: 1;
-        min-height: 2.5rem;
-        max-height: 6rem;
-        padding: 0.75rem;
-        border: 1px solid hsl(var(--border));
-        border-radius: calc(var(--radius) - 2px);
-        background: hsl(var(--background));
-        color: hsl(var(--foreground));
-        font-size: 0.9375rem;
-        resize: vertical;
-        font-family: inherit;
-        line-height: 1.4;
-        transition: all 0.2s ease;
-      }
-
-      .question-input:focus {
-        outline: none;
-        border-color: hsl(var(--ring));
-        box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
-      }
-
-      .question-input::placeholder {
-        color: hsl(var(--muted-foreground));
-      }
-
-      /* Buttons */
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: calc(var(--radius) - 2px);
-        font-size: 0.875rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        white-space: nowrap;
-      }
-
-      .btn-primary {
+      /* FIXED: Form button always visible */
+      .form-button {
         background: hsl(var(--primary));
         color: hsl(var(--primary-foreground));
+        border: none;
+        padding: 0.875rem 1.5rem;
+        border-radius: calc(var(--radius) - 2px);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        margin-top: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
-      .btn-primary:hover:not(:disabled) {
+      .form-button:hover:not(:disabled) {
         background: hsl(var(--primary) / 0.9);
         transform: translateY(-1px);
-        box-shadow: 0 4px 8px 0 rgb(0 0 0 / 0.12);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       }
 
-      .btn-secondary {
-        background: hsl(var(--secondary));
-        color: hsl(var(--secondary-foreground));
-        border: 1px solid hsl(var(--border));
-      }
-
-      .btn-secondary:hover:not(:disabled) {
-        background: hsl(var(--accent));
-        border-color: hsl(var(--ring));
-      }
-
-      .btn:disabled {
-        opacity: 0.6;
+      .form-button:disabled {
+        background: hsl(var(--muted));
+        color: hsl(var(--muted-foreground));
         cursor: not-allowed;
         transform: none;
+        box-shadow: none;
       }
 
-      .btn-submit {
-        min-width: 5rem;
-        height: 2.5rem;
-      }
-
-      /* Completion Step */
-      .completion-container {
+      /* FIXED: Question form with proper layout */
+      .question-form-container {
         max-width: 600px;
         margin: 0 auto;
-        text-align: center;
-        padding: 2rem;
       }
 
-      .completion-header {
+      .text-input-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .text-input-form .form-input {
+        min-height: 2.5rem;
+        resize: vertical;
+      }
+
+      /* Feature Cards */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
         margin-bottom: 2rem;
       }
 
-      .completion-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: hsl(var(--foreground));
-        margin-bottom: 1rem;
-      }
-
-      .completion-subtitle {
-        font-size: 1.125rem;
-        color: hsl(var(--muted-foreground));
-        margin-bottom: 2rem;
-      }
-
-      .score-display {
+      .feature-card {
         background: hsl(var(--card));
         border: 1px solid hsl(var(--border));
         border-radius: var(--radius);
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: var(--card-shadow);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
       }
 
-      .score-number {
-        font-size: 3rem;
-        font-weight: 700;
-        color: hsl(var(--primary));
-        margin-bottom: 0.5rem;
+      .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
+        opacity: 0;
+        transition: opacity 0.3s ease;
       }
 
-      .score-label {
-        font-size: 1rem;
-        color: hsl(var(--muted-foreground));
+      .feature-card:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px);
+        border-color: hsl(var(--primary) / 0.3);
       }
 
-      .completion-actions {
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+
+      .feature-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: var(--radius);
         display: flex;
-        gap: 1rem;
+        align-items: center;
         justify-content: center;
-        flex-wrap: wrap;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:nth-child(1) .feature-icon {
+        background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--primary) / 0.2));
+        color: hsl(var(--primary));
+      }
+
+      .feature-card:nth-child(2) .feature-icon {
+        background: linear-gradient(135deg, hsl(var(--success) / 0.1), hsl(var(--success) / 0.2));
+        color: hsl(var(--success));
+      }
+
+      .feature-card:nth-child(3) .feature-icon {
+        background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(147, 51, 234, 0.2));
+        color: rgb(147, 51, 234);
+      }
+
+      .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+      }
+
+      .feature-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: hsl(var(--foreground));
+        margin-bottom: 0.5rem;
+        transition: color 0.3s ease;
+      }
+
+      .feature-card:hover .feature-title {
+        color: hsl(var(--primary));
+      }
+
+      .feature-description {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+        line-height: 1.5;
       }
 
       /* Footer */
       .footer {
-        background: hsl(var(--muted));
+        background: hsl(var(--muted) / 0.5);
         border-top: 1px solid hsl(var(--border));
-        padding: 2rem 1rem;
-        margin-top: auto;
+        padding: 2rem 0;
+        margin-top: 4rem;
       }
 
       .footer-content {
         max-width: 1280px;
         margin: 0 auto;
+        padding: 0 1rem;
         text-align: center;
-      }
-
-      .footer-text {
-        color: hsl(var(--muted-foreground));
-        font-size: 0.875rem;
       }
 
       .footer-links {
         display: flex;
         justify-content: center;
         gap: 2rem;
-        margin-top: 1rem;
+        margin-bottom: 1rem;
       }
 
       .footer-link {
@@ -557,87 +594,67 @@
       }
 
       .footer-link:hover {
-        color: hsl(var(--primary));
+        color: hsl(var(--foreground));
       }
 
-      /* Animations */
+      .footer-copyright {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+      }
+
+      /* Utilities */
+      .hidden {
+        display: none !important;
+      }
+
+      .loading-dots {
+        display: inline-block;
+      }
+
+      .loading-dots::after {
+        content: '';
+        animation: dots 1.5s steps(5, end) infinite;
+      }
+
+      @keyframes dots {
+        0%, 20% { content: ''; }
+        40% { content: '.'; }
+        60% { content: '..'; }
+        80%, 100% { content: '...'; }
+      }
+
       @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(0.5rem);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes pulse {
-        0%, 100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.5;
-        }
-      }
-
-      .loading {
-        animation: pulse 1.5s ease-in-out infinite;
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       /* Responsive Design */
       @media (max-width: 768px) {
         .header-content {
-          padding: 0.75rem;
+          padding: 0.75rem 1rem;
+          flex-direction: column;
+          gap: 1rem;
         }
 
-        .brand-text {
-          font-size: 1.125rem;
-        }
-
-        .header-controls {
-          gap: 0.5rem;
-        }
-
-        .main-container {
+        .main-content {
           padding: 1rem;
         }
 
-        .chat-container {
-          height: 500px;
-        }
-
-        .chat-header {
-          padding: 1rem;
+        .chat-card {
+          min-height: 400px;
+          max-height: 600px;
         }
 
         .chat-messages {
-          padding: 1rem;
+          max-height: 250px;
         }
 
         .input-container {
-          padding: 1rem;
+          max-height: 250px;
         }
 
-        .question-input-area {
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .btn-submit {
-          width: 100%;
-        }
-
-        .completion-title {
-          font-size: 1.5rem;
-        }
-
-        .score-number {
-          font-size: 2.5rem;
-        }
-
-        .completion-actions {
-          flex-direction: column;
+        .features-grid {
+          grid-template-columns: 1fr;
         }
 
         .footer-links {
@@ -646,301 +663,438 @@
         }
       }
 
-      /* Theme-specific adjustments */
-      .dark .progress-fill {
-        background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent-foreground)));
+      /* Custom scrollbar styling */
+      .chat-messages::-webkit-scrollbar,
+      .input-container::-webkit-scrollbar {
+        width: 6px;
       }
 
-      .dark .bot-icon {
-        box-shadow: 0 1px 3px 0 rgb(255 255 255 / 0.1);
+      .chat-messages::-webkit-scrollbar-track,
+      .input-container::-webkit-scrollbar-track {
+        background: hsl(var(--muted));
+        border-radius: 3px;
       }
 
-      /* Focus styles for accessibility */
-      .btn:focus-visible,
-      .form-input:focus-visible,
-      .form-select:focus-visible,
-      .question-input:focus-visible {
-        outline: 2px solid hsl(var(--ring));
-        outline-offset: 2px;
+      .chat-messages::-webkit-scrollbar-thumb,
+      .input-container::-webkit-scrollbar-thumb {
+        background: hsl(var(--border));
+        border-radius: 3px;
       }
 
-      /* High contrast mode support */
-      @media (prefers-contrast: high) {
-        :root {
-          --border: 210 20% 60%;
-        }
-        
-        .dark {
-          --border: 210 20% 40%;
-        }
+      .chat-messages::-webkit-scrollbar-thumb:hover,
+      .input-container::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--muted-foreground));
       }
 
-      /* Reduced motion support */
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
+      /* SVG Icons */
+      .icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: currentColor;
+      }
+
+      .icon-large {
+        width: 1.5rem;
+        height: 1.5rem;
+        fill: currentColor;
       }
     </style>
   </head>
   <body class="bg-gradient-main">
+    <!-- Header -->
     <header class="header">
       <div class="header-content">
-        <div class="logo-container">
-          <div class="logo">G</div>
-          <div class="brand-text">AI-Readiness Assessment</div>
+        <div class="header-logo">
+          <div class="logo-icon">
+            <svg class="icon-large" viewBox="0 0 24 24" style="color: white;">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <h1 id="main-title">GROVIA AI Readiness Assessment</h1>
+            <p id="main-subtitle">Bewerten Sie die KI-Bereitschaft Ihres Unternehmens</p>
+          </div>
         </div>
         <div class="header-controls">
-          <button class="language-toggle" id="language-toggle">Deutsch</button>
-          <button class="theme-toggle" id="theme-toggle">🌙</button>
+          <div class="language-toggle">
+            <button class="lang-btn active" id="lang-de">DE</button>
+            <button class="lang-btn" id="lang-en">EN</button>
+          </div>
+          <!-- FIXED: Perfect Theme Toggle with proper sun/moon icons -->
+          <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+            <!-- Sun icon for light mode -->
+            <svg class="theme-icon sun-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5"/>
+              <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
+            </svg>
+            <!-- Moon icon for dark mode -->
+            <svg class="theme-icon moon-icon" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
         </div>
       </div>
     </header>
 
-    <div class="progress-container">
-      <div class="progress-content">
-        <div class="progress-header">
-          <div class="progress-title" id="progress-title">Fortschritt</div>
-          <div class="progress-percentage" id="progress-percentage">0%</div>
-        </div>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Progress Bar -->
+      <div class="progress-container">
         <div class="progress-bar">
-          <div class="progress-fill" id="progress-fill"></div>
+          <div class="progress-fill" id="progress" style="width: 0%"></div>
         </div>
+        <div class="progress-text" id="progress-text">Assessment wird geladen...</div>
       </div>
-    </div>
 
-    <main class="main-container">
-      <!-- Consent Step -->
-      <div id="consent-step" class="step active">
-        <div class="chat-container">
-          <div class="chat-header">
-            <div class="bot-icon">🤖</div>
+      <!-- FIXED: Chat Interface with proper scrolling -->
+      <div class="chat-card">
+        <div class="chat-header">
+          <div class="chat-header-content">
+            <div class="bot-icon">
+              <svg class="icon-large" style="color: white;" viewBox="0 0 24 24">
+                <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v1a1 1 0 0 1-1 1h-2v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H4a1 1 0 0 1-1-1v-1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2m6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+              </svg>
+            </div>
             <div class="chat-title">
-              <h3 id="consent-title">KI-Readiness Assessment</h3>
-              <p id="consent-subtitle">Ihr digitaler Berater</p>
-            </div>
-          </div>
-          <div class="chat-messages" id="consent-messages">
-            <!-- Messages will be added here dynamically -->
-          </div>
-          <div class="input-container">
-            <div class="form-container">
-              <div class="form-title" id="consent-form-title">Datenschutz-Einverständnis</div>
-              <div class="checkbox-group">
-                <input type="checkbox" id="consent-data" class="checkbox-input" />
-                <label for="consent-data" class="checkbox-label" id="consent-data-label">
-                  Ich stimme der Verarbeitung meiner Daten für diese Bewertung zu. Die Daten werden nur für die Erstellung Ihres personalisierten Berichts verwendet.
-                </label>
-              </div>
-              <div class="checkbox-group">
-                <input type="checkbox" id="consent-contact" class="checkbox-input" />
-                <label for="consent-contact" class="checkbox-label" id="consent-contact-label">
-                  Ich möchte kontaktiert werden, um meine Ergebnisse und mögliche nächste Schritte zu besprechen.
-                </label>
-              </div>
-              <button class="btn btn-primary" id="consent-submit" disabled>
-                <span id="consent-submit-text">Weiter</span>
-              </button>
+              <h3 id="chat-title">GROVIA KI-Readiness Assessment</h3>
+              <p id="chat-subtitle">Ihr digitaler Berater</p>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Contact Step -->
-      <div id="contact-step" class="step">
-        <div class="chat-container">
-          <div class="chat-header">
-            <div class="bot-icon">🤖</div>
-            <div class="chat-title">
-              <h3 id="contact-title">KI-Readiness Assessment</h3>
-              <p id="contact-subtitle">Ihr digitaler Berater</p>
-            </div>
-          </div>
-          <div class="chat-messages" id="contact-messages">
-            <!-- Messages will be added here dynamically -->
-          </div>
-          <div class="input-container">
-            <div class="form-container">
-              <div class="form-title" id="contact-form-title">Ihre Kontaktdaten</div>
-              <div class="form-group">
-                <label for="contact-name" class="form-label" id="contact-name-label">Vollständiger Name</label>
-                <input type="text" id="contact-name" class="form-input" placeholder="Max Mustermann" />
-              </div>
-              <div class="form-group">
-                <label for="contact-email" class="form-label" id="contact-email-label">E-Mail-Adresse</label>
-                <input type="email" id="contact-email" class="form-input" placeholder="max.mustermann@unternehmen.de" />
-              </div>
-              <div class="form-group">
-                <label for="contact-company" class="form-label" id="contact-company-label">Firmenname</label>
-                <input type="text" id="contact-company" class="form-input" placeholder="Mustermann GmbH" />
-              </div>
-              <div class="form-group">
-                <label for="contact-employees" class="form-label" id="contact-employees-label">Anzahl der Mitarbeiter</label>
-                <select id="contact-employees" class="form-select">
-                  <option value="">Bitte wählen</option>
-                  <option value="1-10">1-10 Mitarbeiter</option>
-                  <option value="11-50">11-50 Mitarbeiter</option>
-                  <option value="51-200">51-200 Mitarbeiter</option>
-                  <option value="201-500">201-500 Mitarbeiter</option>
-                  <option value="500+">500+ Mitarbeiter</option>
-                </select>
-              </div>
-              <button class="btn btn-primary" id="contact-submit" disabled>
-                <span id="contact-submit-text">Assessment starten</span>
-              </button>
-            </div>
-          </div>
+        
+        <div class="chat-messages" id="chat-messages">
+          <!-- Messages will be added here -->
         </div>
-      </div>
-
-      <!-- Questions Step -->
-      <div id="questions-step" class="step">
-        <div class="chat-container">
-          <div class="chat-header">
-            <div class="bot-icon">🤖</div>
-            <div class="chat-title">
-              <h3 id="questions-title">KI-Readiness Assessment</h3>
-              <p id="questions-subtitle">Ihr digitaler Berater</p>
+        
+        <!-- FIXED: Input container with proper scrolling -->
+        <div class="input-container">
+          <!-- Consent Form -->
+          <div id="consent-form" class="form-container">
+            <h3 class="form-title" id="consent-title">Einverständniserklärung</h3>
+            <div class="checkbox-group">
+              <input type="checkbox" id="data-processing" class="checkbox-input" required>
+              <label for="data-processing" class="checkbox-label" id="data-processing-label">
+                Ich stimme der Verarbeitung meiner Daten für das Assessment zu.
+              </label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="contact-permission" class="checkbox-input">
+              <label for="contact-permission" class="checkbox-label" id="contact-permission-label">
+                Ich erlaube die Kontaktaufnahme für weitere Informationen.
+              </label>
+            </div>
+            <button class="form-button" id="consent-submit" disabled>Weiter</button>
+          </div>
+          
+          <!-- Contact Form -->
+          <div id="contact-form" class="form-container hidden">
+            <h3 class="form-title" id="contact-title">Kontaktinformationen</h3>
+            <div class="form-group">
+              <label for="contact-name" class="form-label" id="name-label">Name *</label>
+              <input type="text" id="contact-name" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-email" class="form-label" id="email-label">E-Mail *</label>
+              <input type="email" id="contact-email" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-company" class="form-label" id="company-label">Unternehmen *</label>
+              <input type="text" id="contact-company" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="employee-count" class="form-label" id="employees-label">Mitarbeiteranzahl</label>
+              <select id="employee-count" class="form-select">
+                <option value="">Bitte wählen</option>
+                <option value="1-10">1-10</option>
+                <option value="11-50">11-50</option>
+                <option value="51-200">51-200</option>
+                <option value="201-500">201-500</option>
+                <option value="500+">500+</option>
+              </select>
+            </div>
+            <!-- FIXED: Submit button always visible -->
+            <button class="form-button" id="contact-submit">Assessment starten</button>
+          </div>
+          
+          <!-- Question Form -->
+          <div id="question-form" class="question-form-container hidden">
+            <div class="text-input-form">
+              <input type="text" id="question-input" class="form-input" placeholder="Ihre Antwort...">
+              <button class="form-button" id="question-submit" disabled>Senden</button>
             </div>
           </div>
-          <div class="chat-messages" id="chat-messages">
-            <!-- Messages will be added here dynamically -->
-          </div>
-          <div class="input-container">
-            <div class="question-input-area">
-              <textarea 
-                id="question-input" 
-                class="question-input" 
-                placeholder="Ihre Antwort..."
-                rows="1"
-              ></textarea>
-              <button class="btn btn-primary btn-submit" id="question-submit" disabled>
-                <span id="question-submit-text">Senden</span>
-              </button>
+          
+          <!-- Completion Message -->
+          <div id="completion-form" class="form-container hidden">
+            <h3 class="form-title" id="completion-title">Assessment abgeschlossen!</h3>
+            <div style="text-align: center; margin: 2rem 0;">
+              <div style="font-size: 3rem; font-weight: bold; color: hsl(var(--primary)); margin-bottom: 0.5rem;" id="final-score">--</div>
+              <div style="font-size: 1.125rem; color: hsl(var(--muted-foreground));" id="score-label">AI Readiness Score</div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Completion Step -->
-      <div id="completed-step" class="step">
-        <div class="completion-container">
-          <div class="completion-header">
-            <h1 class="completion-title" id="completion-title">Assessment abgeschlossen!</h1>
-            <p class="completion-subtitle" id="completion-subtitle">
-              Vielen Dank für Ihre Teilnahme. Hier ist Ihr KI-Readiness Score:
+            <p style="text-align: center; color: hsl(var(--muted-foreground));" id="completion-text">
+              Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.
             </p>
           </div>
-          <div class="score-display">
-            <div class="score-number" id="final-score">0%</div>
-            <div class="score-label" id="score-label">KI-Readiness Score</div>
+        </div>
+      </div>
+
+      <!-- Feature Cards -->
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg class="icon-large" viewBox="0 0 24 24">
+              <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v1a1 1 0 0 1-1 1h-2v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H4a1 1 0 0 1-1-1v-1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2m6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+            </svg>
           </div>
-          <div class="completion-actions">
-            <button class="btn btn-primary" id="download-report">
-              <span id="download-text">Bericht herunterladen</span>
-            </button>
-            <button class="btn btn-secondary" id="schedule-consultation">
-              <span id="consultation-text">Beratungstermin vereinbaren</span>
-            </button>
+          <h4 class="feature-title" id="feature1-title">Detaillierte Analyse</h4>
+          <p class="feature-description" id="feature1-desc">Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg class="icon-large" viewBox="0 0 24 24">
+              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
           </div>
+          <h4 class="feature-title" id="feature2-title">DSGVO-konform</h4>
+          <p class="feature-description" id="feature2-desc">Ihre Daten werden sicher und datenschutzkonform verarbeitet</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg class="icon-large" viewBox="0 0 24 24">
+              <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+          </div>
+          <h4 class="feature-title" id="feature3-title">Handlungsempfehlungen</h4>
+          <p class="feature-description" id="feature3-desc">Konkrete nächste Schritte für Ihre KI-Strategie</p>
         </div>
       </div>
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
       <div class="footer-content">
-        <p class="footer-text" id="footer-text">
-          © 2024 Grovia Digital. Alle Rechte vorbehalten.
-        </p>
         <div class="footer-links">
-          <a href="#" class="footer-link" id="privacy-link">Datenschutz</a>
-          <a href="#" class="footer-link" id="terms-link">AGB</a>
-          <a href="#" class="footer-link" id="contact-link">Kontakt</a>
+          <a href="https://grovia-digital.com/datenschutz/" class="footer-link" id="privacy-link" target="_blank" rel="noopener">Datenschutz</a>
+          <a href="https://grovia-digital.com/impressum/" class="footer-link" id="imprint-link" target="_blank" rel="noopener">Impressum</a>
+          <a href="https://grovia-digital.com/terms-conditions/" class="footer-link" id="terms-link" target="_blank" rel="noopener">AGB</a>
         </div>
+        <p class="footer-copyright" id="footer-text">© 2025 GROVIA AI Readiness Assessment. Alle Rechte vorbehalten.</p>
       </div>
     </footer>
 
     <script>
-      // Global variables and state management
+      // Complete assessment functionality with fixed form handling
+      const assessmentQuestions = [
+        {
+          id: '1',
+          text: {
+            de: 'Was ist das Hauptziel Ihres Unternehmens bei der Einführung von KI?',
+            en: 'What is your company\'s main goal when introducing AI?'
+          }
+        },
+        {
+          id: '2',
+          text: {
+            de: 'Beschreiben Sie Ihre bisherigen Erfahrungen mit digitalen Technologien und Automatisierung in Ihrem Unternehmen.',
+            en: 'Describe your previous experiences with digital technologies and automation in your company.'
+          }
+        },
+        {
+          id: '3',
+          text: {
+            de: 'Wie bewerten Sie Ihre aktuelle IT-Infrastruktur und Datenqualität für KI-Anwendungen?',
+            en: 'How do you assess your current IT infrastructure and data quality for AI applications?'
+          }
+        },
+        {
+          id: '4',
+          text: {
+            de: 'Welche konkreten Geschäftsprobleme oder Ineffizienzen möchten Sie mit KI lösen?',
+            en: 'What specific business problems or inefficiencies would you like to solve with AI?'
+          }
+        },
+        {
+          id: '5',
+          text: {
+            de: 'Wie gehen Sie mit Datenschutz und Compliance um?',
+            en: 'How do you handle data protection and compliance?'
+          }
+        },
+        {
+          id: '6',
+          text: {
+            de: 'Wie schätzen Sie die KI-Bereitschaft und Lernfähigkeit Ihres Teams ein?',
+            en: 'How do you assess your team\'s AI readiness and learning capability?'
+          }
+        },
+        {
+          id: '7',
+          text: {
+            de: 'Welche Unterstützung erhalten Sie von der Geschäftsführung für digitale Innovationen und welches Budget steht für KI-Projekte zur Verfügung?',
+            en: 'What support do you receive from management for digital innovations and what budget is available for AI projects?'
+          }
+        },
+        {
+          id: '8',
+          text: {
+            de: 'Was sind Ihre größten Bedenken oder Hindernisse bei der KI-Einführung?',
+            en: 'What are your biggest concerns or obstacles in implementing AI?'
+          }
+        },
+        {
+          id: '9',
+          text: {
+            de: 'Welche Erfolgskriterien würden Sie für eine KI-Initiative definieren?',
+            en: 'What success criteria would you define for an AI initiative?'
+          }
+        },
+        {
+          id: '10',
+          text: {
+            de: 'In welchem Zeitrahmen und mit welchen Ressourcen planen Sie die KI-Einführung?',
+            en: 'In what timeframe and with what resources do you plan to implement AI?'
+          }
+        }
+      ];
+
+      const translations = {
+        de: {
+          mainTitle: 'GROVIA AI Readiness Assessment',
+          mainSubtitle: 'Bewerten Sie die KI-Bereitschaft Ihres Unternehmens',
+          chatTitle: 'GROVIA KI-Readiness Assessment',
+          chatSubtitle: 'Ihr digitaler Berater',
+          consentTitle: 'Einverständniserklärung',
+          dataProcessingLabel: 'Ich stimme der Verarbeitung meiner Daten für das Assessment zu.',
+          contactPermissionLabel: 'Ich erlaube die Kontaktaufnahme für weitere Informationen.',
+          continueBtn: 'Weiter',
+          contactTitle: 'Kontaktinformationen',
+          nameLabel: 'Name *',
+          emailLabel: 'E-Mail *',
+          companyLabel: 'Unternehmen *',
+          employeesLabel: 'Mitarbeiteranzahl',
+          selectPlaceholder: 'Bitte wählen',
+          startAssessment: 'Assessment starten',
+          inputPlaceholder: 'Ihre Antwort...',
+          sendBtn: 'Senden',
+          completionTitle: 'Assessment abgeschlossen!',
+          completionText: 'Vielen Dank! Sie erhalten in Kürze einen detaillierten Report per E-Mail.',
+          scoreLabel: 'AI Readiness Score',
+          questionPrefix: 'Frage',
+          followUpPrefix: 'Nachfrage',
+          welcomeMsg1: 'Hallo! Willkommen zum AI Readiness Assessment. Ich helfe Ihnen dabei, die KI-Bereitschaft Ihres Unternehmens zu bewerten.',
+          welcomeMsg2: 'Das Assessment dauert etwa 5-10 Minuten. Am Ende erhalten Sie einen detaillierten Report per E-Mail.',
+          consentThanks: 'Vielen Dank! Bevor wir mit dem Assessment beginnen, benötigen wir einige Kontaktdaten.',
+          assessmentStart: 'Lassen Sie uns nun mit dem Assessment beginnen.',
+          errorMsg: 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.',
+          progressText: 'Assessment wird geladen...',
+          feature1Title: 'Detaillierte Analyse',
+          feature1Desc: 'Umfassende Bewertung aller KI-relevanten Bereiche Ihres Unternehmens',
+          feature2Title: 'DSGVO-konform',
+          feature2Desc: 'Ihre Daten werden sicher und datenschutzkonform verarbeitet',
+          feature3Title: 'Handlungsempfehlungen',
+          feature3Desc: 'Konkrete nächste Schritte für Ihre KI-Strategie',
+          privacyLink: 'Datenschutz',
+          imprintLink: 'Impressum',
+          termsLink: 'AGB',
+          footerText: '© 2025 GROVIA AI Readiness Assessment. Alle Rechte vorbehalten.'
+        },
+        en: {
+          mainTitle: 'GROVIA AI Readiness Assessment',
+          mainSubtitle: 'Evaluate your company\'s AI readiness',
+          chatTitle: 'GROVIA AI Readiness Assessment',
+          chatSubtitle: 'Your digital consultant',
+          consentTitle: 'Consent Declaration',
+          dataProcessingLabel: 'I agree to the processing of my data for the assessment.',
+          contactPermissionLabel: 'I allow contact for further information.',
+          continueBtn: 'Continue',
+          contactTitle: 'Contact Information',
+          nameLabel: 'Name *',
+          emailLabel: 'Email *',
+          companyLabel: 'Company *',
+          employeesLabel: 'Number of Employees',
+          selectPlaceholder: 'Please select',
+          startAssessment: 'Start Assessment',
+          inputPlaceholder: 'Your answer...',
+          sendBtn: 'Send',
+          completionTitle: 'Assessment completed!',
+          completionText: 'Thank you! You will receive a detailed report via email shortly.',
+          scoreLabel: 'AI Readiness Score',
+          questionPrefix: 'Question',
+          followUpPrefix: 'Follow-up Question',
+          welcomeMsg1: 'Hello! Welcome to the AI Readiness Assessment. I will help you evaluate your company\'s AI readiness.',
+          welcomeMsg2: 'The assessment takes about 5-10 minutes. At the end, you will receive a detailed report via email.',
+          consentThanks: 'Thank you! Before we begin the assessment, we need some contact information.',
+          assessmentStart: 'Let\'s now begin the assessment.',
+          errorMsg: 'Sorry, there was an error. Please try again.',
+          progressText: 'Loading assessment...',
+          feature1Title: 'Detailed Analysis',
+          feature1Desc: 'Comprehensive evaluation of all AI-relevant areas of your company',
+          feature2Title: 'GDPR Compliant',
+          feature2Desc: 'Your data is processed securely and in compliance with data protection',
+          feature3Title: 'Action Recommendations',
+          feature3Desc: 'Concrete next steps for your AI strategy',
+          privacyLink: 'Privacy',
+          imprintLink: 'Imprint',
+          termsLink: 'Terms',
+          footerText: '© 2025 GROVIA AI Readiness Assessment. All rights reserved.'
+        }
+      };
+
+      // Global state
       let currentLanguage = 'de';
       let currentTheme = 'light';
-      let sessionId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      let sessionId = generateSessionId();
       let currentStep = 'consent';
       let currentQuestionIndex = 0;
-      let isAssessmentCompleted = false;
       let waitingForFollowUp = false;
       let questionsWithFollowUp = new Set();
-      let chatMessages = [];
       let responses = {};
       let contactInfo = {};
-      let contactName = '';
 
-      // Server API request helper (replaces all client-side business logic)
-      async function serverRequest(endpoint, data = {}) {
-        try {
-          const response = await fetch(`/.netlify/functions/server/api/assessment${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, language: currentLanguage, ...data })
-          });
-          return await response.json();
-        } catch (error) {
-          console.error('Server request failed:', error);
-          return { success: false, error: 'Network error' };
-        }
-      }
-
-      // UI helper functions (identical to original)
-      function addMessage(type, content, questionId = null, aiAnalysis = null) {
-        const messagesContainer = document.getElementById('chat-messages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${type}`;
-        
-        const bubble = document.createElement('div');
-        bubble.className = 'message-bubble';
-        bubble.textContent = content;
-        
-        messageDiv.appendChild(bubble);
-        messagesContainer.appendChild(messageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Store message in memory
-        chatMessages.push({ type, content, questionId, aiAnalysis, timestamp: new Date().toISOString() });
-      }
-
-      function showStep(step) {
-        // Hide all steps
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        
-        // Show current step
-        document.getElementById(`${step}-step`).classList.add('active');
-        currentStep = step;
-        updateProgress();
-      }
-
-      function updateProgress() {
-        const totalSteps = 12;
-        let progress = 0;
-        
-        if (currentStep === 'consent') progress = 0;
-        else if (currentStep === 'contact') progress = 1;
-        else if (currentStep === 'questions') {
-          // Progress based on actual question progression
-          progress = 2 + currentQuestionIndex;
-        }
-        else if (currentStep === 'completed') progress = totalSteps;
-        
-        const percentage = Math.min(100, (progress / totalSteps) * 100);
-        document.getElementById('progress-fill').style.width = percentage + '%';
+      function generateSessionId() {
+        return Math.random().toString(36).substring(2) + Date.now().toString(36);
       }
 
       function updateLanguage() {
-        // Language update handled by server
-        serverRequest('/language', { language: currentLanguage });
+        const t = translations[currentLanguage];
+        
+        document.getElementById('main-title').textContent = t.mainTitle;
+        document.getElementById('main-subtitle').textContent = t.mainSubtitle;
+        document.getElementById('chat-title').textContent = t.chatTitle;
+        document.getElementById('chat-subtitle').textContent = t.chatSubtitle;
+        document.getElementById('consent-title').textContent = t.consentTitle;
+        document.getElementById('data-processing-label').textContent = t.dataProcessingLabel;
+        document.getElementById('contact-permission-label').textContent = t.contactPermissionLabel;
+        document.getElementById('consent-submit').textContent = t.continueBtn;
+        document.getElementById('contact-title').textContent = t.contactTitle;
+        document.getElementById('name-label').textContent = t.nameLabel;
+        document.getElementById('email-label').textContent = t.emailLabel;
+        document.getElementById('company-label').textContent = t.companyLabel;
+        document.getElementById('employees-label').textContent = t.employeesLabel;
+        document.getElementById('contact-submit').textContent = t.startAssessment;
+        document.getElementById('question-input').placeholder = t.inputPlaceholder;
+        document.getElementById('question-submit').textContent = t.sendBtn;
+        document.getElementById('completion-title').textContent = t.completionTitle;
+        document.getElementById('completion-text').textContent = t.completionText;
+        document.getElementById('score-label').textContent = t.scoreLabel;
+        document.getElementById('progress-text').textContent = t.progressText;
+        document.getElementById('feature1-title').textContent = t.feature1Title;
+        document.getElementById('feature1-desc').textContent = t.feature1Desc;
+        document.getElementById('feature2-title').textContent = t.feature2Title;
+        document.getElementById('feature2-desc').textContent = t.feature2Desc;
+        document.getElementById('feature3-title').textContent = t.feature3Title;
+        document.getElementById('feature3-desc').textContent = t.feature3Desc;
+        document.getElementById('privacy-link').textContent = t.privacyLink;
+        document.getElementById('imprint-link').textContent = t.imprintLink;
+        document.getElementById('terms-link').textContent = t.termsLink;
+        document.getElementById('footer-text').textContent = t.footerText;
+        
+        const selectElement = document.getElementById('employee-count');
+        selectElement.options[0].textContent = t.selectPlaceholder;
+
+        // Update language buttons
+        document.getElementById('lang-de').className = currentLanguage === 'de' ? 'lang-btn active' : 'lang-btn';
+        document.getElementById('lang-en').className = currentLanguage === 'en' ? 'lang-btn active' : 'lang-btn';
       }
 
       function updateTheme() {
@@ -951,132 +1105,299 @@
         }
       }
 
-      // Server-side database functions (placeholders for client compatibility)
-      async function saveConsentData(dataProcessing, contactPermission) {
-        return await serverRequest('/consent', {
-          consentDataProcessing: dataProcessing,
-          consentContactPermission: contactPermission
-        });
-      }
-
-      async function saveContactData(name, email, company, employees) {
-        return await serverRequest('/contact', {
-          contactName: name,
-          email: email,
-          companyName: company,
-          employeeNumber: employees
-        });
-      }
-
-      async function saveChatMessage(messageType, content, questionId = null) {
-        // Messages are handled server-side automatically
-        return { success: true };
-      }
-
-      // Initialize assessment
-      async function initializeAssessment() {
-        const result = await serverRequest('/initialize');
+      function addMessage(type, content) {
+        const chatMessages = document.getElementById('chat-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
         
-        if (result.success && result.messages) {
-          result.messages.forEach((msg, index) => {
-            setTimeout(() => addMessage(msg.type, msg.content), index * 1000);
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'message-bubble';
+        bubbleDiv.textContent = content;
+        
+        messageDiv.appendChild(bubbleDiv);
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Save to database
+        saveChatMessage(type, content);
+      }
+            // Save consent data to database
+      async function saveConsentData(consentDataProcessing, consentContactPermission) {
+        try {
+          await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/consent',
+              sessionId: sessionId,
+              consentDataProcessing: consentDataProcessing,
+              consentContactPermission: consentContactPermission
+            })
           });
+        } catch (error) {
+          console.error('Failed to save consent data:', error);
         }
       }
 
-      // Translations object
-      const translations = {
-        de: {
-          // German translations
-          consentTitle: 'KI-Readiness Assessment',
-          consentSubtitle: 'Ihr digitaler Berater',
-          consentFormTitle: 'Datenschutz-Einverständnis',
-          consentDataLabel: 'Ich stimme der Verarbeitung meiner Daten für diese Bewertung zu. Die Daten werden nur für die Erstellung Ihres personalisierten Berichts verwendet.',
-          consentContactLabel: 'Ich möchte kontaktiert werden, um meine Ergebnisse und mögliche nächste Schritte zu besprechen.',
-          consentSubmitText: 'Weiter',
-          contactFormTitle: 'Ihre Kontaktdaten',
-          contactNameLabel: 'Vollständiger Name',
-          contactEmailLabel: 'E-Mail-Adresse',
-          contactCompanyLabel: 'Firmenname',
-          contactEmployeesLabel: 'Anzahl der Mitarbeiter',
-          contactSubmitText: 'Assessment starten',
-          questionsTitle: 'KI-Readiness Assessment',
-          questionsSubtitle: 'Ihr digitaler Berater',
-          questionSubmitText: 'Senden',
-          completionTitle: 'Assessment abgeschlossen!',
-          completionSubtitle: 'Vielen Dank für Ihre Teilnahme. Hier ist Ihr KI-Readiness Score:',
-          scoreLabel: 'KI-Readiness Score',
-          downloadText: 'Bericht herunterladen',
-          consultationText: 'Beratungstermin vereinbaren',
-          progressTitle: 'Fortschritt',
-          footerText: '© 2024 Grovia Digital. Alle Rechte vorbehalten.',
-          privacyLink: 'Datenschutz',
-          termsLink: 'AGB',
-          contactLink: 'Kontakt'
-        },
-        en: {
-          // English translations
-          consentTitle: 'AI Readiness Assessment',
-          consentSubtitle: 'Your Digital Advisor',
-          consentFormTitle: 'Privacy Consent',
-          consentDataLabel: 'I agree to the processing of my data for this assessment. The data will only be used to create your personalized report.',
-          consentContactLabel: 'I would like to be contacted to discuss my results and possible next steps.',
-          consentSubmitText: 'Continue',
-          contactFormTitle: 'Your Contact Information',
-          contactNameLabel: 'Full Name',
-          contactEmailLabel: 'Email Address',
-          contactCompanyLabel: 'Company Name',
-          contactEmployeesLabel: 'Number of Employees',
-          contactSubmitText: 'Start Assessment',
-          questionsTitle: 'AI Readiness Assessment',
-          questionsSubtitle: 'Your Digital Advisor',
-          questionSubmitText: 'Send',
-          completionTitle: 'Assessment Completed!',
-          completionSubtitle: 'Thank you for your participation. Here is your AI Readiness Score:',
-          scoreLabel: 'AI Readiness Score',
-          downloadText: 'Download Report',
-          consultationText: 'Schedule Consultation',
-          progressTitle: 'Progress',
-          footerText: '© 2024 Grovia Digital. All rights reserved.',
-          privacyLink: 'Privacy',
-          termsLink: 'Terms',
-          contactLink: 'Contact'
+      // Save contact data to database
+      async function saveContactData(contactName, email, companyName, employeeNumber) {
+        try {
+          await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/contact',
+              sessionId: sessionId,
+              contactName: contactName,
+              email: email,
+              companyName: companyName,
+              employeeNumber: employeeNumber
+            })
+          });
+        } catch (error) {
+          console.error('Failed to save contact data:', error);
         }
-      };
+      }
 
-      // Apply translations
-      function applyTranslations() {
-        const t = translations[currentLanguage];
-        
-        // Update all translatable elements
-        Object.keys(t).forEach(key => {
-          const element = document.getElementById(key.replace(/([A-Z])/g, '-$1').toLowerCase());
-          if (element) {
-            if (element.tagName === 'INPUT' && element.type === 'button' || element.tagName === 'BUTTON') {
-              element.textContent = t[key];
-            } else if (element.tagName === 'INPUT') {
-              element.placeholder = t[key];
-            } else {
-              element.textContent = t[key];
+      // Save chat message to database
+      async function saveChatMessage(messageType, content, questionId = null) {
+        try {
+          await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/chat-message',
+              sessionId: sessionId,
+              messageType: messageType,
+              content: content,
+              questionId: questionId
+            })
+          });
+                } catch (error) {
+          console.error('Failed to save chat message:', error);
+        }
+      }
+
+            // Send complete assessment data to n8n webhook
+      async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
+        try {
+          console.log('Preparing webhook for session:', sessionId);
+          
+          // Wait a moment to ensure all database writes are committed
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          
+          const webhookUrl = "https://grovia.app.n8n.cloud/webhook/ai-assessment-complete";
+          
+          const response = await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/complete-data',
+              sessionId: sessionId
+            })
+          });
+          
+          if (response.ok) {
+            const completeData = await response.json();
+            console.log('Assessment data retrieved:', completeData);
+            
+            // Validate that essential data is present
+            const hasEmail = completeData.contact && completeData.contact.email;
+            const hasResponses = completeData.assessment && completeData.assessment.responses && Object.keys(completeData.assessment.responses).length > 0;
+            const hasConsent = completeData.consent && completeData.consent.data_processing !== undefined;
+            
+            if (!hasEmail || !hasResponses || !hasConsent) {
+              console.error('Incomplete session data detected:', {
+                hasEmail,
+                hasResponses,
+                hasConsent,
+                data: completeData
+              });
+              return;
             }
+            
+            console.log('Data validation passed, sending to n8n...');
+            const webhookResponse = await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(completeData)
+            });
+            
+            if (webhookResponse.ok) {
+              console.log('✅ Webhook sent successfully to n8n');
+            } else {
+              const errorText = await webhookResponse.text();
+              console.error('❌ N8N webhook failed:', webhookResponse.status, errorText);
+            }
+          } else {
+            const errorText = await response.text();
+            console.error('Failed to retrieve assessment data:', response.status, errorText);
           }
-        });
-
-        // Update language toggle
-        document.getElementById('language-toggle').textContent = currentLanguage === 'de' ? 'English' : 'Deutsch';
+        } catch (error) {
+          console.error('Webhook error:', error);
+        }
       }
 
-      // DOM Content Loaded
+      function updateProgress() {
+        const totalSteps = assessmentQuestions.length + 2;
+        let currentStepNumber = 0;
+        
+        if (currentStep === 'consent') currentStepNumber = 0;
+        else if (currentStep === 'contact') currentStepNumber = 1;
+        else if (currentStep === 'questions') currentStepNumber = 2 + currentQuestionIndex;
+        else currentStepNumber = totalSteps;
+        
+        const percentage = Math.min((currentStepNumber / totalSteps) * 100, 100);
+        document.getElementById('progress').style.width = percentage + '%';
+        
+        const t = translations[currentLanguage];
+        if (currentStep === 'consent') {
+          document.getElementById('progress-text').textContent = t.progressText;
+        } else if (currentStep === 'contact') {
+          document.getElementById('progress-text').textContent = `Schritt ${currentStepNumber + 1} von ${totalSteps + 1}`;
+        } else if (currentStep === 'questions') {
+          document.getElementById('progress-text').textContent = `${t.questionPrefix} ${currentQuestionIndex + 1} von ${assessmentQuestions.length}`;
+        } else {
+          document.getElementById('progress-text').textContent = 'Assessment abgeschlossen';
+        }
+      }
+
+      function showStep(step) {
+        // Hide all forms
+        document.getElementById('consent-form').classList.add('hidden');
+        document.getElementById('contact-form').classList.add('hidden');
+        document.getElementById('question-form').classList.add('hidden');
+        document.getElementById('completion-form').classList.add('hidden');
+        
+        // Show requested form
+        if (step === 'consent') {
+          document.getElementById('consent-form').classList.remove('hidden');
+        } else if (step === 'contact') {
+          document.getElementById('contact-form').classList.remove('hidden');
+        } else if (step === 'questions') {
+          document.getElementById('question-form').classList.remove('hidden');
+        } else if (step === 'completed') {
+          document.getElementById('completion-form').classList.remove('hidden');
+        }
+        
+        currentStep = step;
+        updateProgress();
+      }
+
+      async function createSession() {
+        try {
+          const response = await fetch('/api/assessment/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId, language: currentLanguage })
+          });
+          
+          if (!response.ok) throw new Error('Failed to create session');
+          
+          const data = await response.json();
+          console.log('Session created:', data);
+        } catch (error) {
+          console.error('Error creating session:', error);
+        }
+      }
+
+      async function submitResponse(questionId, userResponse, questionText) {
+        try {
+          const response = await fetch('/api/assessment/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId,
+              questionId,
+              questionText,
+              userResponse,
+              language: currentLanguage
+            })
+          });
+
+          if (!response.ok) throw new Error('Failed to analyze response');
+          
+          const data = await response.json();
+          return data.analysis;
+        } catch (error) {
+          console.error('Error submitting response:', error);
+          const t = translations[currentLanguage];
+          addMessage('bot', t.errorMsg);
+          return null;
+        }
+      }
+
+              async function completeAssessment() {
+        try {
+          const response = await fetch('/.netlify/functions/server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/assessment/complete',
+              sessionId
+            })
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            document.getElementById('final-score').textContent = data.readinessScore + '%';
+            showStep('completed');
+            
+            const t = translations[currentLanguage];
+            addMessage('bot', `${t.completionText} ${t.scoreLabel}: ${data.readinessScore}%`);
+            
+            // Send complete assessment data to n8n
+            console.log('Triggering n8n webhook...');
+            await sendCompleteAssessmentToN8n(sessionId, data.readinessScore);
+          }
+        } catch (error) {
+          console.error('Error completing assessment:', error);
+        }
+      }
+
+      function proceedToNextQuestion() {
+        waitingForFollowUp = false;
+        
+        if (currentQuestionIndex < assessmentQuestions.length - 1) {
+          currentQuestionIndex++;
+          
+          const nextQuestion = assessmentQuestions[currentQuestionIndex];
+          const questionText = nextQuestion.text[currentLanguage];
+          const t = translations[currentLanguage];
+          const numberedQuestion = `(${t.questionPrefix} ${currentQuestionIndex + 1}) ${questionText}`;
+          
+          setTimeout(() => {
+            addMessage('bot', numberedQuestion);
+          }, 1000);
+        } else {
+          completeAssessment();
+        }
+        
+        updateProgress();
+      }
+
+      // Event Listeners
       document.addEventListener('DOMContentLoaded', function() {
-        // Initialize
-        applyTranslations();
+        updateLanguage();
         updateTheme();
         updateProgress();
+        
+        // Initialize welcome messages
+        const t = translations[currentLanguage];
+        setTimeout(() => addMessage('bot', t.welcomeMsg1), 500);
+        setTimeout(() => addMessage('bot', t.welcomeMsg2), 1500);
+        
+        // Create session
+        createSession();
 
         // Language toggle
-        document.getElementById('language-toggle').addEventListener('click', function() {
-          currentLanguage = currentLanguage === 'de' ? 'en' : 'de';
-          applyTranslations();
+        document.getElementById('lang-de').addEventListener('click', function() {
+          currentLanguage = 'de';
+          updateLanguage();
+        });
+        
+        document.getElementById('lang-en').addEventListener('click', function() {
+          currentLanguage = 'en';
           updateLanguage();
         });
 
@@ -1084,71 +1405,84 @@
         document.getElementById('theme-toggle').addEventListener('click', function() {
           currentTheme = currentTheme === 'light' ? 'dark' : 'light';
           updateTheme();
-          this.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+          localStorage.setItem('grovia-theme', currentTheme);
         });
 
-        // Consent step logic
-        const consentData = document.getElementById('consent-data');
-        const consentContact = document.getElementById('consent-contact');
-        const consentSubmit = document.getElementById('consent-submit');
-
-        function updateConsentButton() {
-          consentSubmit.disabled = !consentData.checked;
+        // Load saved theme
+        const savedTheme = localStorage.getItem('grovia-theme');
+        if (savedTheme) {
+          currentTheme = savedTheme;
+          updateTheme();
         }
 
-        consentData.addEventListener('change', updateConsentButton);
-        consentContact.addEventListener('change', updateConsentButton);
-
-        consentSubmit.addEventListener('click', async function() {
-          const result = await saveConsentData(consentData.checked, consentContact.checked);
-          if (result.success) {
-            showStep('contact');
-          }
+        // Consent form
+        const dataProcessingCheckbox = document.getElementById('data-processing');
+        const consentSubmitBtn = document.getElementById('consent-submit');
+        
+        dataProcessingCheckbox.addEventListener('change', function() {
+          consentSubmitBtn.disabled = !this.checked;
         });
-
-        // Contact step logic
-        const contactNameInput = document.getElementById('contact-name');
-        const contactEmailInput = document.getElementById('contact-email');
-        const contactCompanyInput = document.getElementById('contact-company');
-        const contactEmployeesSelect = document.getElementById('contact-employees');
-        const contactSubmitBtn = document.getElementById('contact-submit');
-
-        function updateContactButton() {
-          const isValid = contactNameInput.value.trim() && 
-                         contactEmailInput.value.trim() && 
-                         contactCompanyInput.value.trim() && 
-                         contactEmployeesSelect.value;
-          contactSubmitBtn.disabled = !isValid;
-        }
-
-        [contactNameInput, contactEmailInput, contactCompanyInput, contactEmployeesSelect].forEach(input => {
-          input.addEventListener('input', updateContactButton);
-          input.addEventListener('change', updateContactButton);
-        });
-
-        contactSubmitBtn.addEventListener('click', async function() {
-          const result = await saveContactData(
-            contactNameInput.value.trim(),
-            contactEmailInput.value.trim(),
-            contactCompanyInput.value.trim(),
-            contactEmployeesSelect.value
-          );
+        
+        consentSubmitBtn.addEventListener('click', async function() {
+          const dataProcessing = document.getElementById('data-processing').checked;
+          const contactPermission = document.getElementById('contact-permission').checked;
           
-          if (result.success) {
-            contactName = contactNameInput.value.trim();
-            showStep('questions');
-            await initializeAssessment();
-          }
+          // Save consent to database
+          await saveConsentData(dataProcessing, contactPermission);
+          
+          const t = translations[currentLanguage];
+          addMessage('bot', t.consentThanks);
+          setTimeout(() => showStep('contact'), 1000);
         });
 
-        // Questions step logic
+        // Contact form
+                         document.getElementById('contact-submit').addEventListener('click', async function() {
+          // Prevent multiple submissions
+          if (this.disabled) return;
+          
+          const name = document.getElementById('contact-name').value;
+          const email = document.getElementById('contact-email').value;
+          const company = document.getElementById('contact-company').value;
+          const employees = document.getElementById('employee-count').value;
+          
+          if (!name || !email || !company) {
+            alert('Please fill in all required fields');
+            return;
+          }
+          
+          // Disable button to prevent duplicates
+          this.disabled = true;
+          this.textContent = 'Processing...';
+          
+          try {
+            // Save contact data to database
+            saveContactData(name, email, company, employees);
+            
+            contactInfo = { name, email, company, employees };
+            contactName = name;
+            
+            const t = translations[currentLanguage];
+            addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
+            
+            setTimeout(() => {
+              showStep('questions');
+              const firstQuestion = assessmentQuestions[0];
+              const questionText = firstQuestion.text[currentLanguage];
+              const numberedQuestion = `(${t.questionPrefix} 1) ${questionText}`;
+              addMessage('bot', numberedQuestion);
+            }, 300);
+          } catch (error) {
+            console.error('Error submitting contact form:', error);
+            // Re-enable button on error
+            this.disabled = false;
+            this.textContent = t.startAssessment;
+          }
+        });
+        // Question form
         const questionInput = document.getElementById('question-input');
         const questionSubmitBtn = document.getElementById('question-submit');
-
-        // Auto-resize textarea
+        
         questionInput.addEventListener('input', function() {
-          this.style.height = 'auto';
-          this.style.height = Math.min(this.scrollHeight, 96) + 'px';
           questionSubmitBtn.disabled = !this.value.trim();
         });
         
@@ -1164,95 +1498,50 @@
           const userResponse = questionInput.value.trim();
           if (!userResponse) return;
           
-          // Show user message
-          addMessage('user', userResponse);
-          
-          // Clear input and show loading
-          questionInput.value = '';
           questionSubmitBtn.disabled = true;
-          questionSubmitBtn.textContent = 'Wird analysiert...';
+          questionSubmitBtn.innerHTML = '<span class="loading-dots">Analyzing</span>';
           
-          try {
-            const result = await serverRequest('/analyze', {
-              questionId: (currentQuestionIndex + 1).toString(),
-              userResponse: userResponse,
-              language: currentLanguage
-            });
-
-            if (result.analysis) {
-  // Show AI analysis explanation
-  if (result.analysis.explanation) {
-    setTimeout(() => {
-      addMessage('bot', result.analysis.explanation);
-    }, 500);
-  }
-
-  // Store response
-  responses[(currentQuestionIndex + 1).toString()] = {
-    userResponse,
-    explanation: result.analysis.explanation,
-    score: result.analysis.score,
-    timestamp: new Date().toISOString()
-  };
-
-  // Handle follow-up question
-  if (result.analysis.needsFollowUp && result.analysis.followUpQuestion && !questionsWithFollowUp.has((currentQuestionIndex + 1).toString())) {
-    setTimeout(() => {
-      addMessage('bot', `(Nachfrage ${currentQuestionIndex + 1}) ${result.analysis.followUpQuestion}`);
-      waitingForFollowUp = true;
-      questionsWithFollowUp.add((currentQuestionIndex + 1).toString());
-    }, 1500);
-  } else if (waitingForFollowUp && !result.analysis.needsFollowUp) {
-    // Follow-up completed, move to next question
-    waitingForFollowUp = false;
-    currentQuestionIndex++;
-    
-    if (result.nextQuestion) {
-      setTimeout(() => {
-        addMessage('bot', result.nextQuestion);
-      }, 2000);
-    } else if (result.isComplete) {
-      const completeResult = await serverRequest('/complete');
-      if (completeResult.success) {
-        document.getElementById('final-score').textContent = completeResult.readinessScore + '%';
-        addMessage('bot', completeResult.message.content);
-        showStep('completed');
-        isAssessmentCompleted = true;
-        return;
-      }
-    }
-  } else {
-                waitingForFollowUp = false;
-                
-                if (result.isComplete) {
-                  // Complete assessment
-                  const completeResult = await serverRequest('/complete');
-                  if (completeResult.success) {
-                    document.getElementById('final-score').textContent = completeResult.readinessScore + '%';
-                    addMessage('bot', completeResult.message.content);
-                    showStep('completed');
-                    isAssessmentCompleted = true;
-                    return;
-                  }
-                } else if (result.nextQuestion) {
-                  currentQuestionIndex++;
-                  setTimeout(() => {
-                    addMessage('bot', result.nextQuestion);
-                  }, 2000);
-                }
-              }
+          addMessage('user', userResponse);
+          questionInput.value = '';
+          
+          const currentQuestion = assessmentQuestions[currentQuestionIndex];
+          const questionId = waitingForFollowUp ? `${currentQuestion.id}_followup` : currentQuestion.id;
+          const questionText = currentQuestion.text[currentLanguage];
+          
+          const analysis = await submitResponse(questionId, userResponse, questionText);
+          
+          if (analysis) {
+            // Add AI explanation
+            if (analysis.explanation) {
+              setTimeout(() => {
+                addMessage('bot', analysis.explanation);
+              }, 500);
             }
-          } catch (error) {
-            console.error('Error submitting question:', error);
+            
+            // Store response
+            responses[questionId] = { userResponse, ...analysis };
+            
+            // Check for follow-up
+            if (analysis.needsFollowUp && analysis.followUpQuestion && !questionsWithFollowUp.has(currentQuestion.id)) {
+              setTimeout(() => {
+                const t = translations[currentLanguage];
+                const followUpMessage = `(${t.followUpPrefix} ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`;
+                addMessage('bot', followUpMessage);
+                waitingForFollowUp = true;
+                questionsWithFollowUp.add(currentQuestion.id);
+              }, 1500);
+            } else {
+              // Move to next question
+              setTimeout(() => {
+                proceedToNextQuestion();
+              }, 2000);
+            }
           }
           
-          // Reset button
+          const t = translations[currentLanguage];
           questionSubmitBtn.disabled = false;
-          questionSubmitBtn.textContent = 'Senden';
+          questionSubmitBtn.textContent = t.sendBtn;
         }
-
-        // Progress update
-        setInterval(updateProgress, 1000);
       });
     </script>
   </body>
