@@ -1,4 +1,10 @@
 const express = require('express');
+const crypto = require('crypto');
+
+// Secure session ID generation
+function generateSecureSessionId() {
+  return crypto.randomBytes(32).toString('hex');
+}
 const serverless = require('serverless-http');
 const { Pool, neonConfig } = require('@neondatabase/serverless');
 const ws = require('ws');
@@ -306,6 +312,37 @@ app.get('/api/assessment/session/:sessionId', async (req, res) => {
   }
 });
 
+// Generate secure session ID
+app.post('/api/assessment/session', async (req, res) => {
+  try {
+    const secureSessionId = generateSecureSessionId();
+    const { language = 'de' } = req.body;
+    
+    // Store session in database
+    const dbPool = await getPool();
+    if (dbPool) {
+      try {
+        const client = await dbPool.connect();
+        await client.query(
+          'INSERT INTO sessions (session_id, language, created_at) VALUES ($1, $2, NOW()) ON CONFLICT (session_id) DO UPDATE SET language = $2',
+          [secureSessionId, language]
+        );
+        client.release();
+      } catch (dbError) {
+        console.error('Database error during session creation:', dbError);
+      }
+    }
+    
+    res.json({
+      success: true,
+      sessionId: secureSessionId,
+      expiresIn: 24 * 60 * 60 * 1000 // 24 hours
+    });
+  } catch (error) {
+    console.error('Session creation error:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
 // Save consent data - NEW ENDPOINT
 app.post('/api/assessment/consent', async (req, res) => {
   try {
