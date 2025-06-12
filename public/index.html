@@ -1317,10 +1317,14 @@
 
       async function createSession() {
         try {
-          const response = await fetch('/api/assessment/session', {
+          const response = await fetch('/.netlify/functions/server', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, language: currentLanguage })
+            body: JSON.stringify({ 
+              endpoint: '/api/assessment/session',
+              sessionId, 
+              language: currentLanguage 
+            })
           });
           
           if (!response.ok) throw new Error('Failed to create session');
@@ -1334,10 +1338,11 @@
 
       async function submitResponse(questionId, userResponse, questionText) {
         try {
-          const response = await fetch('/api/assessment/analyze', {
+          const response = await fetch('/.netlify/functions/server', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              endpoint: '/api/assessment/analyze',
               sessionId,
               questionId,
               questionText,
