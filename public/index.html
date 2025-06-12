@@ -1353,7 +1353,8 @@
           if (!response.ok) throw new Error('Failed to analyze response');
           
           const data = await response.json();
-          return data.analysis;
+          // Handle both response formats
+          return data.analysis ? data.analysis : data;
         } catch (error) {
           console.error('Error submitting response:', error);
           const t = translations[currentLanguage];
