@@ -15,7 +15,7 @@ neonConfig.webSocketConstructor = ws;
 const app = express();
 app.use(express.json());
 // Input validation and sanitization middleware
-function validateAndSanitizeInput(input, maxLength = 500) {
+function validateAndSanitizeInput(input, maxLength = 1000) {
   if (typeof input !== 'string') return '';
   
   // Remove potentially dangerous characters
@@ -35,7 +35,7 @@ app.use((req, res, next) => {
   if (req.body) {
     // Validate text inputs
     if (req.body.userResponse) {
-      req.body.userResponse = validateAndSanitizeInput(req.body.userResponse, 500);
+      req.body.userResponse = validateAndSanitizeInput(req.body.userResponse, 1000);
     }
     if (req.body.contactName) {
       req.body.contactName = validateAndSanitizeInput(req.body.contactName, 100);
@@ -47,7 +47,7 @@ app.use((req, res, next) => {
       req.body.companyName = validateAndSanitizeInput(req.body.companyName, 100);
     }
     if (req.body.content) {
-      req.body.content = validateAndSanitizeInput(req.body.content, 500);
+      req.body.content = validateAndSanitizeInput(req.body.content, 1000);
     }
   }
   next();
@@ -395,10 +395,14 @@ app.post('/api/assessment/consent', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
 
-    await pool.query(
+    const result = await pool.query(
       'UPDATE assessment_sessions SET consent_data_processing = $1, consent_contact_permission = $2 WHERE session_id = $3',
       [consentDataProcessing, consentContactPermission || false, sessionId]
     );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, error: 'Please try again later' });
+    }
     
     res.json({ success: true });
   } catch (error) {
@@ -420,10 +424,14 @@ app.post('/api/assessment/contact', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
 
-    await pool.query(
+    const result = await pool.query(
       'UPDATE assessment_sessions SET contact_name = $1, email = $2, company_name = $3, employee_number = $4 WHERE session_id = $5',
       [contactName, email, companyName, employeeNumber, sessionId]
     );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, error: 'Please try again later' });
+    }
     
     res.json({ success: true });
   } catch (error) {
