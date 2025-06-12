@@ -55,7 +55,7 @@ app.use((req, res, next) => {
 // RATE LIMITING - Prevents API abuse
 const rateLimitStore = new Map();
 
-function checkRateLimit(ip, maxRequests = 3, windowMinutes = 60) {
+function checkRateLimit(ip, maxRequests = 60, windowMinutes = 60) {
   const now = Date.now();
   const windowMs = windowMinutes * 60 * 1000;
   
@@ -102,7 +102,7 @@ app.use((req, res, next) => {
   // Only rate limit assessment endpoints
   if (req.url && req.url.includes('/api/assessment')) {
     const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || '127.0.0.1';
-    const rateLimit = checkRateLimit(clientIP, 3, 60); // 3 requests per hour
+    const rateLimit = checkRateLimit(clientIP, 60, 60); // 3 requests per hour
     
     if (!rateLimit.allowed) {
       return res.status(429).json({
