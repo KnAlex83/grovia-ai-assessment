@@ -1406,7 +1406,25 @@
         
         updateProgress();
       }
-
+        // Character count for text inputs
+      function setupCharacterCount() {
+        const textInput = document.getElementById('question-input');
+        const charCount = document.getElementById('charCount');
+  
+        if (textInput && charCount) {
+          textInput.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = length;
+      
+            const container = charCount.parentElement;
+            if (length > 450) {
+              container.classList.add('warning');
+            } else {
+              container.classList.remove('warning');
+            }
+          });
+        }
+      }
       // Event Listeners
       document.addEventListener('DOMContentLoaded', function() {
         updateLanguage();
@@ -1420,6 +1438,7 @@
         
         // Initialize secure session
         initializeSecureSession();
+        setupCharacterCount();
 
         // Language toggle
         document.getElementById('lang-de').addEventListener('click', function() {
@@ -1510,25 +1529,6 @@
             this.textContent = t.startAssessment;
           }
         });
-        // Character count for text inputs
-          function setupCharacterCount() {
-              const textInput = document.getElementById('question-input');
-              const charCount = document.getElementById('charCount');
-  
-              if (textInput && charCount) {
-                textInput.addEventListener('input', function() {
-                  const length = this.value.length;
-                  charCount.textContent = length;
-      
-                    const container = charCount.parentElement;
-                    if (length > 450) {
-                      container.classList.add('warning');
-                    } else {
-                      container.classList.remove('warning');
-                    }
-                  });
-                }
-            }
         // Question form
         const questionInput = document.getElementById('question-input');
         const questionSubmitBtn = document.getElementById('question-submit');
