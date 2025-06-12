@@ -296,13 +296,13 @@ function calculateReadinessScore(responses) {
 app.post('/api/assessment/session', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId, language = 'de' } = req.body;
     
     if (!sessionId) {
-      return res.status(400).json({ message: 'Session ID required' });
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
     
     // Check if session exists
@@ -324,7 +324,7 @@ app.post('/api/assessment/session', async (req, res) => {
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error creating session:', error);
-    res.status(500).json({ message: 'Failed to create session' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 
@@ -332,7 +332,7 @@ app.post('/api/assessment/session', async (req, res) => {
 app.get('/api/assessment/session/:sessionId', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId } = req.params;
@@ -343,13 +343,13 @@ app.get('/api/assessment/session/:sessionId', async (req, res) => {
     );
     
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Session not found' });
+      return res.status(404).json({ success: false, error: 'Please try again later' });
     }
     
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error getting session:', error);
-    res.status(500).json({ message: 'Failed to get session' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 // Generate new secure session ID
@@ -379,20 +379,20 @@ app.post('/api/assessment/generate-session', async (req, res) => {
     });
   } catch (error) {
     console.error('Session generation error:', error);
-    res.status(500).json({ success: false, error: 'Server error' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 // Save consent data - NEW ENDPOINT
 app.post('/api/assessment/consent', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId, consentDataProcessing, consentContactPermission } = req.body;
     
     if (!sessionId || typeof consentDataProcessing !== 'boolean') {
-      return res.status(400).json({ message: 'Missing required consent data' });
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
 
     await pool.query(
@@ -403,7 +403,7 @@ app.post('/api/assessment/consent', async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Error saving consent:', error);
-    res.status(500).json({ message: 'Failed to save consent' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 
@@ -411,13 +411,13 @@ app.post('/api/assessment/consent', async (req, res) => {
 app.post('/api/assessment/contact', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId, contactName, email, companyName, employeeNumber } = req.body;
     
     if (!sessionId || !contactName || !email || !companyName) {
-      return res.status(400).json({ message: 'Missing required contact information' });
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
 
     await pool.query(
@@ -428,7 +428,7 @@ app.post('/api/assessment/contact', async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Error saving contact info:', error);
-    res.status(500).json({ message: 'Failed to save contact information' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 
@@ -436,28 +436,27 @@ app.post('/api/assessment/contact', async (req, res) => {
 app.post('/api/assessment/chat-message', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId, messageType, content, questionId } = req.body;
     
     if (!sessionId || !messageType || !content) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
 
     // Create chat_messages table if it doesn't exist
     await pool.query(`
       CREATE TABLE IF NOT EXISTS chat_messages (
         id SERIAL PRIMARY KEY,
-        session_id VARCHAR(255) NOT NULL,
-        message_type VARCHAR(20) NOT NULL,
+        session_id TEXT NOT NULL,
+        message_type TEXT NOT NULL,
         content TEXT NOT NULL,
-        question_id VARCHAR(100),
-        created_at TIMESTAMP DEFAULT NOW()
-      )
+        question_id TEXT,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
 
-    // Insert chat message
     await pool.query(
       'INSERT INTO chat_messages (session_id, message_type, content, question_id) VALUES ($1, $2, $3, $4)',
       [sessionId, messageType, content, questionId || null]
@@ -466,20 +465,21 @@ app.post('/api/assessment/chat-message', async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Error saving chat message:', error);
-    res.status(500).json({ message: 'Failed to save chat message' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
-// Analyze response with AI
+
+// Analyze user response with AI
 app.post('/api/assessment/analyze', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId, questionId, questionText, userResponse, language } = req.body;
     
     if (!sessionId || !questionId || !questionText || !userResponse || !language) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
 
     // Get current session
@@ -489,7 +489,7 @@ app.post('/api/assessment/analyze', async (req, res) => {
     );
     
     if (sessionResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Session not found' });
+      return res.status(404).json({ success: false, error: 'Please try again later' });
     }
 
     const session = sessionResult.rows[0];
@@ -518,7 +518,7 @@ app.post('/api/assessment/analyze', async (req, res) => {
     });
   } catch (error) {
     console.error('Error analyzing response:', error);
-    res.status(500).json({ message: 'Failed to analyze response' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 
@@ -526,7 +526,7 @@ app.post('/api/assessment/analyze', async (req, res) => {
 app.patch('/api/assessment/session/:sessionId', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId } = req.params;
@@ -554,7 +554,7 @@ app.patch('/api/assessment/session/:sessionId', async (req, res) => {
     });
     
     if (updateFields.length === 0) {
-      return res.status(400).json({ message: 'No valid fields to update' });
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
     
     if (updates.isCompleted) {
@@ -570,13 +570,13 @@ app.patch('/api/assessment/session/:sessionId', async (req, res) => {
     const result = await pool.query(query, values);
     
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Session not found' });
+      return res.status(404).json({ success: false, error: 'Please try again later' });
     }
     
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error updating session:', error);
-    res.status(500).json({ message: 'Failed to update session' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 
@@ -584,13 +584,13 @@ app.patch('/api/assessment/session/:sessionId', async (req, res) => {
 app.post('/api/assessment/complete', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId } = req.body;
     
     if (!sessionId) {
-      return res.status(400).json({ message: 'Session ID required' });
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
     
     const sessionResult = await pool.query(
@@ -599,7 +599,7 @@ app.post('/api/assessment/complete', async (req, res) => {
     );
     
     if (sessionResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Session not found' });
+      return res.status(404).json({ success: false, error: 'Please try again later' });
     }
     
     const session = sessionResult.rows[0];
@@ -616,7 +616,7 @@ app.post('/api/assessment/complete', async (req, res) => {
     });
   } catch (error) {
     console.error('Error completing assessment:', error);
-    res.status(500).json({ message: 'Failed to complete assessment' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 
@@ -624,7 +624,7 @@ app.post('/api/assessment/complete', async (req, res) => {
 app.post('/api/assessment/send-report', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId, name, email, companyName, employeeNumber } = req.body;
@@ -635,13 +635,13 @@ app.post('/api/assessment/send-report', async (req, res) => {
     );
     
     if (sessionResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Session not found' });
+      return res.status(404).json({ success: false, error: 'Please try again later' });
     }
 
     const session = sessionResult.rows[0];
 
     if (!session.is_completed) {
-      return res.status(400).json({ message: 'Assessment not completed' });
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
 
     // Update session with contact info if not already set
@@ -661,7 +661,7 @@ app.post('/api/assessment/send-report', async (req, res) => {
     res.json({ success: true, message: 'Report sent successfully' });
   } catch (error) {
     console.error('Error sending report:', error);
-    res.status(500).json({ message: 'Failed to send report' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 
@@ -669,7 +669,7 @@ app.post('/api/assessment/send-report', async (req, res) => {
 app.get('/api/admin/export-data', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     // Get all assessment sessions
@@ -717,7 +717,7 @@ app.get('/api/admin/export-data', async (req, res) => {
     res.json(exportData);
   } catch (error) {
     console.error('Error exporting data:', error);
-    res.status(500).json({ message: 'Failed to export data' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 
@@ -725,13 +725,13 @@ app.get('/api/admin/export-data', async (req, res) => {
 app.post('/api/assessment/complete-data', async (req, res) => {
   try {
     if (!pool) {
-      return res.status(500).json({ message: 'Database not configured' });
+      return res.status(500).json({ success: false, error: 'Please try again later' });
     }
 
     const { sessionId } = req.body;
     
     if (!sessionId) {
-      return res.status(400).json({ message: 'Session ID required' });
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
     }
 
     const sessionResult = await pool.query(
@@ -740,7 +740,7 @@ app.post('/api/assessment/complete-data', async (req, res) => {
     );
 
     if (sessionResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Session not found' });
+      return res.status(404).json({ success: false, error: 'Please try again later' });
     }
 
     const session = sessionResult.rows[0];
@@ -785,14 +785,14 @@ app.post('/api/assessment/complete-data', async (req, res) => {
     res.json(webhookPayload);
   } catch (error) {
     console.error('Error preparing webhook data:', error);
-    res.status(500).json({ message: 'Failed to prepare assessment data' });
+    res.status(500).json({ success: false, error: 'Please try again later' });
   }
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
-  res.status(500).json({ message: 'Internal server error' });
+  res.status(500).json({ success: false, error: 'Please try again later' });
 });
 
 exports.handler = serverless(app);
