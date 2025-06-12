@@ -1520,7 +1520,8 @@
             const t = translations[currentLanguage];
             addMessage('bot', `Vielen Dank, ${name}! ${t.assessmentStart}`);
             
-            setTimeout(() => {
+            setTimeout(async () => {
+              await createSession();  // ADD THIS LINE
               showStep('questions');
               const firstQuestion = assessmentQuestions[0];
               const questionText = firstQuestion.text[currentLanguage];
