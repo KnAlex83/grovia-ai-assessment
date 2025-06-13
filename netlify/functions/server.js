@@ -46,14 +46,8 @@ app.use((req, res, next) => {
     if (req.body.companyName) {
       req.body.companyName = validateAndSanitizeInput(req.body.companyName, 100);
     }
-    if (req.body.content) {
-      if (req.body.questionText) {
-        req.body.questionText = validateAndSanitizeInput(req.body.questionText, 1000);
-      }
-    }
     if (req.body.questionText) {
       req.body.questionText = validateAndSanitizeInput(req.body.questionText, 1000);
-      }
     }
     next();
   });
