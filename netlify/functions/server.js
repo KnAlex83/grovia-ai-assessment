@@ -51,9 +51,12 @@ app.use((req, res, next) => {
         req.body.questionText = validateAndSanitizeInput(req.body.questionText, 1000);
       }
     }
-  }
-  next();
-});
+    if (req.body.questionText) {
+      req.body.questionText = validateAndSanitizeInput(req.body.questionText, 1000);
+      }
+    }
+    next();
+  });
 // RATE LIMITING - Prevents API abuse
 const rateLimitStore = new Map();
 
@@ -506,7 +509,11 @@ app.post('/api/assessment/analyze', async (req, res) => {
 
     // Analyze response with AI
     const aiAnalysis = await analyzeResponse(questionId, questionText, userResponse, language);
-    
+
+    if (!aiAnalysis) {
+      return res.status(500).json({ success: false, error: 'Please try again later' });
+    }
+
     // Update session with new response
     const currentResponses = session.responses || {};
     currentResponses[questionId] = {
@@ -517,18 +524,10 @@ app.post('/api/assessment/analyze', async (req, res) => {
     };
 
     // Update session
-    const updateResult = await pool.query(
+    await pool.query(
       'UPDATE assessment_sessions SET responses = $1 WHERE session_id = $2',
       [JSON.stringify(currentResponses), sessionId]
     );
-
-    if (updateResult.rowCount === 0) {
-      return res.status(404).json({ success: false, error: 'Please try again later' });
-    }
-
-    if (!aiAnalysis || typeof aiAnalysis !== 'object') {
-      return res.status(500).json({ success: false, error: 'Please try again later' });
-    }
 
     res.json({
       analysis: aiAnalysis,
