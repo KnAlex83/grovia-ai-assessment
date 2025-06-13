@@ -1438,10 +1438,18 @@
             charCount.textContent = length;
       
             const container = charCount.parentElement;
-            if (length > 450) {
+                        if (length > 950) {
               container.classList.add('warning');
+              textInput.style.borderColor = 'hsl(var(--destructive))';
             } else {
               container.classList.remove('warning');
+              textInput.style.borderColor = '';
+            }
+            
+            // Prevent input beyond 1000 characters
+            if (length >= 1000) {
+              this.value = this.value.substring(0, 1000);
+              charCount.textContent = '1000';
             }
           });
         }
