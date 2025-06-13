@@ -47,7 +47,9 @@ app.use((req, res, next) => {
       req.body.companyName = validateAndSanitizeInput(req.body.companyName, 100);
     }
     if (req.body.content) {
-      req.body.content = validateAndSanitizeInput(req.body.content, 1000);
+      if (req.body.questionText) {
+        req.body.questionText = validateAndSanitizeInput(req.body.questionText, 1000);
+      }
     }
   }
   next();
@@ -129,9 +131,9 @@ try {
 
 // AI Service configuration
 const CONFIG = {
-  AI_MODEL: process.env.AI_MODEL || 'anthropic/claude-3.5-sonnet:beta',
+  AI_MODEL: process.env.AI_MODEL || 'anthropic/claude-3-5-sonnet-20241022',
   AI_TEMPERATURE: parseFloat(process.env.AI_TEMPERATURE || '0.8'),
-  AI_MAX_TOKENS: parseInt(process.env.AI_MAX_TOKENS || '800'),
+  AI_MAX_TOKENS: parseInt(process.env.AI_MAX_TOKENS || '1500'),
   MIN_QUESTION_SCORE: parseInt(process.env.MIN_QUESTION_SCORE || '3'),
   MIN_OVERALL_SCORE: parseInt(process.env.MIN_OVERALL_SCORE || '50'),
   MAX_REALISTIC_SCORE: parseInt(process.env.MAX_REALISTIC_SCORE || '85'),
@@ -515,10 +517,18 @@ app.post('/api/assessment/analyze', async (req, res) => {
     };
 
     // Update session
-    await pool.query(
+    const updateResult = await pool.query(
       'UPDATE assessment_sessions SET responses = $1 WHERE session_id = $2',
       [JSON.stringify(currentResponses), sessionId]
     );
+
+    if (updateResult.rowCount === 0) {
+      return res.status(404).json({ success: false, error: 'Please try again later' });
+    }
+
+    if (!aiAnalysis || typeof aiAnalysis !== 'object') {
+      return res.status(500).json({ success: false, error: 'Please try again later' });
+    }
 
     res.json({
       analysis: aiAnalysis,
