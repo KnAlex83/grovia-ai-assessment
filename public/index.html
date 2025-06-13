@@ -1096,11 +1096,11 @@
                 sessionId: sessionId,
                 language: currentLanguage
               })
-          });
-        } catch (dbError) {
-          console.error('Database session creation failed:', dbError);
+            });
+          } catch (dbError) {
+            console.error('Database session creation failed:', dbError);
+          }
         }
-      }
 
       function updateLanguage() {
         const t = translations[currentLanguage];
