@@ -1102,7 +1102,8 @@
             }
           }
         }
-      function updateLanguage() {
+
+        function updateLanguage() {
         const t = translations[currentLanguage];
         
         document.getElementById('main-title').textContent = t.mainTitle;
@@ -1602,32 +1603,42 @@
               return;
             }
             
-            // Rest of function continues...
+            // Add AI explanation
+            if (analysis.explanation) {
+              setTimeout(() => {
+                addMessage('bot', analysis.explanation);
+              }, 500);
+            }
+            
+            // Store response
+            responses[questionId] = { userResponse, ...analysis };
+            
+            // Check for follow-up
+            if (analysis.needsFollowUp && analysis.followUpQuestion && !questionsWithFollowUp.has(currentQuestion.id)) {
+              setTimeout(() => {
+                const t = translations[currentLanguage];
+                const followUpMessage = `(${t.followUpPrefix} ${currentQuestionIndex + 1}) ${analysis.followUpQuestion}`;
+                addMessage('bot', followUpMessage);
+                waitingForFollowUp = true;
+                questionsWithFollowUp.add(currentQuestion.id);
+              }, 1500);
+            } else {
+              // Move to next question
+              setTimeout(() => {
+                proceedToNextQuestion();
+              }, 2000);
+            }
+            
+            const t = translations[currentLanguage];
+            questionSubmitBtn.disabled = false;
+            questionSubmitBtn.textContent = t.sendBtn;
           } catch (error) {
             console.error('Question submit error:', error);
             const t = translations[currentLanguage];
             questionSubmitBtn.disabled = false;
             questionSubmitBtn.textContent = t.sendBtn;
           }
-        }
-          
-          try {
-            const analysis = await submitResponse(questionId, userResponse, questionText);
-          } catch (submitError) {
-            console.error('Submit error:', submitError);
-            const t = translations[currentLanguage];
-            questionSubmitBtn.disabled = false;
-            questionSubmitBtn.textContent = t.sendBtn;
-            return;
-          }
-                    
-          if (!analysis) {
-            const t = translations[currentLanguage];
-            questionSubmitBtn.disabled = false;
-            questionSubmitBtn.textContent = t.sendBtn;
-            return;
-          }
-          
+                  
           if (analysis) {
             // Add AI explanation
             if (analysis.explanation) {
