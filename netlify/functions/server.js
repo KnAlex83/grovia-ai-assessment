@@ -291,7 +291,66 @@ function calculateReadinessScore(responses) {
   const percentage = (totalScore / maxPossibleScore) * 100;
   return Math.min(CONFIG.MAX_REALISTIC_SCORE, Math.round(percentage));
 }
+// Process responses for webhook - separate main and follow-up responses
+function processResponsesForWebhook(responses) {
+  const mainResponses = {};
+  const followUpResponses = {};
+  const conversationFlow = [];
 
+  Object.entries(responses).forEach(([questionId, response]) => {
+    if (questionId.includes('_followup')) {
+      const originalQuestionId = questionId.replace('_followup', '');
+      followUpResponses[originalQuestionId] = {
+        originalQuestion: mainResponses[originalQuestionId]?.questionText || '',
+        followUpQuestion: response.questionText || '',
+        userResponse: response.userResponse || '',
+        aiAnalysis: response.aiAnalysis || response.analysis || '',
+        explanation: response.explanation || '',
+        score: response.score || 0,
+        timestamp: response.timestamp
+      };
+      
+      conversationFlow.push({
+        type: 'followup_question',
+        questionId: originalQuestionId,
+        question: response.questionText,
+        userResponse: response.userResponse,
+        aiAnalysis: response.aiAnalysis || response.analysis,
+        timestamp: response.timestamp
+      });
+    } else {
+      mainResponses[questionId] = {
+        questionText: response.questionText || '',
+        userResponse: response.userResponse || '',
+        aiAnalysis: response.aiAnalysis || response.analysis || '',
+        explanation: response.explanation || '',
+        score: response.score || 0,
+        needsFollowUp: response.needsFollowUp || false,
+        followUpQuestion: response.followUpQuestion || '',
+        timestamp: response.timestamp
+      };
+      
+      conversationFlow.push({
+        type: 'main_question',
+        questionId: questionId,
+        question: response.questionText,
+        userResponse: response.userResponse,
+        aiAnalysis: response.aiAnalysis || response.analysis,
+        needsFollowUp: response.needsFollowUp,
+        followUpQuestion: response.followUpQuestion,
+        timestamp: response.timestamp
+      });
+    }
+  });
+
+  return {
+    mainResponses,
+    followUpResponses,
+    conversationFlow: conversationFlow.sort((a, b) => 
+      new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    )
+  };
+}
 // Create or get assessment session
 app.post('/api/assessment/session', async (req, res) => {
   try {
@@ -827,6 +886,8 @@ async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
 
     const webhookUrl = 'https://grovia.app.n8n.cloud/webhook/ai-assessment-complete';
     
+  const processedResponses = processResponsesForWebhook(session.responses || {});
+    
     const webhookPayload = {
       contact: {
         email: session.email,
@@ -836,15 +897,19 @@ async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
       },
       assessment: {
         sessionId: sessionId,
-        responses: session.responses,
+        responses: processedResponses.mainResponses,
+        followup_responses: processedResponses.followUpResponses,
         readiness_score: readinessScore,
         language: session.language,
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
+        total_questions: Object.keys(processedResponses.mainResponses).length,
+        total_followups: Object.keys(processedResponses.followUpResponses).length
       },
       consent: {
         data_processing: session.consent_data_processing,
         contact_permission: session.consent_contact_permission
-      }
+      },
+      conversation_flow: processedResponses.conversationFlow
     };
 
     const response = await fetch(webhookUrl, {
@@ -866,68 +931,6 @@ async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
     console.error('Webhook error:', error);
   }
 }
-
-app.post('/api/assessment/complete', async (req, res) => {
-  try {
-    if (!pool) {
-      return res.status(500).json({ success: false, error: 'Please try again later' });
-    }
-
-    const { sessionId } = req.body;
-    
-    if (!sessionId) {
-      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
-    }
-
-    const sessionResult = await pool.query(
-      'SELECT * FROM assessment_sessions WHERE session_id = $1',
-      [sessionId]
-    );
-
-    if (sessionResult.rows.length === 0) {
-      return res.status(404).json({ success: false, error: 'Session not found' });
-    }
-
-    const session = sessionResult.rows[0];
-
-    let readinessScore = 75;
-    if (session.responses && Object.keys(session.responses).length > 0) {
-      const responses = Object.values(session.responses);
-      let totalScore = 0;
-      let validResponses = 0;
-
-      responses.forEach((response) => {
-        if (response?.aiAnalysis?.readinessLevel) {
-          const level = response.aiAnalysis.readinessLevel;
-          let score = 60 + Math.floor(Math.random() * 20);
-          totalScore += score;
-          validResponses++;
-        }
-      });
-
-      if (validResponses > 0) {
-        readinessScore = Math.round(totalScore / validResponses);
-      }
-    }
-
-    await pool.query(
-      'UPDATE assessment_sessions SET readiness_score = $1, is_completed = true, completed_at = CURRENT_TIMESTAMP WHERE session_id = $2',
-      [readinessScore, sessionId]
-    );
-
-    await sendCompleteAssessmentToN8n(sessionId, readinessScore);
-
-    res.json({
-      success: true,
-      readinessScore,
-      message: 'Assessment completed successfully'
-    });
-
-  } catch (error) {
-    console.error('Error completing assessment:', error);
-    res.status(500).json({ success: false, error: 'Please try again later' });
-  }
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
