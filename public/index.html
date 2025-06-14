@@ -1579,20 +1579,54 @@
         questionSubmitBtn.addEventListener('click', handleQuestionSubmit);
 
         async function handleQuestionSubmit() {
-          const userResponse = questionInput.value.trim();
-          if (!userResponse) return;
+          try {
+            const userResponse = questionInput.value.trim();
+            if (!userResponse) return;
+            
+            questionSubmitBtn.disabled = true;
+            questionSubmitBtn.innerHTML = '<span class="loading-dots">Analyzing</span>';
+            
+            addMessage('user', userResponse);
+            questionInput.value = '';
+            
+            const currentQuestion = assessmentQuestions[currentQuestionIndex];
+            const questionId = waitingForFollowUp ? `${currentQuestion.id}_followup` : currentQuestion.id;
+            const questionText = currentQuestion.text[currentLanguage];
+            
+            const analysis = await submitResponse(questionId, userResponse, questionText);
+            
+            if (!analysis) {
+              const t = translations[currentLanguage];
+              questionSubmitBtn.disabled = false;
+              questionSubmitBtn.textContent = t.sendBtn;
+              return;
+            }
+            
+            // Rest of function continues...
+          } catch (error) {
+            console.error('Question submit error:', error);
+            const t = translations[currentLanguage];
+            questionSubmitBtn.disabled = false;
+            questionSubmitBtn.textContent = t.sendBtn;
+          }
+        }
           
-          questionSubmitBtn.disabled = true;
-          questionSubmitBtn.innerHTML = '<span class="loading-dots">Analyzing</span>';
-          
-          addMessage('user', userResponse);
-          questionInput.value = '';
-          
-          const currentQuestion = assessmentQuestions[currentQuestionIndex];
-          const questionId = waitingForFollowUp ? `${currentQuestion.id}_followup` : currentQuestion.id;
-          const questionText = currentQuestion.text[currentLanguage];
-          
-          const analysis = await submitResponse(questionId, userResponse, questionText);
+          try {
+            const analysis = await submitResponse(questionId, userResponse, questionText);
+          } catch (submitError) {
+            console.error('Submit error:', submitError);
+            const t = translations[currentLanguage];
+            questionSubmitBtn.disabled = false;
+            questionSubmitBtn.textContent = t.sendBtn;
+            return;
+          }
+                    
+          if (!analysis) {
+            const t = translations[currentLanguage];
+            questionSubmitBtn.disabled = false;
+            questionSubmitBtn.textContent = t.sendBtn;
+            return;
+          }
           
           if (analysis) {
             // Add AI explanation
