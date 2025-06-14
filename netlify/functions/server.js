@@ -297,28 +297,9 @@ function processResponsesForWebhook(responses) {
   const followUpResponses = {};
   const conversationFlow = [];
 
+  // First pass: collect all main responses
   Object.entries(responses).forEach(([questionId, response]) => {
-    if (questionId.includes('_followup')) {
-      const originalQuestionId = questionId.replace('_followup', '');
-      followUpResponses[originalQuestionId] = {
-        originalQuestion: mainResponses[originalQuestionId]?.questionText || '',
-        followUpQuestion: response.questionText || '',
-        userResponse: response.userResponse || '',
-        aiAnalysis: response.aiAnalysis || response.analysis || '',
-        explanation: response.explanation || '',
-        score: response.score || 0,
-        timestamp: response.timestamp
-      };
-      
-      conversationFlow.push({
-        type: 'followup_question',
-        questionId: originalQuestionId,
-        question: response.questionText,
-        userResponse: response.userResponse,
-        aiAnalysis: response.aiAnalysis || response.analysis,
-        timestamp: response.timestamp
-      });
-    } else {
+    if (!questionId.includes('_followup')) {
       mainResponses[questionId] = {
         questionText: response.questionText || '',
         userResponse: response.userResponse || '',
@@ -338,6 +319,31 @@ function processResponsesForWebhook(responses) {
         aiAnalysis: response.aiAnalysis || response.analysis,
         needsFollowUp: response.needsFollowUp,
         followUpQuestion: response.followUpQuestion,
+        timestamp: response.timestamp
+      });
+    }
+  });
+
+  // Second pass: collect follow-up responses
+  Object.entries(responses).forEach(([questionId, response]) => {
+    if (questionId.includes('_followup')) {
+      const originalQuestionId = questionId.replace('_followup', '');
+      followUpResponses[originalQuestionId] = {
+        originalQuestion: mainResponses[originalQuestionId]?.questionText || '',
+        followUpQuestion: response.questionText || '',
+        userResponse: response.userResponse || '',
+        aiAnalysis: response.aiAnalysis || response.analysis || '',
+        explanation: response.explanation || '',
+        score: response.score || 0,
+        timestamp: response.timestamp
+      };
+      
+      conversationFlow.push({
+        type: 'followup_question',
+        questionId: originalQuestionId,
+        question: response.questionText,
+        userResponse: response.userResponse,
+        aiAnalysis: response.aiAnalysis || response.analysis,
         timestamp: response.timestamp
       });
     }
