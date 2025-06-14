@@ -680,7 +680,18 @@ app.post('/api/assessment/complete', async (req, res) => {
       'UPDATE assessment_sessions SET readiness_score = $1, is_completed = $2, completed_at = $3 WHERE session_id = $4',
       [readinessScore, true, new Date(), sessionId]
     );
+        await pool.query(
+      'UPDATE assessment_sessions SET readiness_score = $1, is_completed = $2, completed_at = $3 WHERE session_id = $4',
+      [readinessScore, true, new Date(), sessionId]
+    );
     
+    // ADD THESE 2 LINES:
+    await sendCompleteAssessmentToN8n(sessionId, readinessScore);
+    
+    res.json({
+      readinessScore,
+      completed: true
+    });
     res.json({
       readinessScore,
       completed: true
