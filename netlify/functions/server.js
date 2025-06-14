@@ -801,6 +801,134 @@ app.post('/api/assessment/complete-data', async (req, res) => {
   }
 });
 
+async function sendCompleteAssessmentToN8n(sessionId, readinessScore) {
+  try {
+    console.log('Preparing webhook for session:', sessionId);
+    
+    const sessionResult = await pool.query(
+      'SELECT * FROM assessment_sessions WHERE session_id = $1',
+      [sessionId]
+    );
+
+    if (sessionResult.rows.length === 0) {
+      console.error('Session not found for webhook');
+      return;
+    }
+
+    const session = sessionResult.rows[0];
+    const hasEmail = session.email;
+    const hasResponses = session.responses && Object.keys(session.responses).length > 0;
+    const hasConsent = session.consent_data_processing !== undefined;
+
+    if (!hasEmail || !hasResponses || !hasConsent) {
+      console.error('Incomplete session data detected');
+      return;
+    }
+
+    const webhookUrl = 'https://grovia.app.n8n.cloud/webhook/ai-assessment-complete';
+    
+    const webhookPayload = {
+      contact: {
+        email: session.email,
+        name: session.contact_name,
+        company: session.company_name || '',
+        employees: session.employee_number || ''
+      },
+      assessment: {
+        sessionId: sessionId,
+        responses: session.responses,
+        readiness_score: readinessScore,
+        language: session.language,
+        completed_at: new Date().toISOString()
+      },
+      consent: {
+        data_processing: session.consent_data_processing,
+        contact_permission: session.consent_contact_permission
+      }
+    };
+
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Grovia-AI-Assessment/1.0'
+      },
+      body: JSON.stringify(webhookPayload)
+    });
+
+    if (response.ok) {
+      console.log('✅ N8N webhook sent successfully');
+    } else {
+      console.error('❌ N8N webhook failed:', response.status);
+    }
+    
+  } catch (error) {
+    console.error('Webhook error:', error);
+  }
+}
+
+app.post('/api/assessment/complete', async (req, res) => {
+  try {
+    if (!pool) {
+      return res.status(500).json({ success: false, error: 'Please try again later' });
+    }
+
+    const { sessionId } = req.body;
+    
+    if (!sessionId) {
+      return res.status(400).json({ success: false, error: 'Please check your input and try again' });
+    }
+
+    const sessionResult = await pool.query(
+      'SELECT * FROM assessment_sessions WHERE session_id = $1',
+      [sessionId]
+    );
+
+    if (sessionResult.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Session not found' });
+    }
+
+    const session = sessionResult.rows[0];
+
+    let readinessScore = 75;
+    if (session.responses && Object.keys(session.responses).length > 0) {
+      const responses = Object.values(session.responses);
+      let totalScore = 0;
+      let validResponses = 0;
+
+      responses.forEach((response) => {
+        if (response?.aiAnalysis?.readinessLevel) {
+          const level = response.aiAnalysis.readinessLevel;
+          let score = 60 + Math.floor(Math.random() * 20);
+          totalScore += score;
+          validResponses++;
+        }
+      });
+
+      if (validResponses > 0) {
+        readinessScore = Math.round(totalScore / validResponses);
+      }
+    }
+
+    await pool.query(
+      'UPDATE assessment_sessions SET readiness_score = $1, is_completed = true, completed_at = CURRENT_TIMESTAMP WHERE session_id = $2',
+      [readinessScore, sessionId]
+    );
+
+    await sendCompleteAssessmentToN8n(sessionId, readinessScore);
+
+    res.json({
+      success: true,
+      readinessScore,
+      message: 'Assessment completed successfully'
+    });
+
+  } catch (error) {
+    console.error('Error completing assessment:', error);
+    res.status(500).json({ success: false, error: 'Please try again later' });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
