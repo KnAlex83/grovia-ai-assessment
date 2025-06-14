@@ -681,9 +681,8 @@ app.post('/api/assessment/complete', async (req, res) => {
       [readinessScore, true, new Date(), sessionId]
     );
     
-    // ADD THESE 2 LINES:
     await sendCompleteAssessmentToN8n(sessionId, readinessScore);
-
+    
     res.json({
       readinessScore,
       completed: true
