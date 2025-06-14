@@ -48,10 +48,10 @@ app.use((req, res, next) => {
     }
     if (req.body.questionText) {
       req.body.questionText = validateAndSanitizeInput(req.body.questionText, 1000);
-      }
     }
-    next();
-  });
+  }
+  next();
+});
 // RATE LIMITING - Prevents API abuse
 const rateLimitStore = new Map();
 
